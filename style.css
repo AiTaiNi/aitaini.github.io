@@ -153,16 +153,30 @@ body {
     font-weight: bold;
 }
 
+#pagination-top {
+    margin-top: 0;
+    padding-top: 0;
+}
+#pagination-bot {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
 /* Media query for mobile devices */
 @media (max-width: 600px) {
     .container {
-        padding: 10px;
+        padding: 0px;
         flex-direction: column;
+    }
+
+    .blog-entry {
+        margin: 10px;
     }
 
     .sidebar {
         width: 100%;
         max-width: 100%;
+        border-radius: 0px;
         background-color: #f0f0f0;
         padding: 0;
         margin: 0;
@@ -173,15 +187,16 @@ body {
 
     .link-list, .text-list {
         flex-direction: row;
-        justify-content: center;
+        justify-content: space-between;
         align-items: center;
+        margin: 0 40px;
     }
 
     .text-item {
-        margin: 10px 15px;
+        width: fit-content;
     }
 
     .link-item {
-        margin: 10px 40px;
+        width: fit-content;
     }
 }
