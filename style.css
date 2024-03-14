@@ -34,9 +34,11 @@ body {
     border-radius: 10px;
     color: #2f3d4e;
     width: fit-content;
-    max-width: 20%;
+    max-width: 300px;
     height: fit-content;
     margin-right: 20px;
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 .sidebar h2 {
