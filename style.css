@@ -23,7 +23,7 @@ body {
     align-items: center;
 }
 .container {
-    max-width: 80dvw;
+    width: 80dvw;
     margin: 20px;
     padding: 20px;
     display: flex;
@@ -35,7 +35,7 @@ body {
     border-radius: 10px;
     color: #2f3d4e;
     width: fit-content;
-    max-width: 30dvw;
+    width: 30dvw;
     height: fit-content;
     margin-right: 20px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -81,7 +81,7 @@ body {
 }
 .main-content {
     flex: 1;
-    min-width: 50dvw;
+    width: 50dvw;
 }
 .blog-entry {
     background-color: #fff;
