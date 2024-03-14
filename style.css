@@ -43,7 +43,8 @@ body {
     margin-bottom: 0.83em;
 }
 .link-list {
-    list-style-type: none;
+    display: flex;
+    flex-direction: column;
     padding: 0;
     margin-bottom: 20px;
 }
@@ -139,6 +140,10 @@ body {
         background-color: #f0f0f0;
         padding: 10px;
         border-top: 1px solid #ccc;
+        flex-direction: row;
+    }
+
+    .link-list {
         flex-direction: row;
     }
 }
