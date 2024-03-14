@@ -1,0 +1,119 @@
+@font-face {
+    font-family: 'Calibri Light';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Calibri Light'), local('Calibri-Light'), url(https://fonts.gstatic.com/s/calibril/v11/q5zGoobMwOlWOGmI-sema5rIj_aH4xHiwcKJ7q1Hyv3Wb8Lt.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+* {
+    font-family: 'Calibri Light', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+a {
+    text-decoration: none;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #FDEAEE;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.container {
+    max-width: 80dvw;
+    margin: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+}
+.sidebar {
+    background-color: #EDEEFF;
+    padding: 20px 20px 60px 20px;
+    border-radius: 10px;
+    color: #2f3d4e;
+    width: fit-content;
+    max-width: 30dvw;
+    height: fit-content;
+    margin-right: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.sidebar h2 {
+    margin-bottom: 0.83em;
+}
+.link-list {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+.link-item {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+.link-item img {
+    width: 20px;
+    height: auto;
+    margin-right: 6px;
+}
+.link-item a {
+    text-decoration: none;
+    font-weight: bold;
+    display: block;
+}
+.link-item a:hover {
+    color: #ccc;
+}
+.text-item {
+    margin-bottom: 20px;
+}
+.text-item h3 {
+    margin-right: 3px;
+    margin-top: 0.83em;
+    margin-bottom: 0.2em;
+    font-size: 1em;
+}
+.text-item p {
+    margin: 0;
+    text-align: right;
+}
+.main-content {
+    flex: 1;
+    min-width: 50dvw;
+}
+.blog-entry {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    width: 100%;
+    height: fit-content;
+}
+.blog-entry h2 {
+    margin-bottom: 0.83em;
+}
+.blog-entry p {
+    margin-bottom: 0;
+    text-align: justify;
+}
+.pagination {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+.pagination a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 5px;
+}
+.pagination a:hover {
+    background-color: #ccc;
+}
