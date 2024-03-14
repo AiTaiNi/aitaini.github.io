@@ -21,11 +21,10 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-top: 40px;
 }
 .container {
-    width: 85dvw;
-    margin: 20px;
-    padding: 20px;
+    width: 90dvw;
     display: flex;
     flex-direction: row;
 }
@@ -35,7 +34,7 @@ body {
     border-radius: 10px;
     color: #2f3d4e;
     width: fit-content;
-    max-width: 20dvw;
+    max-width: 20%;
     height: fit-content;
     margin-right: 20px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -81,8 +80,7 @@ body {
 }
 .main-content {
     flex: 1;
-    max-width: 65dvw;
-    min-width: 65dvw;
+    width: 80%;
 }
 .blog-entry {
     background-color: #fff;
