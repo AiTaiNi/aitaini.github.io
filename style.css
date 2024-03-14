@@ -122,3 +122,21 @@ body {
 .pagination a.active {
     font-weight: bold;
 }
+
+/* Media query for mobile devices */
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    .sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        max-width: 100%;
+        background-color: #f0f0f0;
+        padding: 10px;
+        border-top: 1px solid #ccc;
+    }
+}
