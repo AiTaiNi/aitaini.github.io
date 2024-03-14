@@ -82,6 +82,9 @@ body {
     flex: 1;
     width: 80%;
 }
+.blog-entries {
+    width: 100%;
+}
 .blog-entry {
     background-color: #fff;
     padding: 20px;
