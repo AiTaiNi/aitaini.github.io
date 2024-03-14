@@ -35,7 +35,7 @@ body {
     border-radius: 10px;
     color: #2f3d4e;
     width: fit-content;
-    width: 30dvw;
+    max-width: 30dvw;
     height: fit-content;
     margin-right: 20px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
