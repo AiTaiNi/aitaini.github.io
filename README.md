@@ -8,6 +8,7 @@ Fuwari is a static blog template built with [Astro](https://astro.build), a refa
 
 ## ✨ Features
 
+
 - [x] **Built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com)**
 - [x] **View Transitions between pages**
   - [is not supported by Firefox and Safari yet](https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API#browser_compatibility)
