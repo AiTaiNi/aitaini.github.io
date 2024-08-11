@@ -1,0 +1,23 @@
+{
+  "formatter": {
+    "lineWidth": 320
+  },
+  "linter": {
+    "rules": {
+      "complexity": {
+        "useArrowFunction": "off"
+      },
+      "style": {
+        "useSingleVarDeclarator": "off",
+        "useTemplate": "off",
+        "noCommaOperator": "off",
+        "noParameterAssign": "off",
+        "useNumberNamespace": "off",
+        "noArguments": "off"
+      },
+      "suspicious": {
+        "noAssignInExpressions": "off"
+      }
+    }
+  }
+}
