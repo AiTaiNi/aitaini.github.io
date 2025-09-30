@@ -31,7 +31,7 @@ const configHue = 345;
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
 			offset = offset - offset % 4;
 			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
-		})();</script><!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why --><link rel="alternate" type="application/rss+xml" title="Tai" href="https://tai.moe/rss.xml"><link rel="stylesheet" href="/_astro/Layout.DSulWsr7.css">
+		})();</script><!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why --><link rel="stylesheet" href="/_astro/Layout.DSulWsr7.css">
 <link rel="stylesheet" href="/_astro/Layout.y4KPJ9hc.css">
 <link rel="stylesheet" href="/_astro/about.BtniRLn_.css">
 <link rel="stylesheet" href="/_astro/_page_.3994lfZ5.css">
@@ -103,9 +103,27 @@ if (document.readyState === 'loading') {
         "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> Guides </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
                     text-[var(--btn-content)] dark:text-[var(--deep-text)]
                     bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
+                    flex items-center justify-center"> 1 </div> </div> </button> </a><a href="/archive/?category=Review" aria-label="View all posts in the Review category"> <button class="
+            w-full
+            h-10
+            rounded-lg
+            bg-none
+            hover:bg-[var(--btn-plain-bg-hover)]
+            active:bg-[var(--btn-plain-bg-active)]
+            transition-all
+            pl-2
+            hover:pl-3
+            
+            text-neutral-700
+            hover:text-[var(--primary)]
+            dark:text-neutral-300
+            dark:hover:text-[var(--primary)]
+        "> <div class="flex items-center justify-between relative mr-2"> <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  "> Review </div> <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
+                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
+                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
                     flex items-center justify-center"> 1 </div> </div> </button> </a> </div>  </widget-layout>  <script type="module">class d extends HTMLElement{constructor(){if(super(),this.dataset.isCollapsed!=="true")return;const e=this.dataset.id,t=this.querySelector(".expand-btn"),s=this.querySelector(`#${e}`);t.addEventListener("click",()=>{s.classList.remove("collapsed"),t.classList.add("hidden")})}}customElements.get("widget-layout")||customElements.define("widget-layout",d);</script> <widget-layout data-id="tags" data-is-collapsed="false" class="pb-4 card-base onload-animation" style="animation-delay: 200ms; --collapsedHeight: 7.5rem;" data-astro-cid-ucso7hve="true"> <div class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-8 mt-4 mb-2
         before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
-        before:absolute before:left-[-16px] before:top-[5.5px]" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;">Tags</div> <div id="tags" class="collapse-wrapper px-4 overflow-hidden" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;">  <div class="flex gap-2 flex-wrap"> <a href="/archive/?tag=Blogging" aria-label="View all posts with the Blogging tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Blogging </a><a href="/archive/?tag=Customization" aria-label="View all posts with the Customization tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Customization </a><a href="/archive/?tag=Fuwari" aria-label="View all posts with the Fuwari tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Fuwari </a> </div>  </div>  </widget-layout>   </div> </div> <main id="swup-container" class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden"> <div id="content-wrapper" class="onload-animation"> <!-- the overflow-hidden here prevent long text break the layout--> <!-- make id different from windows.swup global property -->  <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"> <div class="card-base z-10 px-9 py-6 relative w-full "> <div data-pagefind-body class="prose dark:prose-invert prose-base !max-w-none custom-md mt-2"> <!--<div class="prose dark:prose-invert max-w-none custom-md">--> <!--<div class="max-w-none custom-md">-->  <section><h1 id="about">About<a class="anchor" href="#about"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h1><p>Made this website on a whim after finding the perfect template. Will probably just post random thoughts, happenings and whatnot.</p><p>You can find me at any of these sites:</p>
+        before:absolute before:left-[-16px] before:top-[5.5px]" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;">Tags</div> <div id="tags" class="collapse-wrapper px-4 overflow-hidden" data-astro-cid-ucso7hve style="--collapsedHeight: 7.5rem;">  <div class="flex gap-2 flex-wrap"> <a href="/archive/?tag=Blogging" aria-label="View all posts with the Blogging tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Blogging </a><a href="/archive/?tag=Customization" aria-label="View all posts with the Customization tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Customization </a><a href="/archive/?tag=Fuwari" aria-label="View all posts with the Fuwari tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Fuwari </a><a href="/archive/?tag=JDrama" aria-label="View all posts with the JDrama tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  JDrama </a><a href="/archive/?tag=Review" aria-label="View all posts with the Review tag" class="btn-regular h-8 text-sm px-3 rounded-lg">  Review </a> </div>  </div>  </widget-layout>   </div> </div> <main id="swup-container" class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden"> <div id="content-wrapper" class="onload-animation"> <!-- the overflow-hidden here prevent long text break the layout--> <!-- make id different from windows.swup global property -->  <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32"> <div class="card-base z-10 px-9 py-6 relative w-full "> <div data-pagefind-body class="prose dark:prose-invert prose-base !max-w-none custom-md mt-2"> <!--<div class="prose dark:prose-invert max-w-none custom-md">--> <!--<div class="max-w-none custom-md">-->  <section><h1 id="about">About<a class="anchor" href="#about"><span class="anchor-icon" data-pagefind-ignore="">#</span></a></h1><p>Made this website on a whim after finding the perfect template. Will probably just post random thoughts, happenings and whatnot.</p><p>You can find me at any of these sites:</p>
 
 
 
