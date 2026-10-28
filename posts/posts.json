@@ -3,12 +3,12 @@
     "id": "guide-index",
     "file": "guide/index.md",
     "title": "Simple Guides for Fuwari",
-    "date": "2026-10-21",
+    "date": "2026-10-22",
     "category": "Guides",
     "tags": [
-      "Fuwari",
+      "[Fuwari",
       "Blogging",
-      "Customization"
+      "Customization]"
     ],
     "description": "How to use this blog template.",
     "words": 172
