@@ -1,113 +1,134 @@
 <!DOCTYPE html>
 <html lang="en" style="--h: 0">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>My dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>My dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+  <script src="../../assets/sync.js"></script>
 </head>
+
 <body>
-<main>
-<header>
-  <div><h1 id="hello">Hello</h1><p id="date"></p></div>
-  <div class="tools">
-    <button id="refresh">Refresh</button>
-    <button id="open">Settings</button>
-  </div>
-</header>
-
-<div class="grid">
-  <section class="card">
-    <h2>Calendar</h2>
-    <div class="nav"><button id="prev" aria-label="Previous month">‹</button><b id="month"></b><button id="next" aria-label="Next month">›</button></div>
-    <div class="cgrid" id="dows"></div>
-    <div class="cgrid" id="cal" style="margin-top:4px"></div>
-    <div class="clegend"><span>None done</span><div class="cbar"></div><span>All done</span></div>
-    <p class="note">Dashed border = something is scheduled. Hover a date, or tap it, to see its events.</p>
-  </section>
-
-  <div class="stack">
-    <section class="card">
-      <div class="thead"><b id="dayTitle"></b><span id="dayCount"></span></div>
-      <div id="evs" style="margin-bottom:8px"></div>
-      <div class="prog"><i id="prog"></i></div>
-      <div id="checks"></div>
-    </section>
-    <section class="card">
-      <h2 id="evTitle">Add an event</h2>
-      <div class="add"><input id="evName" placeholder="Event name (birthday, deadline, shift…)" maxlength="60" aria-label="Event name"></div>
-      <div class="evrow">
-        <label>Date (or start)<input type="date" id="evDate"></label>
-        <label>Repeats<select id="evRep"><option value="none">Once</option><option value="week">Every week</option><option value="month">Every month</option><option value="year">Every year</option></select></label>
+  <main>
+    <header>
+      <div>
+        <h1 id="hello">Hello</h1>
+        <p id="date"></p>
       </div>
-      <div class="icons"><input id="evIcon" maxlength="2" placeholder="icon" aria-label="Icon (optional)"><span id="icons"></span></div>
-      <button id="evAdd" style="background:var(--ac);color:var(--card);border-color:var(--ac)">Add event</button> <button id="evCancel" hidden>Cancel</button>
-    </section>
-    <section class="card">
-      <h2>Daily tasks</h2>
-      <div class="add"><input id="newTask" placeholder="Add a daily task" maxlength="80" aria-label="New task"><button id="addBtn">Add</button></div>
-      <div id="manage" style="margin-top:8px"></div>
-    </section>
-  </div>
+      <div class="tools">
+        <button id="refresh">Refresh</button>
+        <button id="open">Settings</button>
+      </div>
+    </header>
 
-  <section class="card" aria-live="polite">
-    <h2>US dollar in Peruvian soles</h2>
-    <div id="fx"><p class="note">Loading rate…</p></div>
-  </section>
+    <div class="grid">
+      <section class="card">
+        <h2>Calendar</h2>
+        <div class="nav"><button id="prev" aria-label="Previous month">‹</button><b id="month"></b><button id="next" aria-label="Next month">›</button></div>
+        <div class="cgrid" id="dows"></div>
+        <div class="cgrid" id="cal" style="margin-top:4px"></div>
+        <div class="clegend"><span>None done</span>
+          <div class="cbar"></div><span>All done</span>
+        </div>
+        <p class="note">Dashed border = something is scheduled. Hover a date, or tap it, to see its events.</p>
+      </section>
 
-  <section class="card" aria-live="polite">
-    <h2>MyAnimeList</h2>
-    <div class="tabs">
-      <button data-t="anime" aria-pressed="true">Anime</button>
-      <button data-t="manga" aria-pressed="false">Manga</button>
-      <button id="malLoad" class="sp">Load stats file…</button>
-      <input type="file" id="malFile" accept=".json,application/json" hidden>
+      <div class="stack">
+        <section class="card">
+          <div class="thead"><b id="dayTitle"></b><span id="dayCount"></span></div>
+          <div id="evs" style="margin-bottom:8px"></div>
+          <div class="prog"><i id="prog"></i></div>
+          <div id="checks"></div>
+        </section>
+        <section class="card">
+          <h2 id="evTitle">Add an event</h2>
+          <div class="add"><input id="evName" placeholder="Event name (birthday, deadline, shift…)" maxlength="60" aria-label="Event name"></div>
+          <div class="evrow">
+            <label>Date (or start)<input type="date" id="evDate"></label>
+            <label>Repeats<select id="evRep">
+                <option value="none">Once</option>
+                <option value="week">Every week</option>
+                <option value="month">Every month</option>
+                <option value="year">Every year</option>
+              </select></label>
+          </div>
+          <div class="icons"><input id="evIcon" maxlength="2" placeholder="icon" aria-label="Icon (optional)"><span id="icons"></span></div>
+          <button id="evAdd" style="background:var(--ac);color:var(--card);border-color:var(--ac)">Add event</button> <button id="evCancel" hidden>Cancel</button>
+        </section>
+        <section class="card">
+          <h2>Daily tasks</h2>
+          <div class="add"><input id="newTask" placeholder="Add a daily task" maxlength="80" aria-label="New task"><button id="addBtn">Add</button></div>
+          <div id="manage" style="margin-top:8px"></div>
+        </section>
+      </div>
+
+      <section class="card" aria-live="polite">
+        <h2>US dollar in Peruvian soles</h2>
+        <div id="fx">
+          <p class="note">Loading rate…</p>
+        </div>
+      </section>
+
+      <section class="card" aria-live="polite">
+        <h2>MyAnimeList</h2>
+        <div class="tabs">
+          <button data-t="anime" aria-pressed="true">Anime</button>
+          <button data-t="manga" aria-pressed="false">Manga</button>
+          <button id="malLoad" class="sp">Load stats file…</button>
+          <input type="file" id="malFile" accept=".json,application/json" hidden>
+        </div>
+        <div id="mal">
+          <p class="note">Loading stats…</p>
+        </div>
+      </section>
+
+      <section class="card wide" aria-live="polite">
+        <h2>Latest from your subscriptions</h2>
+        <div id="yt">
+          <p class="note">Loading videos…</p>
+        </div>
+      </section>
     </div>
-    <div id="mal"><p class="note">Loading stats…</p></div>
-  </section>
+  </main>
 
-  <section class="card wide" aria-live="polite">
-    <h2>Latest from your subscriptions</h2>
-    <div id="yt"><p class="note">Loading videos…</p></div>
-  </section>
-</div>
-</main>
-
-<dialog id="dlg">
-  <h3 style="margin:0">Settings</h3>
-  <label for="malUser">MyAnimeList username</label>
-  <input id="malUser" maxlength="40" autocomplete="off">
-  <p class="note">Stats come from data/mal-stats.json. After changing the name, run <code>python scrape_mal.py name</code> to refresh that file.</p>
+  <dialog id="dlg">
+    <h3 style="margin:0">Settings</h3>
+    <label for="malUser">MyAnimeList username</label>
+    <input id="malUser" maxlength="40" autocomplete="off">
+    <p class="note">Stats come from data/mal-stats.json. After changing the name, run <code>python scrape_mal.py name</code> to refresh that file.</p>
     <label for="ch">YouTube channel IDs</label>
-  <textarea id="ch" placeholder="Paste channel IDs (UC...) or the contents of subscriptions.csv from Google Takeout, one per line"></textarea>
-  <p class="note">Your list is saved in this browser only. Takeout: takeout.google.com, choose YouTube, then Subscriptions.</p>
-  <details class="bk">
-    <summary>Backup: import and export</summary>
-    <div class="btns" style="margin-top:10px">
-      <button id="expJson">Export JSON</button>
-      <button id="expCsv">Export task history CSV</button>
-      <button id="expEv">Export events CSV</button>
-      <button id="impFile">Import JSON…</button>
-      <button id="impPaste">Paste JSON</button>
-      <button id="saveAs">Save as…</button>
-      <button id="openPick">Open file…</button>
-    </div>
-    <input type="file" id="fileIn" accept=".json,application/json" hidden>
-    <textarea id="dataText" hidden placeholder="Paste exported JSON here"></textarea>
-    <div class="btns" id="impActions" hidden style="margin-top:10px">
-      <button id="doMerge">Merge into current</button>
-      <button id="doReplace">Replace everything</button>
-      <button id="doCancel">Cancel</button>
-    </div>
-    <p class="msg" id="dataMsg"></p>
-    <p class="note">JSON holds your tasks, history and events, for backup or moving devices. The CSV files are for spreadsheets.</p>
-  </details>
-  <div class="row"><button id="cancel">Cancel</button><button id="save" style="background:var(--ac);color:var(--card)">Save</button></div>
-</dialog>
+    <textarea id="ch" placeholder="Paste channel IDs (UC...) or the contents of subscriptions.csv from Google Takeout, one per line"></textarea>
+    <p class="note">Your list is saved in this browser only. Takeout: takeout.google.com, choose YouTube, then Subscriptions.</p>
+    <details class="bk">
+      <summary>Backup: import and export</summary>
+      <div class="btns" style="margin-top:10px">
+        <button id="expJson">Export JSON</button>
+        <button id="expCsv">Export task history CSV</button>
+        <button id="expEv">Export events CSV</button>
+        <button id="impFile">Import JSON…</button>
+        <button id="impPaste">Paste JSON</button>
+        <button id="saveAs">Save as…</button>
+        <button id="openPick">Open file…</button>
+      </div>
+      <input type="file" id="fileIn" accept=".json,application/json" hidden>
+      <textarea id="dataText" hidden placeholder="Paste exported JSON here"></textarea>
+      <div class="btns" id="impActions" hidden style="margin-top:10px">
+        <button id="doMerge">Merge into current</button>
+        <button id="doReplace">Replace everything</button>
+        <button id="doCancel">Cancel</button>
+      </div>
+      <p class="msg" id="dataMsg"></p>
+      <p class="note">JSON holds your tasks, history and events, for backup or moving devices. The CSV files are for spreadsheets.</p>
+    </details>
+    <div class="row"><button id="cancel">Cancel</button><button id="save" style="background:var(--ac);color:var(--card)">Save</button></div>
+  </dialog>
 
-<script src="script.js"></script>
-<script src="tasks.js"></script>
+  <script src="script.js"></script>
+  <script src="tasks.js"></script>
 </body>
+
 </html>

@@ -1,26 +1,39 @@
 (function () {
     var KEY = 'daily-tasks-v1';
     var state = { tasks: [], done: {} };
+    var p = Sync.get(KEY);
 
-    try {
-        var raw = localStorage.getItem(KEY);
-
-        if (raw) {
-            var p = JSON.parse(raw);
-
-            if (p && p.tasks && p.done) state = p;
-        }
-    } catch (e) {
-    }
+    if (p && p.tasks && p.done) state = p;
 
     function save() {
-        try {
-            localStorage.setItem(KEY, JSON.stringify(state));
-        } catch (e) {
-        }
+        Sync.set(KEY, state);
     }
 
     if (!Array.isArray(state.events)) state.events = [];
+
+    /* First sync on a device that already has data: combine both copies instead of dropping one */
+    var merge = {};
+
+    merge[KEY] = function (local, remote) {
+        var out = { tasks: (remote.tasks || []).slice(), done: Object.assign({}, remote.done), events: (remote.events || []).slice() };
+
+        mergeInto(out, { tasks: local.tasks || [], done: local.done || {}, events: local.events || [] });
+
+        return out;
+    };
+
+    Sync.use([KEY], { merge: merge });
+
+    /* A newer copy arrived from another device */
+    Sync.on(KEY, function (v) {
+        if (!v || !v.tasks || !v.done) return;
+
+        state = v;
+
+        if (!Array.isArray(state.events)) state.events = [];
+
+        render();
+    });
 
     function pad(n) {
         return n < 10 ? '0' + n : '' + n;
@@ -599,39 +612,43 @@
         }
     };
 
-    document.getElementById('doMerge').onclick = function () {
-        if (!pending) return;
-
+    /* Adds tasks, history and events from `from` that `into` doesn't have yet */
+    function mergeInto(into, from) {
         var ids = {};
 
-        state.tasks.forEach(function (t) {
+        into.tasks.forEach(function (t) {
             ids[t.id] = 1;
         });
 
-        pending.tasks.forEach(function (t) {
-            if (!ids[t.id]) state.tasks.push(t);
+        from.tasks.forEach(function (t) {
+            if (!ids[t.id]) into.tasks.push(t);
         });
 
-        Object.keys(pending.done).forEach(function (k) {
-            var cur = state.done[k] || [];
+        Object.keys(from.done).forEach(function (k) {
+            var cur = (into.done[k] || []).slice();
 
-            pending.done[k].forEach(function (id) {
+            from.done[k].forEach(function (id) {
                 if (cur.indexOf(id) < 0) cur.push(id);
             });
 
-            state.done[k] = cur;
+            into.done[k] = cur;
         });
 
         var eids = {};
 
-        state.events.forEach(function (e) {
+        into.events.forEach(function (e) {
             eids[e.id] = 1;
         });
 
-        pending.events.forEach(function (e) {
-            if (!eids[e.id]) state.events.push(e);
+        from.events.forEach(function (e) {
+            if (!eids[e.id]) into.events.push(e);
         });
+    }
 
+    document.getElementById('doMerge').onclick = function () {
+        if (!pending) return;
+
+        mergeInto(state, pending);
         finish('Merged into your current data.');
     };
 

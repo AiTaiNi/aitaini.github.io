@@ -22,7 +22,15 @@ const store = {
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (n, d = 0) => Number(n).toLocaleString('en-US', { maximumFractionDigits: d });
 const DEFAULTS = { mal: 'AisareTai', channels: [] };
-const cfg = Object.assign({}, DEFAULTS, store.get('dash-cfg', {}));
+const cfg = Object.assign({}, DEFAULTS, Sync.get('dash-cfg', {}));
+
+/* Settings follow you across devices; dash-fx and dash-mal are caches and stay local */
+Sync.use(['dash-cfg']);
+Sync.on('dash-cfg', v => {
+    Object.assign(cfg, DEFAULTS, v);
+    loadMal();
+    loadYt();
+});
 let malTab = 'anime', malData = null, malNote = '';
 
 /* ---------- header ---------- */
@@ -270,7 +278,7 @@ $('#cancel').onclick = () => dlg.close();
 $('#save').onclick = () => {
     cfg.mal = $('#malUser').value.trim() || DEFAULTS.mal;
     cfg.channels = [...new Set($('#ch').value.match(/UC[\w-]{22}/g) || [])];
-    store.set('dash-cfg', cfg);
+    Sync.set('dash-cfg', cfg);
     dlg.close();
     loadAll();
 };
