@@ -1,0 +1,35 @@
+{
+  "pages": [
+    {
+      "path": "archive",
+      "file": "archive.md",
+      "title": "Archive",
+      "order": 10,
+      "menu": true
+    },
+    {
+      "path": "about",
+      "file": "about.md",
+      "title": "About",
+      "order": 20,
+      "menu": true
+    },
+    {
+      "path": "more/colophon",
+      "file": "more/colophon.md",
+      "title": "Colophon",
+      "order": 100,
+      "menu": true
+    },
+    {
+      "path": "more/links",
+      "file": "more/links.md",
+      "title": "Links",
+      "order": 100,
+      "menu": true
+    }
+  ],
+  "folders": {
+    "more": "More"
+  }
+}

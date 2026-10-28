@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tai</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+<!-- Markdown renderer (pinned) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+
+<style>
+/* =====================================================
+   COLORS — edit these two numbers (0–360 hue angles).
+   --hue         primary color: page tint, links, title bars, buttons
+   --accent-hue  accent color: tags, quote bars, highlights
+   Light & dark mode shades are all derived from these.
+   (tai.moe's Fuwari default is 250 — change if yours differs.)
+   ===================================================== */
+:root{
+  --hue: 0;
+  --accent-hue: 20;
+
+  --page:    oklch(0.95 0.01 var(--hue));
+  --card:    #fff;
+  --primary: oklch(0.70 0.14 var(--hue));
+  --link:    oklch(0.55 0.14 var(--hue));
+  --tint:    oklch(0.93 0.035 var(--hue));
+  --tint-hi: oklch(0.88 0.06 var(--hue));
+  --accent:  oklch(0.62 0.16 var(--accent-hue));
+  --accent-tint: oklch(0.93 0.045 var(--accent-hue));
+  --line:    oklch(0.90 0.02 var(--hue));
+  --text:    rgb(0 0 0 / .75);
+  --title:   rgb(0 0 0 / .9);
+  --sub:     rgb(0 0 0 / .5);
+  --code:    oklch(0.25 0.02 var(--hue));
+  color-scheme: light;
+}
+html.dark{
+  --page:    oklch(0.16 0.014 var(--hue));
+  --card:    oklch(0.23 0.015 var(--hue));
+  --primary: oklch(0.75 0.14 var(--hue));
+  --link:    oklch(0.75 0.14 var(--hue));
+  --tint:    oklch(0.33 0.07 var(--hue));
+  --tint-hi: oklch(0.40 0.09 var(--hue));
+  --accent:  oklch(0.75 0.14 var(--accent-hue));
+  --accent-tint: oklch(0.33 0.06 var(--accent-hue));
+  --line:    oklch(0.30 0.02 var(--hue));
+  --text:    rgb(255 255 255 / .75);
+  --title:   rgb(255 255 255 / .9);
+  --sub:     rgb(255 255 255 / .5);
+  --code:    oklch(0.19 0.015 var(--hue));
+  color-scheme: dark;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--text);font:16px/1.7 Roboto,system-ui,sans-serif;transition:background .3s}
+a{color:var(--link);text-decoration:none}
+.card{background:var(--card);border-radius:1rem;transition:background .3s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:0;background:transparent;color:var(--text);font:500 1rem Roboto,sans-serif;padding:.5rem .9rem;border-radius:.65rem;cursor:pointer;transition:background .15s,color .15s}
+.btn:hover,.btn.on{background:var(--tint);color:var(--link)}
+.btn:active{background:var(--tint-hi)}
+
+/* Navbar (floating card) */
+.top{position:sticky;top:.5rem;z-index:10;max-width:75rem;margin:.5rem auto 0;padding:0 .75rem}
+.nav{display:flex;align-items:center;gap:.25rem;height:4.25rem;padding:0 1rem;flex-wrap:nowrap}
+.logo{font-size:1.25rem;font-weight:700;color:var(--link);padding:.5rem .9rem;border-radius:.65rem;margin-right:auto}
+.logo:hover{background:var(--tint)}
+.search{width:11rem;border:0;outline:0;background:var(--tint);color:var(--text);font:1rem Roboto,sans-serif;padding:.5rem 1rem;border-radius:.65rem;transition:.2s}
+.search::placeholder{color:var(--sub)}
+.search:focus{background:var(--tint-hi);width:14rem}
+.nav .links{display:flex;gap:.1rem}
+.hue-panel{display:none;position:absolute;right:.75rem;top:4.9rem;width:15rem;padding:1rem;box-shadow:0 8px 30px rgb(0 0 0/.15)}
+.hue-panel.show{display:block}
+.hue-panel input{width:100%;height:.9rem;border-radius:.5rem;appearance:none;background:linear-gradient(90deg,oklch(.7 .14 0),oklch(.7 .14 60),oklch(.7 .14 120),oklch(.7 .14 180),oklch(.7 .14 240),oklch(.7 .14 300),oklch(.7 .14 360))}
+.hue-panel input::-webkit-slider-thumb{appearance:none;width:.5rem;height:1.4rem;border-radius:.3rem;background:#fff;border:2px solid var(--link)}
+.hue-panel input::-moz-range-thumb{width:.4rem;height:1.2rem;border-radius:.3rem;background:#fff;border:2px solid var(--link)}
+.hue-panel p{margin:0 0 .6rem;font-weight:500;color:var(--title)}
+@media(max-width:700px){.nav{flex-wrap:wrap;height:auto;padding:.6rem}.search{width:100%;order:9}.search:focus{width:100%}}
+
+/* Layout */
+.wrap{max-width:75rem;margin:1rem auto;padding:0 .75rem;display:grid;grid-template-columns:17.5rem 1fr;gap:1rem;align-items:start}
+@media(max-width:900px){.wrap{grid-template-columns:1fr}}
+aside{display:flex;flex-direction:column;gap:1rem;position:sticky;top:5.75rem}
+@media(max-width:900px){aside{position:static}}
+
+/* Sidebar: profile */
+.profile{padding:.9rem}
+.profile .avatar{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:.75rem;background:var(--tint)}
+.profile h3{position:relative;text-align:center;margin:1rem 0 .5rem;font-size:1.3rem;color:var(--title)}
+.profile h3::after{content:"";display:block;width:1.5rem;height:4px;border-radius:2px;background:var(--primary);margin:.4rem auto 0}
+.profile p{text-align:center;margin:0 0 .8rem;font-size:.95rem;color:var(--sub);line-height:1.5}
+.profile .socials{display:flex;flex-wrap:wrap;justify-content:center;gap:.25rem}
+.profile .socials .btn{background:var(--tint);color:var(--link);padding:.35rem .75rem;font-size:.9rem}
+.profile .socials .btn:hover{background:var(--tint-hi)}
+
+/* Sidebar: widgets */
+.widget{padding:1rem 1rem 1.1rem}
+.widget h4{position:relative;margin:0 0 .7rem .6rem;color:var(--title);font-size:1.05rem;font-weight:700}
+.widget h4::before{content:"";position:absolute;left:-.6rem;top:.3rem;width:4px;height:1.1rem;border-radius:2px;background:var(--primary)}
+.widget .row{display:flex;justify-content:space-between;padding:.35rem .6rem;border-radius:.5rem;color:var(--text)}
+.widget .row:hover{background:var(--tint);color:var(--link)}
+.widget .row span{background:var(--tint);color:var(--link);border-radius:.4rem;padding:0 .5rem;font-size:.85rem;min-width:1.7rem;text-align:center}
+.chip{display:inline-block;background:var(--tint);color:var(--link);border-radius:.5rem;padding:.1rem .65rem;margin:0 .25rem .35rem 0;font-size:.9rem;transition:.15s}
+.chip:hover{background:var(--tint-hi)}
+
+/* Main + page transition (fade, no reload) */
+#main{transition:opacity .22s ease,transform .22s ease;min-height:60vh;display:flex;flex-direction:column;gap:1rem}
+#main.out{opacity:0;transform:translateY(8px)}
+.heading{margin:0;padding:.2rem .4rem;font-size:1.3rem;color:var(--title)}
+
+/* Post list cards */
+.post{padding:1.5rem 1.75rem 1.4rem;transition:box-shadow .2s}
+.post:hover{box-shadow:0 4px 18px rgb(0 0 0/.06)}
+.post h2{position:relative;margin:0 0 .6rem;font-size:1.65rem;line-height:1.3;font-weight:700}
+.post h2 a{color:var(--title);transition:color .15s}
+.post h2 a:hover{color:var(--link)}
+.post h2::before{content:"";position:absolute;left:-1.75rem;top:.45rem;width:4px;height:1.6rem;border-radius:2px;background:var(--primary)}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem .9rem;color:var(--sub);font-size:.88rem;margin-bottom:.7rem}
+.meta .date{background:var(--tint);color:var(--link);border-radius:.4rem;padding:0 .55rem;font-weight:500}
+.meta a{color:var(--sub)}
+.meta a:hover{color:var(--link)}
+.meta .sep{opacity:.5;margin:0 .15rem}
+.desc{margin:0 0 .8rem;color:var(--text)}
+.count{color:var(--sub);font-size:.88rem}
+
+/* Article body */
+.article{padding:1.75rem 2rem 2rem}
+.article>h1{margin:0 0 .5rem;font-size:2rem;line-height:1.25;color:var(--title)}
+.article hr.top{border:0;border-top:1px dashed var(--line);margin:1rem 0 1.5rem}
+.md h2,.md h3{color:var(--title);position:relative;margin:1.8em 0 .6em;line-height:1.3}
+.md h2::before,.md h3::before{content:"#";position:absolute;left:-1.1rem;color:var(--primary);opacity:.7}
+.md a{border-bottom:1px solid color-mix(in srgb,var(--link) 40%,transparent)}
+.md a:hover{border-color:var(--link)}
+.md img{max-width:100%;border-radius:.75rem}
+.md blockquote{margin:1.2em 0;padding:.1rem 1.1rem;border-left:4px solid var(--accent);background:var(--accent-tint);border-radius:0 .6rem .6rem 0}
+.md code{background:var(--tint);color:var(--link);padding:.1rem .4rem;border-radius:.4rem;font-size:.9em}
+.md pre{background:var(--code);color:#e8e8ee;padding:1rem 1.2rem;border-radius:.75rem;overflow:auto}
+.md pre code{background:none;color:inherit;padding:0}
+.md hr{border:0;border-top:1px dashed var(--line);margin:2rem 0}
+.md table{border-collapse:collapse}.md td,.md th{border:1px solid var(--line);padding:.35rem .7rem}
+.md li::marker{color:var(--primary)}
+.back{padding:.9rem 1.2rem;display:flex;justify-content:space-between}
+
+/* Archive timeline */
+.year{padding:1.2rem 1.5rem}
+.year h3{margin:0 0 .5rem;color:var(--title);font-size:1.3rem}
+.year h3 small{color:var(--sub);font-weight:400;font-size:.9rem;margin-left:.5rem}
+.arow{display:flex;align-items:center;gap:1rem;padding:.45rem .6rem;border-radius:.6rem;color:var(--text)}
+.arow:hover{background:var(--tint)}
+.arow .d{width:3.2rem;color:var(--sub);font-size:.9rem;text-align:right}
+.arow .dot{width:.7rem;height:.7rem;border-radius:50%;border:2px solid var(--primary);flex:none}
+.arow:hover .dot{background:var(--primary)}
+.arow .t{flex:1;font-weight:500}
+.arow .tg{color:var(--sub);font-size:.85rem}
+.empty{padding:2rem;text-align:center;color:var(--sub)}
+
+footer{max-width:75rem;margin:1rem auto 0;padding:0 .75rem 2.5rem}
+footer div{border-top:1px dashed var(--line);padding-top:1.4rem;text-align:center;color:var(--sub);font-size:.88rem;line-height:1.6}
+</style>
+<script>
+/* Apply saved/system theme before paint to avoid a flash */
+try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.classList.add('dark')}catch(e){}
+</script>
+</head>
+
+<body>
+<div class="top">
+  <div class="card nav">
+    <a class="logo" href="#/">Tai</a>
+    <div class="links">
+      <a class="btn" href="#/" data-nav="home">Home</a>
+      <a class="btn" href="#/archive" data-nav="archive">Archive</a>
+      <a class="btn" href="#/about" data-nav="about">About</a>
+      <a class="btn" href="https://twitter.com/aisare_taiii" target="_blank" rel="noopener">Twitter</a>
+    </div>
+    <input class="search" id="q" type="search" placeholder="Search" aria-label="Search posts" autocomplete="off">
+    <button class="btn" id="huebtn" title="Theme color" aria-label="Theme color">🎨</button>
+    <button class="btn" id="themebtn" title="Light / dark" aria-label="Toggle dark mode">🌓</button>
+  </div>
+  <div class="card hue-panel" id="huepanel">
+    <p>Theme color: <span id="hueval"></span></p>
+    <input type="range" id="hue" min="0" max="360">
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- =====================================================
+       SIDEBAR — edit photo, name, bio and quick links here.
+       (Categories & Tags boxes below fill in automatically.)
+       ===================================================== -->
+  <aside>
+    <div class="card profile">
+      <!-- Replace src with your photo (file path or URL) -->
+      <img class="avatar" alt="Profile image of the author" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c9d0e6'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cellipse cx='50' cy='92' rx='32' ry='28' fill='%23fff'/%3E%3C/svg%3E">
+      <h3>Tai</h3>
+      <p>Just someone online. Can speak 🇺🇸 and 🇪🇸, trying and failing to learn 🇮🇩 and 🇯🇵</p>
+      <div class="socials">
+        <a class="btn" href="https://twitter.com/aisare_taiii" target="_blank" rel="noopener">Twitter</a>
+        <a class="btn" href="https://steamcommunity.com/id/aisare_tai/" target="_blank" rel="noopener">Steam</a>
+        <a class="btn" href="https://github.com/AiTaiNi" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn" href="https://ko-fi.com/aisaretai" target="_blank" rel="noopener">Ko-fi</a>
+      </div>
+    </div>
+    <div class="card widget" id="w-cats"></div>
+    <div class="card widget" id="w-tags"></div>
+  </aside>
+
+  <main id="main" class="out"></main>
+</div>
+
+<footer><div>© <span id="yr"></span> Tai. All Rights Reserved.</div></footer>
+
+<!-- =====================================================
+     ABOUT PAGE — Markdown. Keep it between the tags.
+     ===================================================== -->
+<script type="text/markdown" id="about-md">
+# About
+Made this website on a whim after finding the perfect template. Will probably just post random thoughts, happenings and whatnot.
+
+You can find me at any of these sites:
+
+| Social      | Friend Code |
+|-------------|-------------|
+| Twitter     | [@aisare_taiii](https://twitter.com/aisare_taiii) |
+| Discord     | @aisare_tai   |
+| Bluesky     | [@tai.moe](https://bsky.app/profile/tai.moe)   |
+| Steam       | [/aisare_tai](https://steamcommunity.com/id/aisare_tai/)   |
+
+
+While I have essentially quit gacha games, feel free to add me if you want.
+Chances are I won't be able to accept if they require me to though.
+
+| Gacha                                   | Friend Code |
+|-----------------------------------------|-------------|
+| Aether Gazer (America)                  | 53687754066 |
+| Honkai Star Rail (America)              | 601348598   |
+| Morimens (English)                      | 101184333   |
+| Reverse 1999 (Global)                   | 402128624   |
+| Wuthering Waves (America)               | 501696515   |
+| Zenless Zone Zero (America)             | 1000191625  |
+
+
+Additionally, I do play these games occasionally so if you want to add me just send me a DM:
+* Final Fantasy XIV (Aether server)
+* Granblue Fantasy ReLink
+* Warframe
+
+
+**Profile pic by the lovely [@dt717461](https://twitter.com/dt717461), please give them a follow.**
+</script>
+
+<!-- =====================================================
+     POSTS — copy one block to add a post; edit to change it.
+       data-id          unique, no spaces (used in the URL)
+       data-title       title
+       data-date        YYYY-MM-DD (newest first)
+       data-category    one category (optional)
+       data-tags        comma separated (optional)
+       data-description short summary for the list (optional)
+     Write the body in Markdown. Indenting is fine; it's stripped.
+     ===================================================== -->
+<script type="text/markdown" class="post" data-id="hello-world" data-title="Hello, world" data-date="2026-10-20" data-category="Notes" data-tags="intro, blogging" data-description="A first post to show how everything looks.">
+  Welcome to my little corner of the internet!
+
+  This post is written in **Markdown**. To add another post, copy a whole
+  `<script class="post">` block in the HTML file and change the text.
+
+  ## Things you can do
+
+  - Make lists
+  - Add [links](https://example.com)
+  - Quote people:
+
+  > Simple is better than complex.
+
+  ```js
+  console.log("code blocks work too");
+  ```
+</script>
+
+<script type="text/markdown" class="post" data-id="second-post" data-title="Another post" data-date="2026-10-15" data-category="Guides" data-tags="blogging, customization">
+  Here's a second post so you can see the list and archive.
+
+  Try the search box up top — it looks through titles, tags and text.
+</script>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const enc = encodeURIComponent;
+const dedent = t => {
+  const l = t.replace(/^\n+|\s+$/g, '').split('\n');
+  const m = Math.min(...l.filter(x => x.trim()).map(x => x.match(/^ */)[0].length));
+  return l.map(x => x.slice(m)).join('\n');
+};
+const md = t => marked.parse(t);
+
+const posts = [...document.querySelectorAll('script.post')].map(s => {
+  const d = s.dataset, body = dedent(s.textContent), el = document.createElement('div');
+  el.innerHTML = md(body);
+  const plain = el.textContent.trim().replace(/\s+/g, ' ');
+  return { id: d.id, title: d.title, date: d.date || '', cat: d.category || '',
+    tags: (d.tags || '').split(',').map(t => t.trim()).filter(Boolean),
+    md: body, plain, desc: d.description || (plain.length > 160 ? plain.slice(0, 160) + '…' : plain),
+    words: plain.split(' ').length };
+}).sort((a, b) => b.date.localeCompare(a.date));
+const aboutMd = dedent($('#about-md').textContent);
+const SITE = document.title;
+$('#yr').textContent = new Date().getFullYear();
+
+/* Sidebar widgets (auto) */
+const count = arr => arr.reduce((m, k) => (m[k] = (m[k] || 0) + 1, m), {});
+const cats = count(posts.map(p => p.cat).filter(Boolean));
+const tags = count(posts.flatMap(p => p.tags));
+$('#w-cats').innerHTML = '<h4>Categories</h4>' + Object.entries(cats).map(([k, n]) =>
+  `<a class="row" href="#/category/${enc(k)}">${esc(k)}<span>${n}</span></a>`).join('');
+$('#w-tags').innerHTML = '<h4>Tags</h4>' + Object.keys(tags).map(k =>
+  `<a class="chip" href="#/tag/${enc(k)}">${esc(k)}</a>`).join('');
+if (!posts.length) document.querySelectorAll('.widget').forEach(w => w.remove());
+
+/* Views */
+const metaLine = p => `<div class="meta"><span class="date">${esc(p.date)}</span>` +
+  [p.cat && `<a href="#/category/${enc(p.cat)}">${esc(p.cat)}</a>`,
+   ...p.tags.map(t => `<a href="#/tag/${enc(t)}">${esc(t)}</a>`)].filter(Boolean).join('<span class="sep">/</span>') + '</div>';
+const cards = (items, head) => (head ? `<h1 class="heading">${head}</h1>` : '') + (items.length ? items.map(p => `
+  <article class="card post">
+    <h2><a href="#/post/${esc(p.id)}">${esc(p.title)}</a></h2>
+    ${metaLine(p)}<p class="desc">${esc(p.desc)}</p>
+    <div class="count">${p.words} words</div>
+  </article>`).join('') : '<div class="card empty">Nothing here yet.</div>');
+
+function archive() {
+  const years = {};
+  posts.forEach(p => (years[p.date.slice(0, 4)] ||= []).push(p));
+  return Object.keys(years).sort().reverse().map(y => `
+    <section class="card year"><h3>${esc(y)}<small>${years[y].length} post${years[y].length > 1 ? 's' : ''}</small></h3>
+    ${years[y].map(p => `<a class="arow" href="#/post/${esc(p.id)}"><span class="d">${esc(p.date.slice(5))}</span>
+      <span class="dot"></span><span class="t">${esc(p.title)}</span><span class="tg">${p.tags.map(esc).join(' · ')}</span></a>`).join('')}
+    </section>`).join('') || '<div class="card empty">No posts yet.</div>';
+}
+
+function view(hash) {
+  const [, route = '', arg = ''] = hash.split('/');
+  const a = decodeURIComponent(arg);
+  if (route === 'post') {
+    const p = posts.find(x => x.id === a);
+    if (p) return { title: p.title, nav: 'home', html: `
+      <article class="card article"><h1>${esc(p.title)}</h1>${metaLine(p)}<hr class="top">
+      <div class="md">${md(p.md)}</div></article>
+      <div class="card back"><a href="#/">← All posts</a><span class="count">${p.words} words</span></div>` };
+  }
+  if (route === 'about') return { title: 'About', nav: 'about', html: `<div class="card article"><div class="md">${md(aboutMd)}</div></div>` };
+  if (route === 'archive') return { title: 'Archive', nav: 'archive', html: archive() };
+  if (route === 'category') return { title: a, nav: 'archive', html: cards(posts.filter(p => p.cat === a), `Category: ${esc(a)}`) };
+  if (route === 'tag') return { title: '#' + a, nav: 'archive', html: cards(posts.filter(p => p.tags.includes(a)), `Tag: ${esc(a)}`) };
+  if (route === 'search') {
+    const q = a.toLowerCase();
+    const r = posts.filter(p => (p.title + ' ' + p.cat + ' ' + p.tags.join(' ') + ' ' + p.plain).toLowerCase().includes(q));
+    return { title: 'Search', nav: '', html: cards(r, `${r.length} result${r.length === 1 ? '' : 's'} for “${esc(a)}”`) };
+  }
+  return { title: '', nav: 'home', html: cards(posts, '') };
+}
+
+/* Router with fade transition (no reloads, no flash) */
+let first = true, prev = '', token = 0;
+async function go() {
+  const my = ++token, hash = location.hash || '#/', main = $('#main');
+  const bothSearch = prev.startsWith('#/search') && hash.startsWith('#/search');
+  if (!first && !bothSearch) {
+    main.classList.add('out');
+    await new Promise(r => setTimeout(r, 200));
+    if (my !== token) return;
+  }
+  const v = view(hash);
+  main.innerHTML = v.html;
+  document.title = v.title ? `${v.title} - ${SITE}` : SITE;
+  document.querySelectorAll('.links a[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === v.nav));
+  if (!bothSearch) window.scrollTo(0, 0);
+  requestAnimationFrame(() => requestAnimationFrame(() => main.classList.remove('out')));
+  prev = hash; first = false;
+}
+window.addEventListener('hashchange', go);
+
+/* Search */
+let st;
+$('#q').addEventListener('input', e => {
+  clearTimeout(st);
+  st = setTimeout(() => { const v = e.target.value.trim(); location.hash = v ? '#/search/' + enc(v) : '#/'; }, 180);
+});
+$('#q').addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+
+/* Dark mode + hue picker (visitor's hue choice lasts until reload; default is the CSS value) */
+$('#themebtn').onclick = () => {
+  const d = document.documentElement.classList.toggle('dark');
+  try { localStorage.setItem('theme', d ? 'dark' : 'light'); } catch (e) {}
+};
+const hue = $('#hue');
+hue.value = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hue'));
+$('#hueval').textContent = hue.value;
+hue.oninput = () => { document.documentElement.style.setProperty('--hue', hue.value); $('#hueval').textContent = hue.value; };
+$('#huebtn').onclick = () => $('#huepanel').classList.toggle('show');
+document.addEventListener('click', e => { if (!e.target.closest('#huepanel,#huebtn')) $('#huepanel').classList.remove('show'); });
+
+go();
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+[tool.basedpyright]
+pythonVersion = "3.14"
+typeCheckingMode = "standard"
+
+exclude = ["**/__backup/**"]
+
+reportArgumentType = "none"
+reportAssignmentType = "none"
+reportAttributeAccessIssue = "none"
+reportCallIssue = "none"
+reportGeneralTypeIssues = "none"
+reportIncompatibleMethodOverride = "none"
+reportIncompatibleVariableOverride = "none"
+reportIndexIssue = "none"
+reportOperatorIssue = "none"
+reportOptionalCall = "none"
+reportOptionalIterable = "none"
+reportOptionalMemberAccess = "none"
+reportOptionalOperand = "none"
+reportOptionalSubscript = "none"
+reportPossiblyUnboundVariable = "none"
+reportRedeclaration = "none"
+reportReturnType = "none"
+
+[tool.ruff]
+target-version = "py314"
+line-length = 320
+select = ["ALL"]
+ignore = [
+    "T201",
+    "BLE001",
+    
+    "CPY",        # Useless
+    "DTZ",        # Pointless, timezone isn't as important and should only run inside Peru anyway
+    "TRY",        # Ignore all Tryceratops rules
+    "FURB",       # Ignore all FURB rules, it's dog
+    "ANN002",     # https://docs.astral.sh/ruff/rules/missing-type-args                          - *args are too varied to be annotating them, it's mean to be generic catch-all
+    "ANN003",     # https://docs.astral.sh/ruff/rules/missing-type-kwargs                        - **kwargs are too varied to be annotating them, it's mean to be generic catch-all
+
+    "C901",       # https://docs.astral.sh/ruff/rules/complex-structure                          - Arbitrary, functions that are complex are meant to be complex, the example is disingenuous
+    "D100",       # https://docs.astral.sh/ruff/rules/undocumented-public-module                 - Superfluous documentation creates noise
+    "D101",       # https://docs.astral.sh/ruff/rules/undocumented-public-class                  - Superfluous documentation creates noise
+    "D102",       # https://docs.astral.sh/ruff/rules/undocumented-public-method                 - Superfluous documentation creates noise
+    "D103",       # https://docs.astral.sh/ruff/rules/undocumented-public-function               - Superfluous documentation creates noise
+    "D105",       # https://docs.astral.sh/ruff/rules/undocumented-magic-method                  - Superfluous documentation creates noise
+    "D107",       # https://docs.astral.sh/ruff/rules/undocumented-public-init                   - Debatable, might consider re-enabling but the sheer amount of functions to annotate makes this a long term goal with the least priority
+    "D202",       # https://docs.astral.sh/ruff/rules/blank-line-after-function                  - Arbitrary, it looks better with a space, keep disabled
+    "D208",       # https://docs.astral.sh/ruff/rules/over-indentation                           - Arbitrary, multi-line docstrings look better without enforcing this
+    "D212",       # https://docs.astral.sh/ruff/rules/multi-line-summary-first-line              - Arbitrary, multi-line docstrings look better without enforcing this
+    "D401",       # https://docs.astral.sh/ruff/rules/non-imperative-mood                        - Arbitrary, keep disabled
+    #"D417",       # https://docs.astral.sh/ruff/rules/undocumented-param                         - Debatable, might consider re-enabling but the sheer amount of functions to annotate makes this a long term goal with the least priority
+    "E501",       # https://docs.astral.sh/ruff/rules/line-too-long/                             - Inevitable fact of life sometimes
+    "E701",       # https://docs.astral.sh/ruff/rules/multiple-statements-on-one-line-colon      - Arbitrary, let people decide if it's better to have one-liners
+    "E722",       # https://docs.astral.sh/ruff/rules/bare-except                                - Bare excepts are intended, and those that aren't are temporary
+    "EM101",      # https://docs.astral.sh/ruff/rules/raw-string-in-exception                    - String literals are fine
+    "EM102",      # https://docs.astral.sh/ruff/rules/f-string-in-exception                      - f-string is fine
+    "ERA001",     # https://docs.astral.sh/ruff/rules/commented-out-code                         - Waaay too prone to false positives
+    "N802",       # https://docs.astral.sh/ruff/rules/invalid-function-name                      - Arbitrary, this project has its own naming conventions (WIP)
+    #"PLW2901",    # https://docs.astral.sh/ruff/rules/redefined-loop-name                        - All instances of this are done intentionally, keep
+    "PTH123",     # https://docs.astral.sh/ruff/rules/builtin-open                               - open() is fine as it is
+    "PYI041",     # https://docs.astral.sh/ruff/rules/redundant-numeric-union                    - Explicitly mentioning 'int' is done for readability reasons
+    "S110",       # https://docs.astral.sh/ruff/rules/try-except-pass                            - except-pass are intended
+    "S301",       # https://docs.astral.sh/ruff/rules/suspicious-pickle-usage                    - pickle objects are private, keep disabled
+    "S311",       # https://docs.astral.sh/ruff/rules/suspicious-non-cryptographic-random-usage  - random library usages are entirely for simple uses, pointless to change to secrets library
+    "S321",       # https://docs.astral.sh/ruff/rules/suspicious-ftp-lib-usage                   - Debatable, might consider looking into proper SSL verification
+    "S501",       # https://docs.astral.sh/ruff/rules/request-with-no-cert-validation            - Debatable, might consider looking into proper SSL verification
+    "S603",       # https://docs.astral.sh/ruff/rules/subprocess-without-shell-equals-true       - Fixing the warnings doesn't seem to work, keep disabled but keep instances in mind
+    "S607",       # https://docs.astral.sh/ruff/rules/start-process-with-partial-path            - Fixing the warnings doesn't seem to work, keep disabled but keep instances in mind
+    "S608",       # https://docs.astral.sh/ruff/rules/hardcoded-sql-expression                   - Debatable, should be safe to keep queries as is, therefore keeping this disabled but keep in mind for a future refactor
+    "SIM105",     # https://docs.astral.sh/ruff/rules/suppressible-exception                     - Disable to not have to include an additional library (contextlib)
+    "SIM108",     # https://docs.astral.sh/ruff/rules/if-else-block-instead-of-if-exp            - While ternaries are good in most contexts, sometimes it's good to have explicit if/else blocks
+    "W293",       # https://docs.astral.sh/ruff/rules/blank-line-with-whitespace                 - VSCode might add space to empty lines and it's not really an issue
+]
+
+[tool.ruff.format]
+quote-style = "double"
+docstring-code-format = true
+indent-style = "space"
+
+[tool.ruff.lint]
+allowed-confusables = ["–", "×"]
+
+[tool.ruff.lint.per-file-ignores]
+"base/ui.py" = ["F401"]
+"components/frame.py" = ["PLR0913", "ANN401"]
+"db/base.py" = ["ANN401"]
+"dev_*.py" = ["T201", "D101"]
+"**/mia_*.py" = ["T201", "D101", "PLW"]
+"uis/*.py" = ["D101"]
+"**/test_*.py" = ["F", "T", "COM", "PLW", "PLR", "FBT"]
+
+[tool.ruff.lint.pep8-naming]
+ignore-names = [
+    # wxPython components
+    "label*", "choice*", "field*", "panel*", "lctrl*",
+
+    # UIBase.new*() functions
+    "new*",
+    
+    # wxPython and others functions
+    "Get*", "Set*", "Add*",
+
+    # DB objects database related functions
+    "DB*",
+
+    # SMB related functions
+    "SMB*"
+]
+
+[tool.ruff.lint.flake8-annotations]
+suppress-none-returning = true
+suppress-dummy-args = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+ignore-var-parameters = true
+
+[tool.ruff.pylint]
+max-args = 6
+allow-magic-value-types = ["int", "str", "float"]

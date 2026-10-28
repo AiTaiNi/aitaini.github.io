@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tai</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="assets/style.css">
+
+  <style>
+    /* 
+   --hue         primary color: page tint, links, title bars, buttons
+   --accent-hue  accent color: quote bars, highlights
+   */
+    :root {
+      --hue: 0;
+      --accent-hue: 20;
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+</head>
+
+<body>
+  <div class="top">
+    <div class="card nav">
+      <a class="logo" href="#/">Home</a>
+      <!-- Everything in the middle of <span id="menu"> is built automatically -->
+      <div class="links">
+        <span class="menu" id="menu"></span>
+      </div>
+      <input class="search" id="q" type="search" placeholder="Search" aria-label="Search posts" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="wrap">
+    <aside>
+      <div class="card profile">
+        <img class="avatar" src="assets/avatar.png">
+        <h3>Tai</h3>
+        <p>Just someone online. Can speak 🇺🇸 and 🇪🇸, trying and failing to learn 🇮🇩 and 🇯🇵</p>
+        <div class="socials">
+          <a class="btn" href="https://bsky.app/profile/tai.moe" target="_blank" rel="noopener">BlueSky</a>
+          <a class="btn" href="https://steamcommunity.com/id/aisare_tai/" target="_blank" rel="noopener">Steam</a>
+          <a class="btn" href="https://github.com/AiTaiNi" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn" href="https://ko-fi.com/aisaretai" target="_blank" rel="noopener">Ko-fi</a>
+        </div>
+      </div>
+      <!-- MAL stat filled from data/mal-stats.json -->
+      <div class="card widget" id="w-mal" hidden></div>
+      <div class="card widget" id="w-cats"></div>
+      <div class="card widget" id="w-tags"></div>
+    </aside>
+
+    <main id="main" class="out"></main>
+  </div>
+
+  <footer></footer>
+
+  <script src="assets/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Blog</title>
+
+<!-- Markdown renderer (pinned). Needs an internet connection the first time. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+
+<style>
+/* =====================================================
+   COLORS — edit these 4 values and the whole site follows
+   ===================================================== */
+:root{
+  --paper:   #faf6f0;  /* page background */
+  --ink:     #2b2724;  /* text */
+  --primary: #2f6f62;  /* header, links, buttons */
+  --accent:  #d9633b;  /* hovers, tags, highlights */
+
+  /* derived automatically — no need to touch */
+  --muted: color-mix(in srgb, var(--ink) 58%, var(--paper));
+  --line:  color-mix(in srgb, var(--ink) 14%, var(--paper));
+  --card:  color-mix(in srgb, var(--paper) 65%, white);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.7 Georgia,"Times New Roman",serif}
+a{color:var(--primary);text-decoration-color:color-mix(in srgb,var(--primary) 40%,transparent);text-underline-offset:3px;transition:color .2s}
+a:hover{color:var(--accent)}
+
+/* Header */
+header{background:var(--primary);color:var(--paper);position:sticky;top:0;z-index:5}
+.bar{max-width:1040px;margin:auto;padding:14px 20px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.logo{font-size:1.4rem;font-weight:bold;color:var(--paper);text-decoration:none;letter-spacing:.01em}
+.logo:hover{color:var(--paper);opacity:.85}
+nav a{color:var(--paper);margin-right:18px;text-decoration:none;font:600 .9rem system-ui,sans-serif;padding-bottom:3px;border-bottom:2px solid transparent;transition:border-color .2s}
+nav a:hover,nav a.on{color:var(--paper);border-color:var(--accent)}
+.search{background:color-mix(in srgb,var(--paper) 16%,transparent);border:1px solid transparent;color:var(--paper);padding:8px 14px;border-radius:99px;font:.9rem system-ui,sans-serif;width:210px;outline:none;transition:.2s}
+.search::placeholder{color:color-mix(in srgb,var(--paper) 70%,transparent)}
+.search:focus{background:var(--paper);color:var(--ink);border-color:var(--accent)}
+
+/* Layout */
+.wrap{max-width:1040px;margin:34px auto;padding:0 20px;display:grid;grid-template-columns:230px 1fr;gap:44px;align-items:start}
+@media(max-width:760px){.wrap{grid-template-columns:1fr;gap:24px}}
+
+/* Sidebar */
+aside{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;text-align:center;position:sticky;top:84px}
+@media(max-width:760px){aside{position:static}}
+aside img{width:130px;height:130px;border-radius:50%;object-fit:cover;border:4px solid var(--accent);background:var(--line)}
+aside h3{margin:12px 0 2px;font-size:1.15rem}
+aside p{margin:0 0 14px;color:var(--muted);font-size:.9rem;line-height:1.5}
+aside ul{list-style:none;margin:0;padding:14px 0 0;border-top:1px solid var(--line);text-align:left;font:.92rem system-ui,sans-serif}
+aside li{margin:7px 0}
+
+/* Content + page transition */
+#main{transition:opacity .25s ease,transform .25s ease;min-height:60vh}
+#main.out{opacity:0;transform:translateY(8px)}
+h1,h2,h3{line-height:1.25}
+.post-card{padding:0 0 26px;margin-bottom:26px;border-bottom:1px solid var(--line)}
+.post-card h2{margin:0 0 4px;font-size:1.5rem}
+.post-card h2 a{color:var(--ink);text-decoration:none}
+.post-card h2 a:hover{color:var(--accent)}
+.meta{font:.82rem system-ui,sans-serif;color:var(--muted);margin-bottom:8px}
+.tag{display:inline-block;background:color-mix(in srgb,var(--accent) 14%,var(--paper));color:var(--accent);padding:1px 10px;border-radius:99px;margin-left:6px;text-decoration:none;font-weight:600}
+.tag:hover{background:var(--accent);color:var(--paper)}
+.post-card p{margin:6px 0 0;color:var(--muted)}
+.content img{max-width:100%;border-radius:10px}
+.content blockquote{margin:1.2em 0;padding:2px 18px;border-left:4px solid var(--accent);color:var(--muted)}
+.content code{background:var(--line);padding:2px 6px;border-radius:5px;font-size:.88em}
+.content pre{background:var(--ink);color:var(--paper);padding:16px;border-radius:10px;overflow:auto}
+.content pre code{background:none;padding:0}
+.content hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+.empty{color:var(--muted);font-style:italic}
+footer{text-align:center;color:var(--muted);font:.82rem system-ui,sans-serif;padding:30px 0 40px}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="bar">
+    <a class="logo" href="#/">My Blog</a>
+    <nav>
+      <a href="#/" data-nav="home">Home</a>
+      <a href="#/about" data-nav="about">About</a>
+    </nav>
+    <input class="search" id="q" type="search" placeholder="Search posts…" aria-label="Search posts" autocomplete="off">
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- =====================================================
+       SIDEBAR — edit the photo, name, blurb and links here
+       ===================================================== -->
+  <aside>
+    <!-- Replace src with your photo (a file path like "me.jpg" or a URL) -->
+    <img alt="Photo of me" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ccc'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cellipse cx='50' cy='90' rx='32' ry='28' fill='%23fff'/%3E%3C/svg%3E">
+    <h3>Your Name</h3>
+    <p>A short line about you.</p>
+    <ul>
+      <li><a href="#/about">About me</a></li>
+      <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="mailto:you@example.com">Email me</a></li>
+      <li><a href="https://example.com" target="_blank" rel="noopener">Favorite link</a></li>
+    </ul>
+  </aside>
+
+  <main id="main" class="out"></main>
+</div>
+
+<footer>© <span id="yr"></span> Your Name</footer>
+
+<!-- =====================================================
+     ABOUT PAGE — written in Markdown. Keep it between the tags.
+     ===================================================== -->
+<script type="text/markdown" id="about-md">
+# About me
+
+Hi, I'm **Your Name**. This is where I write about the things I'm into.
+
+Tell people who you are, what you do, and how to reach you. You can use
+*italics*, **bold**, [links](https://example.com), lists, and images.
+
+- Thing I love
+- Another thing I love
+</script>
+
+<!-- =====================================================
+     POSTS — copy one block to add a new post. Edit text to change it.
+       data-id    : unique, no spaces (used in the URL)
+       data-title : the title
+       data-date  : YYYY-MM-DD (newest shows first)
+       data-tags  : comma separated, optional
+     Write the body in Markdown. Indenting is fine; it's stripped.
+     ===================================================== -->
+<script type="text/markdown" class="post" data-id="hello-world" data-title="Hello, world" data-date="2026-10-20" data-tags="intro, meta">
+  Welcome to my little corner of the internet!
+
+  This post is written in **Markdown**. To add another post, copy a whole
+  `<script class="post">` block in `index.html` and change the text.
+
+  ## Things you can do
+
+  - Make lists
+  - Add [links](https://example.com)
+  - Quote people:
+
+  > Simple is better than complex.
+
+  ```js
+  console.log("code blocks work too");
+  ```
+</script>
+
+<script type="text/markdown" class="post" data-id="second-post" data-title="Another post" data-date="2026-10-15" data-tags="notes">
+  Here's a second post so you can see how the list looks.
+
+  Try the search box up top — it looks through titles, tags and text.
+</script>
+
+<script>
+/* ---------- Load content from the blocks above ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dedent = t => {
+  const l = t.replace(/^\n+|\s+$/g, '').split('\n');
+  const m = Math.min(...l.filter(x => x.trim()).map(x => x.match(/^ */)[0].length));
+  return l.map(x => x.slice(m)).join('\n');
+};
+const md = t => marked.parse(t);
+const posts = [...document.querySelectorAll('script.post')].map(s => ({
+  id: s.dataset.id, title: s.dataset.title, date: s.dataset.date || '',
+  tags: (s.dataset.tags || '').split(',').map(t => t.trim()).filter(Boolean),
+  md: dedent(s.textContent)
+})).sort((a, b) => b.date.localeCompare(a.date));
+const aboutMd = dedent($('#about-md').textContent);
+const SITE = document.title;
+$('#yr').textContent = new Date().getFullYear();
+
+/* ---------- Views ---------- */
+const tagLinks = p => p.tags.map(t => `<a class="tag" href="#/tag/${encodeURIComponent(t)}">${esc(t)}</a>`).join('');
+const excerpt = p => {
+  const d = document.createElement('div'); d.innerHTML = md(p.md);
+  const t = d.textContent.trim().replace(/\s+/g, ' ');
+  return t.length > 190 ? t.slice(0, 190) + '…' : t;
+};
+const list = (items, head) => head + (items.length ? items.map(p => `
+  <article class="post-card">
+    <h2><a href="#/post/${esc(p.id)}">${esc(p.title)}</a></h2>
+    <div class="meta">${esc(p.date)}${tagLinks(p)}</div>
+    <p>${esc(excerpt(p))}</p>
+  </article>`).join('') : '<p class="empty">Nothing here yet.</p>');
+
+function view(hash) {
+  const [, route = '', arg = ''] = hash.split('/');
+  const a = decodeURIComponent(arg);
+  if (route === 'post') {
+    const p = posts.find(x => x.id === a);
+    if (p) return { title: p.title, nav: 'home', html: `
+      <article class="content"><h1>${esc(p.title)}</h1>
+      <div class="meta">${esc(p.date)}${tagLinks(p)}</div>${md(p.md)}</article>
+      <p><a href="#/">← All posts</a></p>` };
+  }
+  if (route === 'about') return { title: 'About', nav: 'about', html: `<div class="content">${md(aboutMd)}</div>` };
+  if (route === 'tag') return { title: '#' + a, nav: '', html:
+    list(posts.filter(p => p.tags.includes(a)), `<h1>Tagged “${esc(a)}”</h1>`) };
+  if (route === 'search') {
+    const q = a.toLowerCase();
+    const r = posts.filter(p => (p.title + ' ' + p.tags.join(' ') + ' ' + p.md).toLowerCase().includes(q));
+    return { title: 'Search', nav: '', html: list(r, `<h1>${r.length} result${r.length === 1 ? '' : 's'} for “${esc(a)}”</h1>`) };
+  }
+  return { title: '', nav: 'home', html: list(posts, '') };
+}
+
+/* ---------- Router with fade transition (no page reloads) ---------- */
+let first = true, prev = '', token = 0;
+async function go() {
+  const my = ++token, hash = location.hash || '#/', main = $('#main');
+  const bothSearch = prev.startsWith('#/search') && hash.startsWith('#/search');
+  if (!first && !bothSearch) {
+    main.classList.add('out');
+    await new Promise(r => setTimeout(r, 220));
+    if (my !== token) return;
+  }
+  const v = view(hash);
+  main.innerHTML = v.html;
+  document.title = v.title ? `${v.title} · ${SITE}` : SITE;
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('on', a.dataset.nav === v.nav));
+  if (!bothSearch) window.scrollTo(0, 0);
+  requestAnimationFrame(() => requestAnimationFrame(() => main.classList.remove('out')));
+  prev = hash; first = false;
+}
+window.addEventListener('hashchange', go);
+
+/* ---------- Search box ---------- */
+let t;
+$('#q').addEventListener('input', e => {
+  clearTimeout(t);
+  t = setTimeout(() => {
+    const v = e.target.value.trim();
+    location.hash = v ? '#/search/' + encodeURIComponent(v) : '#/';
+  }, 180);
+});
+$('#q').addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+
+go();
+</script>
+</body>
+</html>
