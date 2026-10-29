@@ -1,0 +1,63 @@
+/* Personal hub only. Theme and shared layout come from /assets/base.css and app.css. */
+main {
+    max-width: 860px
+}
+
+.tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px
+}
+
+/* Each tile: icon, name, what it is, and a live line (today's progress etc.) */
+.tile {
+    display: grid;
+    grid-template-columns: 2.6rem 1fr;
+    grid-template-rows: auto 1fr auto;
+    column-gap: 12px;
+    row-gap: 2px;
+    padding: 16px;
+    color: var(--text);
+    border: var(--border);
+    transition: background .15s, border-color .15s, transform .15s
+}
+
+.tile:hover {
+    border-color: var(--tint-hi);
+    background: color-mix(in srgb, var(--card) 85%, var(--tint));
+    transform: translateY(-2px)
+}
+
+.tile i {
+    grid-row: 1 / 4;
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: var(--radius-chip);
+    background: var(--tint);
+    color: var(--primary);
+    font-style: normal;
+    font-size: 1.3rem
+}
+
+.tile b {
+    color: var(--title);
+    font-size: 1.05rem
+}
+
+.tile span {
+    color: var(--sub);
+    font-size: .88rem
+}
+
+.tile em {
+    margin-top: 6px;
+    font-style: normal;
+    font-size: .85rem;
+    color: var(--link)
+}
+
+.tile em:empty {
+    display: none
+}

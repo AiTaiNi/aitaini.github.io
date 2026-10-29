@@ -36,6 +36,17 @@
   /* Lock the page until we know who is signed in, so private data never flashes on screen */
   if (db) document.documentElement.classList.add('sync-locked');
 
+  /* Another tab of this site saved something (e.g. Today and Calendar open side by side): pick it up right away */
+  addEventListener('storage', e => {
+    if (e.key === 'sync-meta') {
+      const m = read('sync-meta') || {};
+      Object.keys(meta).forEach(k => delete meta[k]);
+      Object.assign(meta, m);
+    } else if (keys.has(e.key)) {
+      emit(e.key);
+    }
+  });
+
   /* ---------- server ---------- */
   async function push(k) {
     const m = meta[k], value = read(k);

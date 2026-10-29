@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Today</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="/assets/tasks.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+  <script src="/assets/sync.js"></script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Today</h1>
+        <p class="sub">Today’s tasks, upcoming countdowns and notes.</p>
+      </div>
+      <nav class="tools">
+        <a href="/personal/">All pages</a>
+        <a href="/personal/calendar/">Calendar</a>
+        <a href="/personal/dashboard/">Dashboard</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <div class="stack">
+        <section class="card">
+          <div class="thead"><b id="dayTitle"></b><span id="dayCount"></span></div>
+          <div class="prog"><i id="prog"></i></div>
+          <div id="checks"></div>
+          <p class="note">Add or remove daily tasks on the <a href="/personal/calendar/">Calendar</a>.</p>
+        </section>
+
+        <section class="card">
+          <h2>Countdowns</h2>
+          <div id="countdowns"></div>
+          <p class="note">Events with ⏱ on, once they’re 2 weeks away or less. Manage them on the <a href="/personal/calendar/">Calendar</a>.</p>
+        </section>
+      </div>
+
+      <section class="card">
+        <h2>Notes</h2>
+        <textarea id="notes" placeholder="Anything…" aria-label="Notes" spellcheck="true"></textarea>
+        <p class="note" id="notesState"></p>
+      </section>
+    </div>
+  </main>
+
+  <script src="/assets/tasks.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>

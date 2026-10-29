@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Personal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="hub.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+  <script src="/assets/sync.js"></script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <div>
+        <h1 id="hello">Personal</h1>
+        <p class="sub" id="date"></p>
+      </div>
+      <nav class="tools"><a href="/">Main site</a></nav>
+    </header>
+
+    <!-- One tile per private page. A new page gets a tile here (see _docs/template/README.md). -->
+    <div class="tiles">
+      <a class="card tile" href="today/">
+        <i aria-hidden="true">☑&#xFE0E;</i>
+        <b>Today</b>
+        <span>Today’s tasks, upcoming countdowns and notes.</span>
+        <em id="liveToday"></em>
+      </a>
+
+      <a class="card tile" href="calendar/">
+        <i aria-hidden="true">▦&#xFE0E;</i>
+        <b>Calendar</b>
+        <span>Daily tasks, one-time and recurring events, countdowns.</span>
+        <em id="liveCal"></em>
+      </a>
+
+      <a class="card tile" href="dashboard/">
+        <i aria-hidden="true">◫&#xFE0E;</i>
+        <b>Dashboard</b>
+        <span>Calendar and checklist, exchange rate, MyAnimeList, YouTube.</span>
+        <em></em>
+      </a>
+
+      <a class="card tile" href="statements/">
+        <i aria-hidden="true">⇄&#xFE0E;</i>
+        <b>Statements</b>
+        <span>BCP credit card and debit account movements.</span>
+        <em id="liveStmt"></em>
+      </a>
+    </div>
+  </main>
+
+  <script src="/assets/tasks.js"></script>
+  <script src="hub.js"></script>
+</body>
+
+</html>

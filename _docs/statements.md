@@ -1,16 +1,16 @@
-# Bank statements page (`stuff/statements/`)
+# Bank statements page (`personal/statements/`)
 
 BCP statements (one Visa credit card, one savings/debit account) go through two steps:
 
 1. **[parse_statements.py](../parse_statements.py)** (run on your PC) reads the PDFs and writes one JSON file per
-   statement to `stuff/statements/json/`.
+   statement to `personal/statements/json/`.
 2. **The page** loads those JSON files, lets you review and correct them, and saves them to Supabase.
 
 Assumes [sync-setup.md](sync-setup.md) is done.
 
 - **The PDFs never leave your PC.** Only the extracted rows (date, description, amount, currency, original text
   line) are uploaded. The page doesn't keep loaded files in browser storage either.
-- PDFs under `stuff/statements/` and the `stuff/statements/json/` output are **git-ignored**. Check `git status`
+- PDFs under `personal/statements/` and the `personal/statements/json/` output are **git-ignored**. Check `git status`
   before committing anything in that folder.
 
 ## Why tables and not `kv`
@@ -137,7 +137,7 @@ Check **Table Editor**: `statements` and `transactions` both show **RLS enabled*
 
 ## Monthly routine
 
-1. Download the statements from BCP into `stuff/statements/examples/` (or any folder). Keep BCP's names: files
+1. Download the statements from BCP into `personal/statements/examples/` (or any folder). Keep BCP's names: files
    starting `EECC_AHORRO` are the debit account, `EECC_VISA` the credit card. `EECC_VISA (3).PDF` style
    duplicates are fine, since the month is read from inside the PDF.
 2. Run `python parse_statements.py` (or `python parse_statements.py path/to/folder-or-file.pdf …`). It asks for
@@ -149,7 +149,7 @@ Check **Table Editor**: `statements` and `transactions` both show **RLS enabled*
    ```
 
    ✗ or `!` lines explain what didn't add up or what was skipped.
-3. Open `/stuff/statements/`, sign in, press **⚙ Manage** and drop the JSON files from `stuff/statements/json/`.
+3. Open `/personal/statements/`, sign in, press **⚙ Manage** and drop the JSON files from `personal/statements/json/`.
 4. **Review** if anything is flagged; rows can be edited, added or removed, and the balance check updates live.
    Then **Save** (or **Save all ready**). Saved statements are listed under the import box; **View** shows the
    stored rows.

@@ -1,0 +1,8 @@
+/* Today only. Theme, layout and the checklist styles come from /assets/base.css, app.css and tasks.css. */
+#notes {
+    display: block;
+    width: 100%;
+    min-height: 50vh;
+    resize: vertical;
+    line-height: 1.55
+}

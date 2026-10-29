@@ -1,9 +1,9 @@
 """
-Turn BCP statement PDFs into JSON files for the statements page (stuff/statements/).
+Turn BCP statement PDFs into JSON files for the statements page (personal/statements/).
 
-`python parse_statements.py`                     every PDF in stuff/statements/examples
+`python parse_statements.py`                     every PDF in personal/statements/examples
 `python parse_statements.py FILE_OR_FOLDER ...`  specific PDFs or folders
-`--out DIR`                                      where the JSON goes (default stuff/statements/json, git-ignored)
+`--out DIR`                                      where the JSON goes (default personal/statements/json, git-ignored)
 
 EECC_AHORRO* is the debit (savings) account and EECC_VISA* the credit card. The account, period and currency are
 read from the PDF itself. The PDF password is asked for once (or set BCP_PDF_PASSWORD).
@@ -25,8 +25,8 @@ from pathlib import Path
 import pymupdf
 
 ROOT = Path(__file__).parent
-DEFAULT_IN = ROOT / "stuff" / "statements" / "examples"
-DEFAULT_OUT = ROOT / "stuff" / "statements" / "json"
+DEFAULT_IN = ROOT / "personal" / "statements" / "examples"
+DEFAULT_OUT = ROOT / "personal" / "statements" / "json"
 
 MONTHS = {"ENE": 1, "FEB": 2, "MAR": 3, "ABR": 4, "MAY": 5, "JUN": 6, "JUL": 7, "AGO": 8, "SET": 9, "SEP": 9, "OCT": 10, "NOV": 11, "DIC": 12}
 SHORT_DATE = re.compile(r"^(\d{1,2})([A-Za-z]{3})$")   # 05DIC, 11Set
@@ -449,9 +449,9 @@ def parse_pdf(path: Path, password: str) -> tuple[Statement, dict]:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Turn BCP statement PDFs into JSON for stuff/statements/.")
-    ap.add_argument("paths", nargs="*", type=Path, default=[DEFAULT_IN], help="PDF files or folders (default: stuff/statements/examples)")
-    ap.add_argument("--out", type=Path, default=DEFAULT_OUT, help="output folder (default: stuff/statements/json)")
+    ap = argparse.ArgumentParser(description="Turn BCP statement PDFs into JSON for personal/statements/.")
+    ap.add_argument("paths", nargs="*", type=Path, default=[DEFAULT_IN], help="PDF files or folders (default: personal/statements/examples)")
+    ap.add_argument("--out", type=Path, default=DEFAULT_OUT, help="output folder (default: personal/statements/json)")
     args = ap.parse_args()
 
     pdfs = sorted({f for p in args.paths for f in ([p] if p.is_file() else p.glob("*")) if f.suffix.lower() == ".pdf"})

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Calendar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="/assets/tasks.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+  <script src="/assets/sync.js"></script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Calendar</h1>
+        <p class="sub">Daily tasks, events and countdowns.</p>
+      </div>
+      <nav class="tools">
+        <a href="/personal/">All pages</a>
+        <a href="/personal/today/">Today</a>
+        <a href="/personal/dashboard/">Dashboard</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Calendar</h2>
+        <div class="nav"><button id="prev" aria-label="Previous month">‹</button><b id="month"></b><span class="navr"><button id="goToday" title="Go to the current month and select today">Today</button><button id="next" aria-label="Next month">›</button></span></div>
+        <div class="cgrid" id="dows"></div>
+        <div class="cgrid" id="cal"></div>
+        <div class="clegend"><span>None done</span>
+          <div class="cbar"></div><span>All done</span>
+        </div>
+        <p class="note">Dashed border = something is scheduled. Tap a date to see its tasks and events.</p>
+      </section>
+
+      <div class="stack">
+        <section class="card">
+          <div class="thead"><b id="dayTitle"></b><span id="dayCount"></span></div>
+          <div id="evs"></div>
+          <div class="prog"><i id="prog"></i></div>
+          <div id="checks"></div>
+        </section>
+
+        <section class="card">
+          <h2>Countdowns</h2>
+          <div id="countdowns"></div>
+        </section>
+      </div>
+
+      <section class="card">
+        <h2 id="evTitle">Add an event</h2>
+        <div class="add"><input id="evName" placeholder="Event name (birthday, deadline, shift…)" maxlength="60" aria-label="Event name"></div>
+        <div class="evrow">
+          <label>Date (or start)<input type="date" id="evDate"></label>
+          <label>Repeats<select id="evRep">
+              <option value="none">Once</option>
+              <option value="week">Every week</option>
+              <option value="month">Every month</option>
+              <option value="year">Every year</option>
+            </select></label>
+          <label class="chk"><input type="checkbox" id="evCd"> Show countdown (when 2 weeks away or less)</label>
+        </div>
+        <div class="icons"><input id="evIcon" maxlength="2" placeholder="icon" aria-label="Icon (optional)"><span id="icons"></span></div>
+        <button id="evAdd" class="pri">Add event</button> <button id="evCancel" hidden>Cancel</button>
+      </section>
+
+      <section class="card">
+        <h2>Daily tasks</h2>
+        <div class="add"><input id="newTask" placeholder="Add a daily task" maxlength="80" aria-label="New task"><input id="newMax" class="num" type="number" min="1" max="99" placeholder="×1" title="Counter (optional), e.g. 3 for a task done three times" aria-label="Counter (optional)"><button id="addBtn">Add</button></div>
+        <div id="manage"></div>
+      </section>
+
+      <section class="card wide">
+        <h2>All events</h2>
+        <div id="evAll"></div>
+        <p class="note">⏱ turns an event’s countdown on or off. Countdowns show once the event is 2 weeks away or less.</p>
+      </section>
+    </div>
+  </main>
+
+  <script src="/assets/tasks.js"></script>
+</body>
+
+</html>

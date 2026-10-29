@@ -8,14 +8,16 @@ root, since the page loads `/assets/sync.js`). The example stores its data under
 
 ## Making a new page
 
-1. Copy this folder to `stuff/<page-name>/` (lowercase-with-dashes). Delete the copied `README.md`.
+1. Copy this folder to `personal/<page-name>/` (lowercase-with-dashes). Delete the copied `README.md`.
 2. `index.html`: set the `<title>`, the `<h1>` and the subtitle. Replace the example cards inside
    `<div class="grid">`. Keep the stylesheet links (`base.css`, `app.css`, then `style.css`) and the two
    `<script>` lines in `<head>`.
 3. `script.js`: change `KEY` to a new unique key, then replace the example list with the page's feature. Keep the
    `Sync.use` / `Sync.get` / `Sync.on` / `Sync.set` pattern. Update or remove the `merge` function to match the
    data's shape.
-4. Optionally add a link to the new page from the dashboard header.
+4. Add a tile for it to the hub, [personal/index.html](../../personal/index.html): copy one `<a class="card tile">`
+   block and change the link, icon, name and description. The `<em>` is an optional live line, filled from
+   `personal/hub.js`.
 
 No database changes are needed; any new key is stored in the existing `kv` table.
 
@@ -27,6 +29,9 @@ Pages share the main site's look, so a change to the hue or colours in one place
    colours, radii, borders, shadows), the dark theme (`class="dark"` on `<html>`), and `.card`, `.btn` and `.chip`.
    **The site's hue is set here**, not per page.
 2. **`/assets/app.css`**: the layout and controls every tool page uses (listed below).
+   - **`/assets/tasks.css` + `/assets/tasks.js`**: the daily tasks / calendar / events / countdowns feature,
+     for pages that show any of it (dashboard, calendar, today). The script only runs the parts whose elements
+     the page has (see the comment at its top), and every page shares the same data (`daily-tasks-v1`).
 3. **The page's `style.css`**: only what's unique to that page. Always use the tokens (`var(--primary)`,
    `var(--line)`, `var(--radius)`), never fixed colours, so the page keeps following the site.
 
@@ -66,7 +71,7 @@ Pages share the main site's look, so a change to the hue or colours in one place
 
 ## For Claude
 
-When asked to make a new private page: copy this folder to `stuff/<name>/` as above, choose a new unique key
+When asked to make a new private page: copy this folder to `personal/<name>/` as above, choose a new unique key
 (check that existing pages don't already use it with a search for `Sync.use`), keep the head scripts and the style
 tokens, and replace the example feature completely rather than leaving template text behind. Put only page-specific
 rules in the page's `style.css`. Anything two pages would share belongs in `/assets/app.css`, and colours or shapes

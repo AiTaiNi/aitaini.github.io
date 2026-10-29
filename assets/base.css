@@ -1,5 +1,5 @@
 /* Shared by every page: theme tokens and base elements. Load it first, then the page's own CSS.
-   Main site: base.css + style.css. Tool pages (stuff/*): base.css + app.css + the page's style.css.
+   Main site: base.css + style.css. Tool pages (personal/*): base.css + app.css + the page's style.css.
 
    --hue         primary color: page tint, links, title bars, buttons
    --accent-hue  accent color: quote bars, highlights

@@ -1,4 +1,4 @@
-/* Shared layout and controls for tool pages (stuff/*, _docs/template). Load after base.css, before the page's own CSS.
+/* Shared layout and controls for tool pages (personal/*, _docs/template). Load after base.css, before the page's own CSS.
    Colors, radii, borders and shadows all come from base.css tokens, so pages follow the main site. */
 :root {
   padding-top: env(safe-area-inset-top, 0px);

@@ -25,6 +25,6 @@ yarn.lock
 *.iml
 
 # bank statements (sensitive, never commit)
-stuff/statements/examples/
-stuff/statements/**/*.pdf
-stuff/statements/json/
+personal/statements/examples/
+personal/statements/**/*.pdf
+personal/statements/json/

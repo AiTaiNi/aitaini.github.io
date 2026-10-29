@@ -1,6 +1,6 @@
 # Private pages + sync: setup (Supabase)
 
-Personal pages (like `stuff/dashboard/`) show a sign-in screen and sync their data across devices through
+Personal pages (like `personal/dashboard/`) show a sign-in screen and sync their data across devices through
 [Supabase](https://supabase.com). The site stays on free GitHub Pages; Supabase's free tier holds the accounts and the data.
 
 This guide is the one-time setup, done with the dashboard. To make more private pages afterwards, see
@@ -97,7 +97,7 @@ small pill in the corner says "Sync not set up".
 
 ### 6. Test locally and sign in for the first time
 
-1. Run `start_server.bat` and open <http://localhost:8000/stuff/dashboard/>.
+1. Run `start_server.bat` and open <http://localhost:8000/personal/dashboard/>.
 2. You should see **Private page** with an email and password form. Sign in with the user from step 4.
 3. The dashboard appears, and the pill at the bottom right goes **Syncing… → Synced** (green).
 4. Your existing tasks, history, events and settings from this browser are uploaded on this first sign-in.
@@ -108,7 +108,7 @@ Do this first sign-in on the device that has your real dashboard data.
 ### 7. Deploy and sign in on your other devices
 
 1. Commit and push as usual (`sync.js`, the dashboard files, these docs).
-2. Open `https://tai.moe/stuff/dashboard/` on each device and sign in.
+2. Open `https://tai.moe/personal/dashboard/` on each device and sign in.
    - If that device has no dashboard data yet, it downloads yours.
    - If it already has its own data, the two are **combined** (tasks, checked-off days and events from both are
      kept). After that first time, the newest change always wins.
