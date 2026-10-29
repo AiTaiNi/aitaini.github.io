@@ -6,6 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex">
   <title>Personal</title>
+  <!-- Installable app: manifest + service worker (registered in hub.js). See _docs/private-pages.md. -->
+  <link rel="manifest" href="/personal/manifest.webmanifest">
+  <meta name="theme-color" content="#120b0d">
+  <link rel="apple-touch-icon" href="/personal/icons/apple-touch-icon.png">
+  <link rel="icon" href="/personal/icons/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/base.css">
@@ -22,7 +27,10 @@
         <h1 id="hello">Personal</h1>
         <p class="sub" id="date"></p>
       </div>
-      <nav class="tools"><a href="/">Main site</a></nav>
+      <nav class="tools">
+        <button id="install" hidden>Install app</button>
+        <a href="/">Main site</a>
+      </nav>
     </header>
 
     <!-- One tile per private page. A new page gets a tile here (see _docs/template/README.md). -->
@@ -54,9 +62,19 @@
         <span>BCP credit card and debit account movements.</span>
         <em id="liveStmt"></em>
       </a>
+
+      <a class="card tile" href="expenses/">
+        <i aria-hidden="true">◔&#xFE0E;</i>
+        <b>Expenses</b>
+        <span>Subscriptions, bills and transport, and the next cycle’s estimate.</span>
+        <em id="liveExp"></em>
+      </a>
     </div>
+
+    <p class="note" id="installHelp" hidden></p>
   </main>
 
+  <script src="/assets/statements-due.js"></script>
   <script src="/assets/tasks.js"></script>
   <script src="hub.js"></script>
 </body>

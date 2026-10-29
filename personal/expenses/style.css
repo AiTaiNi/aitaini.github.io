@@ -1,0 +1,239 @@
+/* Expenses only. Theme and shared layout come from /assets/base.css and /assets/app.css. */
+
+/* ---------- cycle ---------- */
+#cycle {
+    margin-bottom: 12px
+}
+
+.chead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px
+}
+
+.mnav {
+    align-items: center
+}
+
+.mnav select {
+    background: transparent;
+    font-weight: 500
+}
+
+.accs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px
+}
+
+.total {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px
+}
+
+.total .note {
+    margin: 0
+}
+
+.big {
+    color: var(--title);
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums
+}
+
+/* Labelled field: small label above its control */
+.fl {
+    display: grid;
+    gap: 3px;
+    font-size: .8rem;
+    color: var(--sub)
+}
+
+.fl input.amtf {
+    width: 6.5em;
+    font-size: .9rem
+}
+
+/* One box per group under the total */
+.tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+    margin-top: 14px
+}
+
+.tile {
+    display: grid;
+    gap: 2px;
+    padding: 10px 12px;
+    border: var(--border);
+    border-radius: var(--radius)
+}
+
+.tile .note {
+    margin: 0
+}
+
+.tile b {
+    color: var(--title);
+    font-size: 1.15rem;
+    font-variant-numeric: tabular-nums
+}
+
+/* Import reminder */
+.due {
+    margin: 12px 0 0;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    background: var(--warn-tint);
+    color: var(--warn);
+    font-size: .9rem
+}
+
+/* ---------- group tables ---------- */
+.lines button.ren {
+    margin-left: 6px;
+    padding: 0 6px;
+    background: transparent;
+    color: var(--sub);
+    font-size: .85rem
+}
+
+.lines button.ren:hover,
+.lines button.ren:focus {
+    background: var(--tint);
+    color: var(--link)
+}
+
+.lines input.ren-in {
+    width: 100%;
+    min-width: 10em;
+    padding: 3px 6px
+}
+
+#gReview td .btns {
+    flex-wrap: nowrap;
+    gap: 6px
+}
+
+#gReview td button {
+    padding: 2px 8px
+}
+
+.sm {
+    color: var(--sub);
+    font-size: .8rem;
+    font-weight: 400
+}
+
+.lines td.name {
+    white-space: normal;
+    min-width: 12em
+}
+
+.lines td.name .sm {
+    overflow-wrap: anywhere
+}
+
+.lines select {
+    padding: 2px 6px;
+    font-size: .85rem
+}
+
+/* Estimates are lighter than posted amounts */
+.lines tr.est td.num b {
+    color: var(--sub)
+}
+
+tr.sum td {
+    font-weight: 500;
+    color: var(--title)
+}
+
+#gYear td .chip {
+    margin-left: 6px
+}
+
+#oQ {
+    width: 100%;
+    margin-top: 6px
+}
+
+/* ---------- insights ---------- */
+.icols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 8px 24px;
+    margin-top: 16px
+}
+
+.icols h3 {
+    margin: 0 0 8px;
+    font-size: .95rem;
+    color: var(--title)
+}
+
+.icols .scroll {
+    margin-top: 0
+}
+
+/* One row per category: name, bar, amount, share and change, all as text so the bar is never the only cue */
+.bars {
+    display: grid;
+    gap: 8px
+}
+
+.bar {
+    display: grid;
+    grid-template-columns: minmax(7em, 9em) 1fr auto;
+    align-items: center;
+    gap: 2px 10px;
+    font-size: .9rem
+}
+
+.bar .track {
+    height: 10px;
+    border-radius: 0 4px 4px 0;
+    background: var(--tint)
+}
+
+.bar .fill {
+    height: 100%;
+    min-width: 2px;
+    border-radius: 0 4px 4px 0;
+    background: var(--primary)
+}
+
+.bar .v {
+    text-align: right;
+    font-variant-numeric: tabular-nums
+}
+
+.bar .sm {
+    grid-column: 2 / 4
+}
+
+/* ---------- history ---------- */
+#hist tr.cur td {
+    background: var(--tint)
+}
+
+#hist td.strong {
+    font-weight: 500;
+    color: var(--title)
+}
+
+#rulesBox {
+    margin-top: 14px
+}
+
+#rules button {
+    padding: 2px 8px
+}

@@ -61,3 +61,12 @@ main {
 .tile em:empty {
     display: none
 }
+
+/* A statement waiting to be imported */
+.tile em.due {
+    color: var(--warn)
+}
+
+#installHelp {
+    margin-top: 16px
+}

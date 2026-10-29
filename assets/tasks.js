@@ -9,7 +9,8 @@
      #countdowns                            events marked "show countdown" that are at most CD_DAYS away
      #evAll                                 every event, soonest first
      #expJson …                             backup import/export (dashboard settings)
-   window.Tasks gives a read-only summary (today's progress, upcoming countdowns) for overview pages. */
+   window.Tasks gives a read-only summary (today's progress, upcoming countdowns) for overview pages, plus
+   syncEvents for pages that keep their own events on the calendar (personal/expenses: yearly payments). */
 (function () {
     var KEY = 'daily-tasks-v1';
     var CD_DAYS = 14;
@@ -739,6 +740,49 @@
 
         onChange: function (fn) {
             listeners.push(fn);
+        },
+
+        /* Events kept up to date by another page (the Expenses page's yearly payments): every event whose id starts
+           with `prefix` is replaced by `list` ([{ id, name, date, rep, icon }]). Missing ones are added with the
+           countdown on, name/date/repeat follow the list, and an icon or countdown changed on the Calendar is kept.
+           Call it after Sync.ready(), so an older copy on this device can't overwrite newer events. */
+        syncEvents: function (prefix, list) {
+            var want = {}, changed = false;
+
+            list.forEach(function (e) {
+                want[e.id] = e;
+            });
+
+            state.events = state.events.filter(function (e) {
+                var keep = e.id.indexOf(prefix) !== 0 || want[e.id];
+
+                if (!keep) changed = true;
+
+                return keep;
+            });
+
+            list.forEach(function (w) {
+                var e = state.events.filter(function (x) {
+                    return x.id === w.id;
+                })[0];
+
+                if (!e) {
+                    state.events.push({ id: w.id, name: w.name.slice(0, 60), date: w.date, rep: w.rep, icon: w.icon || '', countdown: true });
+                    changed = true;
+                } else if (e.name !== w.name.slice(0, 60) || e.date !== w.date || e.rep !== w.rep) {
+                    e.name = w.name.slice(0, 60);
+                    e.date = w.date;
+                    e.rep = w.rep;
+                    changed = true;
+                }
+            });
+
+            if (changed) {
+                save();
+                render();
+            }
+
+            return changed;
         }
     };
 

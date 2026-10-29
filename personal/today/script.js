@@ -33,4 +33,21 @@
 
         box.value = v;
     });
+
+    /* Statements that should be out by now but aren't imported (/assets/statements-due.js) */
+    const db = Sync.db;
+    let checked = false;
+
+    if (db) db.auth.onAuthStateChange((_, session) => {
+        if (!session || checked) return;
+
+        checked = true;
+
+        setTimeout(async () => {
+            const t = StatementsDue.text(await StatementsDue.check()), p = document.getElementById('stmtDue');
+
+            p.querySelector('span').textContent = t;
+            p.hidden = !t;
+        }, 0);
+    });
 })();

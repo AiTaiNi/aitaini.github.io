@@ -1,4 +1,14 @@
 /* Today only. Theme, layout and the checklist styles come from /assets/base.css, app.css and tasks.css. */
+/* Import reminder above the countdowns */
+.due {
+    margin: 0 0 10px;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    background: var(--warn-tint);
+    color: var(--warn);
+    font-size: .9rem
+}
+
 #notes {
     display: block;
     width: 100%;

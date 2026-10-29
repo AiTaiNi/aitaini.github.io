@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Expenses</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+  <script src="/assets/sync.js"></script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Expenses</h1>
+        <p class="sub">Subscriptions, bills and transport from the statements, and what the next cycle should cost.</p>
+      </div>
+      <nav class="tools"><a href="/personal/">All pages</a><a href="/personal/statements/">Statements</a></nav>
+    </header>
+
+    <!-- The chosen month: total, per-group totals, which statements are in -->
+    <section class="card" id="cycle">
+      <div class="chead">
+        <div class="seg mnav">
+          <button id="mPrev" aria-label="Previous month">‹</button>
+          <select id="mSel" aria-label="Month"></select>
+          <button id="mNext" aria-label="Next month">›</button>
+        </div>
+        <div class="accs" id="accs"></div>
+      </div>
+
+      <div class="total">
+        <div>
+          <span class="note" id="tLabel">Expected this cycle</span>
+          <div class="big" id="tBig">…</div>
+          <span class="note" id="tSplit"></span>
+        </div>
+        <label class="fl">S/ per US$ <input id="fx" inputmode="decimal" class="amtf"></label>
+      </div>
+
+      <div class="tiles" id="tiles"></div>
+      <p class="due" id="due" hidden><span></span> · <a href="/personal/statements/">Import on the Statements page</a></p>
+      <p class="msg" id="msg"></p>
+    </section>
+
+    <div class="grid">
+      <section class="card wide">
+        <h2>Bills &amp; utilities</h2>
+        <div class="scroll"><table class="lines" id="gBill"></table></div>
+      </section>
+
+      <section class="card">
+        <h2>Subscriptions</h2>
+        <div class="scroll"><table class="lines" id="gSub"></table></div>
+      </section>
+
+      <section class="card">
+        <h2>Transport</h2>
+        <div class="scroll"><table class="lines" id="gTransport"></table></div>
+      </section>
+
+      <section class="card wide" id="insights">
+        <h2>Spending insights</h2>
+        <p class="note" id="iNote"></p>
+        <div class="tiles" id="iTiles"></div>
+        <div class="icols">
+          <div>
+            <h3>By category</h3>
+            <div class="bars" id="iCats"></div>
+          </div>
+          <div>
+            <h3>Top merchants</h3>
+            <div class="scroll"><table class="lines" id="iTop"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card wide">
+        <h2>Yearly</h2>
+        <p class="note">Paid once a year. Each one is added to its group above in the month it’s due.</p>
+        <div class="scroll"><table class="lines" id="gYear"></table></div>
+        <p class="note" id="yTotal"></p>
+      </section>
+
+      <section class="card wide">
+        <h2>Subscription review</h2>
+        <p class="note" id="rvNote"></p>
+        <div class="scroll"><table class="lines" id="gReview"></table></div>
+      </section>
+
+      <section class="card wide">
+        <h2>History</h2>
+        <p class="note">Months up to the one shown above. <i>est.</i> = an account’s statement isn’t imported yet, so its part is estimated.</p>
+        <div class="scroll"><table id="hist"></table></div>
+      </section>
+
+      <section class="card wide">
+        <h2>Everything else</h2>
+        <p class="note">Spending that isn’t a bill, subscription or transport, over the last 12 statements. Move anything
+          that was missed into a group; the choice is saved and applies to every month. Search covers all statements,
+          for yearly charges from longer ago.</p>
+        <input type="search" id="oQ" placeholder="Search merchants and descriptions…" aria-label="Search other spending">
+        <div class="scroll"><table class="lines" id="gOther"></table></div>
+        <details id="rulesBox">
+          <summary>Your changes (<span id="rulesN">0</span>)</summary>
+          <div class="scroll"><table class="lines" id="rules"></table></div>
+        </details>
+      </section>
+    </div>
+  </main>
+
+  <!-- tasks.js only for Tasks.syncEvents (yearly payments on the Calendar); statements-due.js for the import reminder -->
+  <script src="/assets/tasks.js"></script>
+  <script src="/assets/statements-due.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>

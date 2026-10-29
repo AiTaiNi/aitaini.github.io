@@ -10,6 +10,7 @@
      Sync.get('my-key', fallback)  read, instantly, from this browser's copy
      Sync.set('my-key', value)     save here, then upload
      Sync.on('my-key', fn)         fn(value) runs when a newer copy arrives from another device
+     Sync.ready()                  promise: the first download from the server is done
 
    Values are stored in localStorage under the same key, so the page still works offline. */
 (() => {
@@ -107,7 +108,12 @@
     saveMeta();
     await pushAll();
     status('ok');
+    markReady();
   }
+
+  /* Resolves after the first pull that reached the server, so a page can safely change data another page owns */
+  let markReady;
+  const ready = new Promise(r => markReady = r);
 
   /* ---------- page API ---------- */
   let pullTimer;
@@ -134,6 +140,9 @@
     },
 
     on: (k, fn) => (handlers[k] ||= []).push(fn),
+
+    /* Promise: the server's copies of the page's keys are in (never resolves while signed out or offline) */
+    ready: () => ready,
 
     /* For pages that need more than key/value storage (their own tables etc.) */
     get db() { return db; },
