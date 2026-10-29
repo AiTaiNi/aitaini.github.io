@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" style="--h: 0">
+<html lang="en" class="dark">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>My dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/app.css">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
   <script src="../../assets/sync.js"></script>
@@ -57,7 +59,7 @@
               </select></label>
           </div>
           <div class="icons"><input id="evIcon" maxlength="2" placeholder="icon" aria-label="Icon (optional)"><span id="icons"></span></div>
-          <button id="evAdd" style="background:var(--ac);color:var(--card);border-color:var(--ac)">Add event</button> <button id="evCancel" hidden>Cancel</button>
+          <button id="evAdd" class="pri">Add event</button> <button id="evCancel" hidden>Cancel</button>
         </section>
         <section class="card">
           <h2>Daily tasks</h2>
@@ -124,7 +126,7 @@
       <p class="msg" id="dataMsg"></p>
       <p class="note">JSON holds your tasks, history and events, for backup or moving devices. The CSV files are for spreadsheets.</p>
     </details>
-    <div class="row"><button id="cancel">Cancel</button><button id="save" style="background:var(--ac);color:var(--card)">Save</button></div>
+    <div class="row"><button id="cancel">Cancel</button><button id="save" class="pri">Save</button></div>
   </dialog>
 
   <script src="script.js"></script>

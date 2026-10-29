@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- Private page template. Copy this folder to stuff/<page-name>/ and follow _docs/template/README.md.
-     --h sets the colour hue for the whole page (0 red, 140 green, 250 blue, 300 purple). -->
-<html lang="en" style="--h: 250">
+     Colors, hue and shapes come from /assets/base.css (shared with the main site); class="dark" picks the dark theme. -->
+<html lang="en" class="dark">
 
 <head>
   <meta charset="utf-8">
@@ -9,7 +9,9 @@
   <meta name="robots" content="noindex">
   <title>Page title</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/app.css">
   <link rel="stylesheet" href="style.css">
   <!-- These two lines put the page behind the sign-in screen and provide Sync. Keep them before the page's script. -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>

@@ -60,7 +60,8 @@
   }
 
   async function pull() {
-    if (!user || !keys.size) return;
+    if (!user) return;
+    if (!keys.size) return status('ok');   /* page uses its own tables only */
     status('busy');
 
     const { data, error } = await db.from(TABLE).select('key,value,updated_at').in('key', [...keys]);
@@ -129,30 +130,33 @@
   };
 
   /* ---------- sign-in screen + status pill ---------- */
+  /* Uses the site theme tokens from /assets/base.css when the page loads it; the fallbacks keep it usable without */
   const CSS = `
     html.sync-locked body > :not(#sync-gate) { visibility: hidden }
     #sync-gate { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; padding: 16px;
-      background: var(--bg, #f4f4f5); color: var(--fg, #222); font: 15px/1.5 system-ui, sans-serif }
+      background: var(--page, #f4f4f5); color: var(--text, #222); font: 15px/1.5 var(--font, system-ui, sans-serif) }
     html:not(.sync-locked) #sync-gate { display: none }
     #sync-gate form { display: grid; gap: 10px; max-width: 340px; width: 100%; box-sizing: border-box; padding: 28px;
-      border-radius: 14px; text-align: center; background: var(--card, #fff); border: 1px solid var(--bd, #ddd) }
-    #sync-gate h2 { margin: 0; font-size: 20px }
-    #sync-gate p { margin: 0 0 8px; color: var(--mut, #666) }
-    #sync-gate input { font: inherit; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--bd, #ddd);
-      background: var(--bg, #fff); color: inherit }
-    #sync-gate button { font: inherit; padding: 9px 18px; border-radius: 8px; cursor: pointer; border: 0;
-      background: var(--ac, #333); color: var(--card, #fff) }
+      border-radius: var(--radius-card, 8px); text-align: center; background: var(--card, #fff);
+      border: var(--border-hi, 1px solid #ddd); box-shadow: var(--shadow-hi, none) }
+    #sync-gate h2 { margin: 0; font-size: 20px; color: var(--title, inherit) }
+    #sync-gate p { margin: 0 0 8px; color: var(--sub, #666) }
+    #sync-gate input { font: inherit; padding: 9px 12px; border-radius: var(--radius, 6px); border: 1px solid transparent;
+      background: var(--tint, #eee); color: inherit }
+    #sync-gate input:focus { background: var(--tint-hi, #e4e4e4) }
+    #sync-gate button { font: inherit; font-weight: 500; padding: 9px 18px; border-radius: var(--radius, 6px); cursor: pointer; border: 0;
+      background: var(--primary, #333); color: var(--card, #fff) }
     #sync-gate button:disabled { opacity: .6; cursor: wait }
-    #sync-gate .err { margin: 14px 0 0; color: #c0392b }
+    #sync-gate .err { margin: 14px 0 0; color: var(--neg, #c0392b) }
     #sync-pill { position: fixed; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 9998;
-      display: flex; align-items: center; gap: 8px; padding: 5px 6px 5px 11px; border-radius: 99px; font: 12px system-ui, sans-serif;
-      background: var(--card, #fff); color: var(--mut, #666); border: 1px solid var(--bd, #ddd) }
+      display: flex; align-items: center; gap: 8px; padding: 5px 6px 5px 11px; border-radius: 99px; font: 12px var(--font, system-ui, sans-serif);
+      background: var(--card, #fff); color: var(--sub, #666); border: var(--border-hi, 1px solid #ddd); box-shadow: var(--shadow, none) }
     #sync-pill i { width: 8px; height: 8px; border-radius: 50%; background: #9aa0a6 }
     #sync-pill[data-s=ok] i { background: #2db039 }
     #sync-pill[data-s=busy] i { background: #f9d457 }
     #sync-pill[data-s=error] i { background: #c0392b }
     #sync-pill button { font: inherit; padding: 2px 9px; border-radius: 99px; cursor: pointer;
-      border: 1px solid var(--bd, #ddd); background: transparent; color: inherit }
+      border: 0; background: var(--tint, transparent); color: var(--link, inherit) }
     #sync-pill button[hidden] { display: none }`;
 
   let pill, pillText, outBtn, gateErr;

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Statements</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+  <script src="/assets/sync.js"></script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Statements</h1>
+        <p class="sub">BCP credit card and debit account movements.</p>
+      </div>
+      <nav class="tools">
+        <a href="/stuff/dashboard/">Dashboard</a>
+        <button id="cog" aria-expanded="false" aria-controls="manage" title="Import and manage statements">⚙ Manage</button>
+      </nav>
+    </header>
+
+    <!-- Import, review and saved statements, behind the ⚙ button -->
+    <div class="grid" id="manage" hidden>
+      <section class="card wide">
+        <h2>Import</h2>
+        <label class="drop" id="drop">
+          <input type="file" id="fileIn" multiple accept=".json,application/json" hidden>
+          <b>Drop statement JSON files here</b> or <u>choose files</u>
+          <span class="note">Make them with <code>python parse_statements.py</code>, which reads the PDFs and writes stuff/statements/json/.</span>
+        </label>
+
+        <div class="scroll"><table class="files" id="files"></table></div>
+        <div class="btns"><button id="saveAll" class="pri" hidden>Save all ready</button></div>
+        <p class="msg" id="msg"></p>
+      </section>
+
+      <section class="card wide" id="review" hidden>
+        <div class="rhead">
+          <h2 id="rTitle"></h2>
+          <div class="btns">
+            <button id="rAdd">Add row</button>
+            <button id="rSave" class="pri">Save</button>
+            <button id="rClose">Close</button>
+          </div>
+        </div>
+        <p class="note" id="rInfo"></p>
+        <ul class="warn" id="rWarn"></ul>
+        <div class="sums" id="rSums"></div>
+        <div class="scroll"><table class="tx" id="rTable"></table></div>
+      </section>
+
+      <section class="card wide">
+        <h2>Saved statements</h2>
+        <div id="saved">
+          <p class="note">Sign in to see saved statements.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Viewer -->
+    <section class="card" id="viewer">
+      <div class="vhead">
+        <div class="seg" role="group" aria-label="Account">
+          <button data-acc="credit" aria-pressed="true">Credit card</button>
+          <button data-acc="debit" aria-pressed="false">Debit account</button>
+        </div>
+        <label class="fl">Statement <select id="vStmt"></select></label>
+      </div>
+
+      <div class="filters">
+        <label class="fl">From <input type="date" id="vFrom"></label>
+        <label class="fl">To <input type="date" id="vTo"></label>
+        <label class="fl grow">Search <input type="search" id="vQ" placeholder="Description, category, note…"></label>
+        <label class="fl">Type <select id="vKind">
+            <option value="">All</option>
+            <option value="out">Expenses</option>
+            <option value="in">Income</option>
+          </select></label>
+        <label class="fl">Currency <select id="vCur">
+            <option value="">All</option>
+            <option value="PEN">PEN</option>
+            <option value="USD">USD</option>
+          </select></label>
+        <label class="fl">Min <input id="vMin" inputmode="decimal" placeholder="0.00" class="amtf"></label>
+        <label class="fl">Max <input id="vMax" inputmode="decimal" placeholder="any" class="amtf"></label>
+        <button id="vReset">Reset</button>
+      </div>
+
+      <div class="sums" id="vSums"></div>
+      <p class="msg" id="vMsg"></p>
+      <div class="scroll"><table class="vt" id="vTable"></table></div>
+      <p class="note" id="vEmpty">Loading…</p>
+      <button id="vMore" hidden></button>
+      <datalist id="vCats"></datalist>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

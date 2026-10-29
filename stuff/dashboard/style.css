@@ -1,160 +1,35 @@
-:root {
-    --h: 0;
-    --bg: oklch(0.96 0.012 var(--h));
-    --card: oklch(0.995 0.004 var(--h));
-    --fg: oklch(0.25 0.03 var(--h));
-    --mut: oklch(0.5 0.03 var(--h));
-    --bd: oklch(0.9 0.02 var(--h));
-    --ac: oklch(0.55 0.17 var(--h));
-    --acs: oklch(0.93 0.04 var(--h))
-}
-
-@media(prefers-color-scheme:dark) {
-    :root:not([data-theme=light]) {
-        --bg: oklch(0.19 0.02 var(--h));
-        --card: oklch(0.24 0.025 var(--h));
-        --fg: oklch(0.94 0.01 var(--h));
-        --mut: oklch(0.72 0.03 var(--h));
-        --bd: oklch(0.32 0.03 var(--h));
-        --ac: oklch(0.76 0.14 var(--h));
-        --acs: oklch(0.3 0.05 var(--h))
-    }
-}
-
-:root[data-theme=dark] {
-    --bg: oklch(0.19 0.02 var(--h));
-    --card: oklch(0.24 0.025 var(--h));
-    --fg: oklch(0.94 0.01 var(--h));
-    --mut: oklch(0.72 0.03 var(--h));
-    --bd: oklch(0.32 0.03 var(--h));
-    --ac: oklch(0.76 0.14 var(--h));
-    --acs: oklch(0.3 0.05 var(--h))
-}
-
-* {
-    box-sizing: border-box
-}
-
-body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--fg);
-    font: 400 15px/1.45 "Schibsted Grotesk", system-ui, sans-serif
-}
-
-main {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 16px 12px 40px
-}
-
-header {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px 24px;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 14px
-}
-
-h1 {
-    margin: 0;
-    font-size: 1.4rem;
-    font-weight: 800;
-    letter-spacing: -.02em;
-    line-height: 1.1
-}
-
+/* Dashboard only. Theme and shared layout come from /assets/base.css and /assets/app.css. */
 #date {
-    color: var(--mut);
+    color: var(--sub);
     margin: 4px 0 0
 }
 
-.tools {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--mut);
-    font-size: .9rem
-}
-
 input[type=range] {
-    accent-color: var(--ac);
     width: 110px
-}
-
-button,
-input,
-textarea {
-    font: inherit;
-    color: inherit
-}
-
-button {
-    background: var(--acs);
-    border: 1px solid var(--bd);
-    border-radius: 10px;
-    padding: 6px 12px;
-    cursor: pointer
-}
-
-button:hover {
-    border-color: var(--ac)
-}
-
-:focus-visible {
-    outline: 2px solid var(--ac);
-    outline-offset: 2px
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 12px
-}
-
-.card {
-    background: var(--card);
-    border: 1px solid var(--bd);
-    border-radius: 14px;
-    padding: 14px
-}
-
-.wide {
-    grid-column: 1/-1
-}
-
-h2 {
-    margin: 0 0 8px;
-    font-size: .9rem;
-    font-weight: 600;
-    color: var(--mut)
 }
 
 .big {
     font-size: 1.7rem;
-    font-weight: 800;
-    letter-spacing: -.03em;
+    font-weight: 700;
+    color: var(--title);
+    letter-spacing: -.02em;
     line-height: 1
 }
 
 .big small {
     font-size: .85rem;
-    font-weight: 600;
-    color: var(--mut);
+    font-weight: 500;
+    color: var(--sub);
     margin-left: 6px;
     letter-spacing: 0
 }
 
-.note {
-    color: var(--mut);
-    font-size: .85rem;
-    margin: 8px 0 0
-}
-
-.err {
-    color: oklch(0.6 0.2 25);
-    font-size: .9rem
+/* ---------- exchange rate ---------- */
+.fxtop {
+    display: flex;
+    align-items: baseline;
+    gap: 4px 12px;
+    flex-wrap: wrap
 }
 
 .conv {
@@ -168,28 +43,24 @@ h2 {
     flex: 1;
     display: block;
     font-size: .85rem;
-    color: var(--mut)
+    color: var(--sub)
 }
 
 .conv input {
     width: 100%;
-    margin-top: 2px;
-    padding: 4px 8px;
-    border: 1px solid var(--bd);
-    border-radius: 10px;
-    background: var(--bg)
+    margin-top: 2px
 }
 
+/* ---------- MyAnimeList ---------- */
 .tabs {
     display: flex;
+    align-items: center;
     gap: 6px;
     margin-bottom: 8px
 }
 
-.tabs button[aria-pressed=true] {
-    background: var(--ac);
-    color: var(--card);
-    border-color: var(--ac)
+.tabs .sp {
+    margin-left: auto
 }
 
 .user {
@@ -202,15 +73,14 @@ h2 {
 .user img {
     width: 38px;
     height: 38px;
-    border-radius: 12px;
+    border-radius: var(--radius-chip);
     object-fit: cover;
-    background: var(--bd)
+    background: var(--line)
 }
 
 .user a {
-    color: var(--fg);
-    font-weight: 600;
-    text-decoration: none
+    color: var(--title);
+    font-weight: 700
 }
 
 .stats {
@@ -223,13 +93,14 @@ h2 {
 .stats b {
     display: block;
     font-size: 1.15rem;
-    font-weight: 800;
+    font-weight: 700;
+    color: var(--title);
     line-height: 1.1
 }
 
 .stats span {
     font-size: .8rem;
-    color: var(--mut)
+    color: var(--sub)
 }
 
 .bar {
@@ -237,7 +108,7 @@ h2 {
     height: 12px;
     border-radius: 6px;
     overflow: hidden;
-    background: var(--bd)
+    background: var(--line)
 }
 
 .legend {
@@ -256,6 +127,7 @@ h2 {
     margin-right: 5px
 }
 
+/* ---------- YouTube ---------- */
 .vids {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -263,24 +135,24 @@ h2 {
 }
 
 .vid {
-    color: inherit;
-    text-decoration: none
+    color: inherit
 }
 
 .vid img {
     width: 100%;
     aspect-ratio: 16/9;
     object-fit: cover;
-    border-radius: 12px;
-    background: var(--bd);
+    border-radius: var(--radius-chip);
+    background: var(--line);
     display: block
 }
 
 .vid p {
     margin: 6px 0 0;
-    font-weight: 600;
+    font-weight: 500;
     font-size: .95rem;
     line-height: 1.3;
+    color: var(--title);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -289,55 +161,45 @@ h2 {
 
 .vid span {
     font-size: .8rem;
-    color: var(--mut)
+    color: var(--sub)
 }
 
 .vid:hover p {
-    color: var(--ac)
+    color: var(--link)
 }
 
-dialog {
-    border: 1px solid var(--bd);
-    border-radius: 18px;
-    background: var(--card);
-    color: var(--fg);
-    width: min(520px, 92vw);
-    padding: 22px
-}
-
-dialog::backdrop {
-    background: #0006
-}
-
-dialog {
-    max-height: 90vh;
-    overflow: auto
-}
-
-.bk {
-    margin-top: 14px;
-    border-top: 1px solid var(--bd);
-    padding-top: 10px
+/* ---------- settings dialog ---------- */
+dialog h3 {
+    color: var(--title)
 }
 
 dialog label {
     display: block;
     margin: 12px 0 4px;
-    font-weight: 600
+    font-weight: 500
 }
 
 dialog input,
 dialog textarea {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1px solid var(--bd);
-    border-radius: 10px;
-    background: var(--bg)
+    width: 100%
 }
 
 dialog textarea {
     min-height: 120px;
     resize: vertical
+}
+
+.bk {
+    margin-top: 14px;
+    border-top: var(--border);
+    padding-top: 10px
+}
+
+details textarea {
+    width: 100%;
+    height: 110px;
+    margin-top: 10px;
+    font: 13px ui-monospace, Menlo, monospace
 }
 
 .row {
@@ -347,18 +209,13 @@ dialog textarea {
     margin-top: 16px
 }
 
-.stack {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    min-width: 0
-}
-
+/* ---------- calendar ---------- */
 .nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px
+    margin-bottom: 10px;
+    color: var(--title)
 }
 
 .cgrid {
@@ -369,40 +226,58 @@ dialog textarea {
 
 .dow {
     font-size: .75rem;
-    color: var(--mut);
+    color: var(--sub);
     text-align: center
 }
 
 .day {
+    position: relative;
     aspect-ratio: 1.25;
-    border-radius: 8px;
+    border-radius: var(--radius);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: .8rem;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     border: 2px solid transparent;
-    background: var(--bd);
-    color: var(--fg)
+    background: var(--line);
+    color: var(--title)
 }
 
 .day.empty {
     visibility: hidden
 }
 
+/* Graded days get a red→green background from tasks.js */
 .day.graded {
     color: #111
 }
 
 .day.today {
-    box-shadow: 0 0 0 2px var(--fg) inset
+    box-shadow: 0 0 0 2px var(--title) inset
 }
 
 .day.sel {
-    border-color: var(--ac);
-    outline: 2px solid var(--ac);
+    border-color: var(--primary);
+    outline: 2px solid var(--primary);
     outline-offset: 1px
+}
+
+.day.has {
+    border-style: dashed;
+    border-color: var(--primary)
+}
+
+.mk {
+    position: absolute;
+    top: 1px;
+    right: 3px;
+    font-size: .55rem;
+    line-height: 1;
+    font-weight: 700;
+    opacity: .9;
+    pointer-events: none
 }
 
 .clegend {
@@ -410,7 +285,7 @@ dialog textarea {
     align-items: center;
     gap: 8px;
     font-size: .75rem;
-    color: var(--mut);
+    color: var(--sub);
     margin-top: 12px
 }
 
@@ -421,21 +296,23 @@ dialog textarea {
     background: linear-gradient(90deg, hsl(0, 75%, 62%), hsl(60, 75%, 60%), hsl(120, 60%, 55%))
 }
 
+/* ---------- day + tasks ---------- */
 .thead {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    margin-bottom: 8px
+    margin-bottom: 8px;
+    color: var(--title)
 }
 
 .thead span {
-    color: var(--mut);
+    color: var(--sub);
     font-size: .9rem
 }
 
 .prog {
     height: 6px;
-    background: var(--bd);
+    background: var(--line);
     border-radius: 3px;
     overflow: hidden;
     margin-bottom: 10px
@@ -453,7 +330,7 @@ label.t {
     align-items: center;
     gap: 12px;
     padding: 10px 4px;
-    border-top: 1px solid var(--bd);
+    border-top: var(--border);
     cursor: pointer
 }
 
@@ -461,30 +338,14 @@ label.t:first-of-type {
     border-top: 0
 }
 
-input[type=checkbox] {
+label.t input[type=checkbox] {
     width: 22px;
-    height: 22px;
-    accent-color: var(--ac);
-    flex: none
+    height: 22px
 }
 
 label.t.done span {
-    color: var(--mut);
+    color: var(--sub);
     text-decoration: line-through
-}
-
-.add {
-    display: flex;
-    gap: 8px
-}
-
-.add input {
-    flex: 1;
-    min-width: 0;
-    padding: 8px 10px;
-    border: 1px solid var(--bd);
-    border-radius: 10px;
-    background: var(--bg)
 }
 
 .add input.num {
@@ -509,18 +370,12 @@ label.t.done span {
     font-variant-numeric: tabular-nums
 }
 
-.add button {
-    background: var(--ac);
-    color: var(--card);
-    border-color: var(--ac)
-}
-
 .trow {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 6px 0;
-    border-top: 1px solid var(--bd)
+    border-top: var(--border)
 }
 
 .trow:first-of-type {
@@ -528,75 +383,15 @@ label.t.done span {
 }
 
 .trow button {
-    padding: 2px 8px;
-    color: var(--mut)
+    padding: 2px 8px
 }
 
-.btns {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px
-}
-
-.msg {
-    font-size: .9rem;
-    color: var(--mut);
-    margin: 10px 0 0;
-    min-height: 1.4em
-}
-
-summary {
-    cursor: pointer;
-    font-weight: 600;
-    color: var(--mut)
-}
-
-details textarea {
-    width: 100%;
-    height: 110px;
-    margin-top: 10px;
-    font: 13px ui-monospace, Menlo, monospace;
-    background: var(--bg);
-    border: 1px solid var(--bd);
-    border-radius: 10px;
-    padding: 8px
-}
-
-:root {
-    box-sizing: border-box;
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px)
-}
-
-html {
-    scroll-padding-top: env(safe-area-inset-top, 0px)
-}
-
-.day {
-    position: relative
-}
-
-.day.has {
-    border-style: dashed;
-    border-color: var(--ac)
-}
-
-.mk {
-    position: absolute;
-    top: 1px;
-    right: 3px;
-    font-size: .55rem;
-    line-height: 1;
-    font-weight: 700;
-    opacity: .9;
-    pointer-events: none
-}
-
-.sub {
+/* ---------- events ---------- */
+/* "Events" label above the day's events */
+#evs .sub {
     margin: 0 0 6px;
     font-size: .8rem;
-    font-weight: 600;
-    color: var(--mut)
+    font-weight: 500
 }
 
 .ev {
@@ -611,20 +406,19 @@ html {
     font-style: normal;
     width: 1.3em;
     text-align: center;
-    color: var(--ac)
+    color: var(--primary)
 }
 
 .ev em {
     font-style: normal;
-    color: var(--mut);
+    color: var(--sub);
     font-size: .78rem
 }
 
 .ev button {
     margin-left: auto;
     padding: 1px 7px;
-    font-size: .78rem;
-    color: var(--mut)
+    font-size: .78rem
 }
 
 .evrow {
@@ -636,19 +430,13 @@ html {
 .evrow label {
     flex: 1;
     font-size: .78rem;
-    color: var(--mut);
+    color: var(--sub);
     min-width: 0
 }
 
 .evrow input,
-.evrow select,
-#evIcon {
-    width: 100%;
-    padding: 6px 8px;
-    border: 1px solid var(--bd);
-    border-radius: 10px;
-    background: var(--bg);
-    color: var(--fg)
+.evrow select {
+    width: 100%
 }
 
 #evIcon {
@@ -669,30 +457,7 @@ html {
     min-width: 28px
 }
 
-.fxtop {
-    display: flex;
-    align-items: baseline;
-    gap: 4px 12px;
-    flex-wrap: wrap
-}
-
-.tabs {
-    align-items: center
-}
-
-.tabs .sp {
-    margin-left: auto
-}
-
-[hidden] {
-    display: none !important
-}
-
 @media(max-width:720px) {
-    .grid {
-        grid-template-columns: 1fr
-    }
-
     .big {
         font-size: 1.5rem
     }

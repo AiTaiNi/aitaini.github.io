@@ -1,85 +1,4 @@
-:root {
-  --post-font: inherit, Georgia, "Times New Roman", serif;
-  --page: oklch(0.95 0.01 var(--hue));
-  --card: #fff;
-  --primary: oklch(0.70 0.14 var(--hue));
-  --link: oklch(0.55 0.14 var(--hue));
-  --tint: oklch(0.93 0.035 var(--hue));
-  --tint-hi: oklch(0.88 0.06 var(--hue));
-  --accent: oklch(0.62 0.16 var(--accent-hue));
-  --accent-tint: oklch(0.93 0.045 var(--accent-hue));
-  --line: oklch(0.90 0.02 var(--hue));
-  --text: rgb(0 0 0 / .75);
-  --title: rgb(0 0 0 / .9);
-  --sub: rgb(0 0 0 / .5);
-  --code: oklch(0.25 0.02 var(--hue));
-  color-scheme: light;
-}
-
-html.dark {
-  --page: oklch(0.16 0.014 var(--hue));
-  --card: oklch(0.23 0.015 var(--hue));
-  --primary: oklch(0.75 0.14 var(--hue));
-  --link: oklch(0.75 0.14 var(--hue));
-  --tint: oklch(0.33 0.07 var(--hue));
-  --tint-hi: oklch(0.40 0.09 var(--hue));
-  --accent: oklch(0.75 0.14 var(--accent-hue));
-  --accent-tint: oklch(0.33 0.06 var(--accent-hue));
-  --line: oklch(0.30 0.02 var(--hue));
-  --text: rgb(255 255 255 / .75);
-  --title: rgb(255 255 255 / .9);
-  --sub: rgb(255 255 255 / .5);
-  --code: oklch(0.19 0.015 var(--hue));
-  color-scheme: dark;
-}
-
-* {
-  box-sizing: border-box
-}
-
-body {
-  margin: 0;
-  background: var(--page);
-  color: var(--text);
-  font: 17px/1.7 Roboto, system-ui, sans-serif;
-  transition: background .3s
-}
-
-a {
-  color: var(--link);
-  text-decoration: none
-}
-
-.card {
-  background: var(--card);
-  border-radius: 0.25rem;
-  transition: background .3s
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .4rem;
-  border: 0;
-  background: transparent;
-  color: var(--text);
-  font: 500 1rem Roboto, sans-serif;
-  padding: .5rem .9rem;
-  border-radius: .35rem;
-  cursor: pointer;
-  transition: background .15s, color .15s
-}
-
-.btn:hover,
-.btn.on {
-  background: var(--tint);
-  color: var(--link)
-}
-
-.btn:active {
-  background: var(--tint-hi)
-}
+/* Main site only. Tokens, colors and shared elements (.card, .btn, .chip) are in base.css, loaded first. */
 
 /* Navbar floating card */
 .top {
@@ -98,21 +17,13 @@ a {
   height: 4.25rem;
   padding: 0 1rem;
   flex-wrap: nowrap;
-  border: 1px solid var(--tint-hi);
-  box-shadow: 0 2px 14px rgb(0 0 0/.08);
+  border: var(--border-hi);
+  box-shadow: var(--shadow);
   transition: box-shadow .25s, background .3s
 }
 
 .top.scrolled .nav {
-  box-shadow: 0 8px 28px rgb(0 0 0/.16)
-}
-
-html.dark .nav {
-  box-shadow: 0 2px 14px rgb(0 0 0/.4)
-}
-
-html.dark .top.scrolled .nav {
-  box-shadow: 0 8px 28px rgb(0 0 0/.6)
+  box-shadow: var(--shadow-hi)
 }
 
 .logo {
@@ -310,15 +221,9 @@ aside {
   text-align: center
 }
 
+/* Tag cloud */
 .chip {
-  display: inline-block;
-  background: var(--tint);
-  color: var(--link);
-  border-radius: .5rem;
-  padding: .1rem .65rem;
-  margin: 0 .25rem .35rem 0;
-  font-size: .9rem;
-  transition: .15s
+  margin: 0 .25rem .35rem 0
 }
 
 .chip:hover {
@@ -455,8 +360,8 @@ aside {
   top: calc(100% + .75rem);
   min-width: 11rem;
   padding: .4rem;
-  border: 1px solid var(--tint-hi);
-  box-shadow: 0 8px 28px rgb(0 0 0/.16);
+  border: var(--border-hi);
+  box-shadow: var(--shadow-hi);
   z-index: 20
 }
 
@@ -484,10 +389,6 @@ aside {
   top: 0;
   height: 100%;
   width: .6rem
-}
-
-html.dark .dd>.sub {
-  box-shadow: 0 8px 28px rgb(0 0 0/.6)
 }
 
 .count {
@@ -683,7 +584,6 @@ html.dark .dd>.sub {
 }
 
 /* MyAnimeList widget */
-[hidden],
 .side-off {
   display: none !important
 }

@@ -23,3 +23,8 @@ yarn.lock
 # ide
 .idea
 *.iml
+
+# bank statements (sensitive, never commit)
+stuff/statements/examples/
+stuff/statements/**/*.pdf
+stuff/statements/json/

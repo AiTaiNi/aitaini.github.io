@@ -1,162 +1,8 @@
-/* Shared look for private pages (same tokens as the dashboard; sync.js's sign-in screen reads them too).
-   Set the hue with style="--h: …" on <html>. */
-:root {
-    --h: 0;
-    --bg: oklch(0.96 0.012 var(--h));
-    --card: oklch(0.995 0.004 var(--h));
-    --fg: oklch(0.25 0.03 var(--h));
-    --mut: oklch(0.5 0.03 var(--h));
-    --bd: oklch(0.9 0.02 var(--h));
-    --ac: oklch(0.55 0.17 var(--h));
-    --acs: oklch(0.93 0.04 var(--h))
-}
+/* This page's own styles only. Theme (colors, hue, borders, radii) comes from /assets/base.css and the shared
+   layout and controls (.grid, .card, .add, .btns, .seg, tables…) from /assets/app.css. Use their tokens
+   (var(--primary), var(--line), var(--radius)…) instead of fixed colors so the page follows the main site. */
 
-@media(prefers-color-scheme:dark) {
-    :root:not([data-theme=light]) {
-        --bg: oklch(0.19 0.02 var(--h));
-        --card: oklch(0.24 0.025 var(--h));
-        --fg: oklch(0.94 0.01 var(--h));
-        --mut: oklch(0.72 0.03 var(--h));
-        --bd: oklch(0.32 0.03 var(--h));
-        --ac: oklch(0.76 0.14 var(--h));
-        --acs: oklch(0.3 0.05 var(--h))
-    }
-}
-
-:root[data-theme=dark] {
-    --bg: oklch(0.19 0.02 var(--h));
-    --card: oklch(0.24 0.025 var(--h));
-    --fg: oklch(0.94 0.01 var(--h));
-    --mut: oklch(0.72 0.03 var(--h));
-    --bd: oklch(0.32 0.03 var(--h));
-    --ac: oklch(0.76 0.14 var(--h));
-    --acs: oklch(0.3 0.05 var(--h))
-}
-
-* {
-    box-sizing: border-box
-}
-
-body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--fg);
-    font: 400 15px/1.45 "Schibsted Grotesk", system-ui, sans-serif
-}
-
-main {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 16px 16px 64px
-}
-
-header {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px 24px;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 14px
-}
-
-h1 {
-    margin: 0;
-    font-size: 1.4rem;
-    font-weight: 800;
-    letter-spacing: -.02em;
-    line-height: 1.1
-}
-
-h2 {
-    margin: 0 0 10px;
-    font-size: 1rem;
-    font-weight: 600
-}
-
-.sub {
-    color: var(--mut);
-    margin: 4px 0 0
-}
-
-.tools {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: .9rem
-}
-
-a {
-    color: var(--ac)
-}
-
-button,
-input,
-select,
-textarea {
-    font: inherit;
-    color: inherit
-}
-
-button {
-    background: var(--acs);
-    border: 1px solid var(--bd);
-    border-radius: 10px;
-    padding: 6px 12px;
-    cursor: pointer
-}
-
-button:hover {
-    border-color: var(--ac)
-}
-
-:focus-visible {
-    outline: 2px solid var(--ac);
-    outline-offset: 2px
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 12px
-}
-
-.card {
-    background: var(--card);
-    border: 1px solid var(--bd);
-    border-radius: 14px;
-    padding: 14px
-}
-
-.wide {
-    grid-column: 1 / -1
-}
-
-.note {
-    color: var(--mut);
-    font-size: .9rem;
-    margin: 8px 0 0
-}
-
-.add {
-    display: flex;
-    gap: 8px
-}
-
-.add input {
-    flex: 1;
-    min-width: 0;
-    padding: 8px 10px;
-    border: 1px solid var(--bd);
-    border-radius: 10px;
-    background: var(--bg)
-}
-
-.add button {
-    background: var(--ac);
-    color: var(--card);
-    border-color: var(--ac)
-}
-
+/* Example: the synced checklist. Replace with the page's own styles. */
 .list {
     list-style: none;
     margin: 8px 0 0;
@@ -168,7 +14,7 @@ button:hover {
     align-items: center;
     gap: 10px;
     padding: 8px 2px;
-    border-top: 1px solid var(--bd)
+    border-top: var(--border)
 }
 
 .list li:first-child {
@@ -184,24 +30,10 @@ button:hover {
 }
 
 .list li.done span {
-    color: var(--mut);
+    color: var(--sub);
     text-decoration: line-through
 }
 
 .list li button {
-    padding: 2px 8px;
-    color: var(--mut)
-}
-
-input[type=checkbox] {
-    width: 20px;
-    height: 20px;
-    accent-color: var(--ac);
-    flex: none
-}
-
-@media(max-width:720px) {
-    .grid {
-        grid-template-columns: minmax(0, 1fr)
-    }
+    padding: 2px 8px
 }

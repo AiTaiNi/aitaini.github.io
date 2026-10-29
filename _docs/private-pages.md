@@ -49,6 +49,7 @@ Its [README](template/README.md) has the steps. The rest of this file explains w
 - **Size**: each key is one JSON value that's uploaded whole on every change. Great for lists, settings and logs
   up to a few hundred KB. For something big or ever-growing (e.g. thousands of journal entries), split it across
   keys (`journal-2026`, `journal-2027`) or create a dedicated table with the same RLS rule and use `Sync.db`
-  (the Supabase client) directly.
+  (the Supabase client) directly. [statements.md](statements.md) is a worked example (tables, rules and an
+  import function).
 - **No new SQL is needed** for new keys; the `kv` table holds any key.
 - **No secrets in page code**: the page source is public; only the stored data is private.

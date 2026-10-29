@@ -1,0 +1,141 @@
+/* Shared by every page: theme tokens and base elements. Load it first, then the page's own CSS.
+   Main site: base.css + style.css. Tool pages (stuff/*): base.css + app.css + the page's style.css.
+
+   --hue         primary color: page tint, links, title bars, buttons
+   --accent-hue  accent color: quote bars, highlights
+   Dark theme: class="dark" on <html>. */
+:root {
+  --hue: 0;
+  --accent-hue: 20;
+
+  --font: Roboto, system-ui, sans-serif;
+  --post-font: inherit, Georgia, "Times New Roman", serif;
+
+  --page: oklch(0.95 0.01 var(--hue));
+  --card: #fff;
+  --primary: oklch(0.70 0.14 var(--hue));
+  --link: oklch(0.55 0.14 var(--hue));
+  --tint: oklch(0.93 0.035 var(--hue));
+  --tint-hi: oklch(0.88 0.06 var(--hue));
+  --accent: oklch(0.62 0.16 var(--accent-hue));
+  --accent-tint: oklch(0.93 0.045 var(--accent-hue));
+  --line: oklch(0.90 0.02 var(--hue));
+  --text: rgb(0 0 0 / .75);
+  --title: rgb(0 0 0 / .9);
+  --sub: rgb(0 0 0 / .5);
+  --code: oklch(0.25 0.02 var(--hue));
+
+  /* status colors (money in/out, checks) */
+  --pos: oklch(0.55 0.14 150);
+  --neg: oklch(0.58 0.17 25);
+  --warn: oklch(0.55 0.12 75);
+  --pos-tint: oklch(0.92 0.06 150);
+  --neg-tint: oklch(0.92 0.05 25);
+  --warn-tint: oklch(0.94 0.07 90);
+
+  /* shapes */
+  --radius-card: .25rem;
+  --radius: .35rem;          /* buttons, inputs */
+  --radius-chip: .5rem;
+  --border: 1px solid var(--line);
+  --border-hi: 1px solid var(--tint-hi);
+  --shadow: 0 2px 14px rgb(0 0 0 / .08);
+  --shadow-hi: 0 8px 28px rgb(0 0 0 / .16);
+
+  color-scheme: light;
+}
+
+html.dark {
+  --page: oklch(0.16 0.014 var(--hue));
+  --card: oklch(0.23 0.015 var(--hue));
+  --primary: oklch(0.75 0.14 var(--hue));
+  --link: oklch(0.75 0.14 var(--hue));
+  --tint: oklch(0.33 0.07 var(--hue));
+  --tint-hi: oklch(0.40 0.09 var(--hue));
+  --accent: oklch(0.75 0.14 var(--accent-hue));
+  --accent-tint: oklch(0.33 0.06 var(--accent-hue));
+  --line: oklch(0.30 0.02 var(--hue));
+  --text: rgb(255 255 255 / .75);
+  --title: rgb(255 255 255 / .9);
+  --sub: rgb(255 255 255 / .5);
+  --code: oklch(0.19 0.015 var(--hue));
+
+  --pos: oklch(0.75 0.14 150);
+  --neg: oklch(0.72 0.15 25);
+  --warn: oklch(0.80 0.12 85);
+  --pos-tint: oklch(0.32 0.06 150);
+  --neg-tint: oklch(0.32 0.06 25);
+  --warn-tint: oklch(0.34 0.06 85);
+
+  --shadow: 0 2px 14px rgb(0 0 0 / .4);
+  --shadow-hi: 0 8px 28px rgb(0 0 0 / .6);
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box
+}
+
+[hidden] {
+  display: none !important
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font: 17px/1.7 var(--font);
+  transition: background .3s
+}
+
+a {
+  color: var(--link);
+  text-decoration: none
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius-card);
+  transition: background .3s
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: 500 1rem var(--font);
+  padding: .5rem .9rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background .15s, color .15s
+}
+
+.btn:hover,
+.btn.on {
+  background: var(--tint);
+  color: var(--link)
+}
+
+.btn:active {
+  background: var(--tint-hi)
+}
+
+.chip {
+  display: inline-block;
+  background: var(--tint);
+  color: var(--link);
+  border-radius: var(--radius-chip);
+  padding: .1rem .65rem;
+  font-size: .9rem;
+  transition: .15s
+}

@@ -1,0 +1,177 @@
+/* Statements only. Theme and shared layout come from /assets/base.css and /assets/app.css. */
+
+/* ---------- import ---------- */
+#manage {
+    margin-bottom: 12px
+}
+
+#cog[aria-expanded=true] {
+    background: var(--tint-hi)
+}
+
+.drop {
+    display: grid;
+    gap: 4px;
+    place-items: center;
+    text-align: center;
+    padding: 22px 16px;
+    border: 2px dashed var(--tint-hi);
+    border-radius: var(--radius-card);
+    cursor: pointer
+}
+
+.drop:hover,
+.drop.over {
+    border-color: var(--primary);
+    background: var(--tint)
+}
+
+.drop b {
+    color: var(--title)
+}
+
+.drop u {
+    color: var(--link)
+}
+
+.flags {
+    font-size: .8rem;
+    color: var(--sub);
+    white-space: normal
+}
+
+td .btns {
+    flex-wrap: nowrap;
+    gap: 6px
+}
+
+td button {
+    padding: 2px 8px
+}
+
+td.desc {
+    white-space: normal;
+    min-width: 14em
+}
+
+/* ---------- review ---------- */
+.rhead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px
+}
+
+.rhead h2 {
+    margin-bottom: 0;
+    margin-right: auto
+}
+
+.warn {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    color: var(--warn);
+    font-size: .9rem
+}
+
+.warn:empty {
+    display: none
+}
+
+tr.flag td {
+    background: var(--warn-tint)
+}
+
+.tx input.amt {
+    width: 8em;
+    text-align: right
+}
+
+.tx input.d {
+    width: 100%;
+    min-width: 14em
+}
+
+/* In/out/net and balance check boxes */
+.sums {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px
+}
+
+.sums div {
+    padding: 8px 12px;
+    border: var(--border);
+    border-radius: var(--radius);
+    font-size: .9rem;
+    font-variant-numeric: tabular-nums
+}
+
+.sums b {
+    display: block;
+    color: var(--title)
+}
+
+/* ---------- viewer ---------- */
+.vhead,
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px 12px
+}
+
+.filters {
+    margin-top: 12px
+}
+
+/* Labelled filter field: small label above its control */
+.fl {
+    display: grid;
+    gap: 3px;
+    font-size: .8rem;
+    color: var(--sub)
+}
+
+.fl.grow {
+    flex: 1;
+    min-width: 12em
+}
+
+.fl input,
+.fl select {
+    font-size: .9rem
+}
+
+.fl input.amtf {
+    width: 6.5em
+}
+
+.vt th button {
+    padding: 0;
+    background: none;
+    color: inherit
+}
+
+/* Category/note cells: look like text until hovered or focused */
+.vt input.cell {
+    width: 100%;
+    min-width: 7em;
+    padding: 3px 6px;
+    background: transparent
+}
+
+.vt input.cell:hover,
+.vt input.cell:focus {
+    background: var(--tint)
+}
+
+.vt .sm {
+    color: var(--sub);
+    font-size: .8rem
+}
+
+#vMore {
+    margin-top: 10px
+}
