@@ -3,6 +3,9 @@
 Any page can use the same sign-in and synced storage as the dashboard. This assumes the one-time setup in
 [sync-setup.md](sync-setup.md) is done.
 
+**Quickest route:** copy [template/](template/) (a complete page with sign-in, sync and the dashboard's styling).
+Its [README](template/README.md) has the steps. The rest of this file explains what the template does.
+
 ## Steps
 
 1. In the page's `<head>`, **before** its own scripts:

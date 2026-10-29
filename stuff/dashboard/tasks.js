@@ -11,13 +11,15 @@
 
     if (!Array.isArray(state.events)) state.events = [];
 
+    if (!state.counts || typeof state.counts !== 'object') state.counts = {};
+
     /* First sync on a device that already has data: combine both copies instead of dropping one */
     var merge = {};
 
     merge[KEY] = function (local, remote) {
-        var out = { tasks: (remote.tasks || []).slice(), done: Object.assign({}, remote.done), events: (remote.events || []).slice() };
+        var out = { tasks: (remote.tasks || []).slice(), done: Object.assign({}, remote.done), events: (remote.events || []).slice(), counts: Object.assign({}, remote.counts) };
 
-        mergeInto(out, { tasks: local.tasks || [], done: local.done || {}, events: local.events || [] });
+        mergeInto(out, { tasks: local.tasks || [], done: local.done || {}, events: local.events || [], counts: local.counts || {} });
 
         return out;
     };
@@ -31,6 +33,8 @@
         state = v;
 
         if (!Array.isArray(state.events)) state.events = [];
+
+        if (!state.counts || typeof state.counts !== 'object') state.counts = {};
 
         render();
     });
@@ -66,6 +70,51 @@
         return tasksFor(k).filter(function (t) {
             return d.indexOf(t.id) > -1;
         }).length;
+    }
+
+    /* Counter tasks have a target `max`; plain tasks count as 1 */
+    function maxOf(t) {
+        return t.max > 1 ? t.max : 1;
+    }
+
+    function countOf(t, k) {
+        if ((state.done[k] || []).indexOf(t.id) > -1) return maxOf(t);
+
+        return Math.min((state.counts[k] || {})[t.id] || 0, maxOf(t));
+    }
+
+    /* Share of the day done, weighting each task by its counter, e.g. 2/3 + 1/1 = 75% */
+    function fracFor(k) {
+        var got = 0, all = 0;
+
+        tasksFor(k).forEach(function (t) {
+            got += countOf(t, k);
+            all += maxOf(t);
+        });
+
+        return all ? got / all : 0;
+    }
+
+    function setCount(t, k, n) {
+        var m = maxOf(t), arr = (state.done[k] || []).slice(), i = arr.indexOf(t.id);
+
+        n = Math.max(0, Math.min(m, n));
+
+        if (m > 1) {
+            var c = Object.assign({}, state.counts[k]);
+
+            if (n) c[t.id] = n; else delete c[t.id];
+
+            state.counts[k] = c;
+        }
+
+        if (n >= m && i < 0) arr.push(t.id);
+
+        if (n < m && i > -1) arr.splice(i, 1);
+
+        state.done[k] = arr;
+        save();
+        render();
     }
 
     function color(frac) {
@@ -277,7 +326,7 @@
 
             if (k <= todayKey && total > 0) {
                 el.className += ' graded';
-                el.style.background = color(doneFor(k) / total);
+                el.style.background = color(fracFor(k));
             }
 
             if (k === todayKey) el.className += ' today';
@@ -331,7 +380,7 @@
 
         document.getElementById('dayCount').textContent = n + ' / ' + list.length + ' done';
 
-        var prog = document.getElementById('prog'), frac = list.length ? n / list.length : 0;
+        var prog = document.getElementById('prog'), frac = fracFor(sel);
 
         prog.style.width = (frac * 100) + '%';
         prog.style.background = color(frac);
@@ -358,21 +407,42 @@
             cb.checked = d.indexOf(t.id) > -1;
 
             cb.onchange = function () {
-                var arr = (state.done[sel] || []).slice(), i = arr.indexOf(t.id);
-
-                if (cb.checked && i < 0) arr.push(t.id);
-
-                if (!cb.checked && i > -1) arr.splice(i, 1);
-
-                state.done[sel] = arr;
-                save();
-                render();
+                setCount(t, sel, cb.checked ? maxOf(t) : 0);
             };
 
             var sp = document.createElement('span');
             sp.textContent = t.name;
             lab.appendChild(cb);
             lab.appendChild(sp);
+
+            if (maxOf(t) > 1) {
+                var c = countOf(t, sel), ctr = document.createElement('div');
+                ctr.className = 'ctr';
+
+                [['−', -1, 'Decrease '], ['+', 1, 'Increase ']].forEach(function (b, j) {
+                    var btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.textContent = b[0];
+                    btn.setAttribute('aria-label', b[2] + t.name);
+                    btn.disabled = b[1] < 0 ? c <= 0 : c >= maxOf(t);
+
+                    btn.onclick = function (e) {
+                        e.preventDefault();
+                        setCount(t, sel, c + b[1]);
+                    };
+
+                    if (j) {
+                        var v = document.createElement('b');
+                        v.textContent = c + '/' + maxOf(t);
+                        ctr.appendChild(v);
+                    }
+
+                    ctr.appendChild(btn);
+                });
+
+                lab.appendChild(ctr);
+            }
+
             box.appendChild(lab);
         });
     }
@@ -395,7 +465,7 @@
             r.className = 'trow';
 
             var s = document.createElement('span');
-            s.textContent = t.name;
+            s.textContent = t.name + (maxOf(t) > 1 ? ' · ×' + maxOf(t) : '');
 
             var b = document.createElement('button');
             b.textContent = 'Remove';
@@ -424,18 +494,23 @@
     }
 
     function addTask() {
-        var inp = document.getElementById('newTask'), name = inp.value.trim();
+        var inp = document.getElementById('newTask'), name = inp.value.trim(), mx = document.getElementById('newMax'), m = Math.min(99, parseInt(mx.value, 10) || 1);
 
         if (!name) return;
 
-        state.tasks.push({ id: 't' + Date.now(), name: name, since: todayKey });
+        var t = { id: 't' + Date.now(), name: name, since: todayKey };
+
+        if (m > 1) t.max = m;
+
+        state.tasks.push(t);
         inp.value = '';
+        mx.value = '';
         save();
         render();
     }
     document.getElementById('addBtn').onclick = addTask;
 
-    document.getElementById('newTask').onkeydown = function (e) {
+    document.getElementById('newTask').onkeydown = document.getElementById('newMax').onkeydown = function (e) {
         if (e.key === 'Enter') addTask();
     };
 
@@ -481,7 +556,7 @@
     };
 
     document.getElementById('expJson').onclick = function () {
-        var out = { app: 'daily-tasks', version: 2, exportedAt: new Date().toISOString(), tasks: state.tasks, done: state.done, events: state.events };
+        var out = { app: 'daily-tasks', version: 3, exportedAt: new Date().toISOString(), tasks: state.tasks, done: state.done, counts: state.counts, events: state.events };
 
         saveFile('daily-tasks-' + todayKey + '.json', JSON.stringify(out, null, 2));
     };
@@ -490,7 +565,7 @@
         return '"' + String(s).replace(/"/g, '""') + '"';
     }
     document.getElementById('expCsv').onclick = function () {
-        var rows = ['date,task,done'];
+        var rows = ['date,task,done,count,target'];
 
         if (state.tasks.length) {
             var min = state.tasks.reduce(function (a, t) {
@@ -503,7 +578,7 @@
                 var k = dkey(d), dn = state.done[k] || [];
 
                 tasksFor(k).forEach(function (t) {
-                    rows.push(k + ',' + q(t.name) + ',' + (dn.indexOf(t.id) > -1 ? 1 : 0));
+                    rows.push(k + ',' + q(t.name) + ',' + (dn.indexOf(t.id) > -1 ? 1 : 0) + ',' + countOf(t, k) + ',' + maxOf(t));
                 });
 
                 d.setDate(d.getDate() + 1);
@@ -527,9 +602,29 @@
         var tasks = [], done = {};
 
         o.tasks.forEach(function (t) {
-            if (t && typeof t.id === 'string' && typeof t.name === 'string' && DATE.test(t.since || ''))
-                tasks.push({ id: t.id.slice(0, 40), name: t.name.slice(0, 80), since: t.since });
+            if (t && typeof t.id === 'string' && typeof t.name === 'string' && DATE.test(t.since || '')) {
+                var nt = { id: t.id.slice(0, 40), name: t.name.slice(0, 80), since: t.since };
+
+                if (Number.isInteger(t.max) && t.max > 1) nt.max = Math.min(99, t.max);
+
+                tasks.push(nt);
+            }
         });
+
+        var counts = {};
+
+        if (o.counts && typeof o.counts === 'object')
+            Object.keys(o.counts).forEach(function (k) {
+                var c = o.counts[k], out = {};
+
+                if (!DATE.test(k) || !c || typeof c !== 'object') return;
+
+                Object.keys(c).forEach(function (id) {
+                    if (Number.isInteger(c[id]) && c[id] > 0) out[id] = c[id];
+                });
+
+                counts[k] = out;
+            });
 
         Object.keys(o.done).forEach(function (k) {
             if (DATE.test(k) && Array.isArray(o.done[k]))
@@ -545,7 +640,7 @@
                 events.push({ id: e.id.slice(0, 40), name: e.name.slice(0, 60), date: e.date, rep: e.rep, icon: typeof e.icon === 'string' ? e.icon.slice(0, 3) : '' });
         });
 
-        return { tasks: tasks, done: done, events: events };
+        return { tasks: tasks, done: done, counts: counts, events: events };
     }
 
     function stage(text) {
@@ -634,6 +729,19 @@
             into.done[k] = cur;
         });
 
+        if (!into.counts) into.counts = {};
+
+        /* For counters, keep the higher count of the two copies */
+        Object.keys(from.counts || {}).forEach(function (k) {
+            var cur = Object.assign({}, into.counts[k]);
+
+            Object.keys(from.counts[k]).forEach(function (id) {
+                if (!(cur[id] >= from.counts[k][id])) cur[id] = from.counts[k][id];
+            });
+
+            into.counts[k] = cur;
+        });
+
         var eids = {};
 
         into.events.forEach(function (e) {
@@ -655,7 +763,7 @@
     document.getElementById('doReplace').onclick = function () {
         if (!pending) return;
 
-        state = { tasks: pending.tasks, done: pending.done, events: pending.events };
+        state = { tasks: pending.tasks, done: pending.done, counts: pending.counts, events: pending.events };
         finish('Replaced with imported data.');
     };
 
@@ -689,7 +797,7 @@
             var h = await window.showSaveFilePicker({ suggestedName: 'daily-tasks-' + todayKey + '.json', types: jsonTypes });
             var w = await h.createWritable();
 
-            await w.write(JSON.stringify({ app: 'daily-tasks', version: 2, exportedAt: new Date().toISOString(), tasks: state.tasks, done: state.done, events: state.events }, null, 2));
+            await w.write(JSON.stringify({ app: 'daily-tasks', version: 3, exportedAt: new Date().toISOString(), tasks: state.tasks, done: state.done, counts: state.counts, events: state.events }, null, 2));
             await w.close();
             say('Saved to ' + h.name + '.');
         } catch (e) {

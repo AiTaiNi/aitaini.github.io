@@ -487,6 +487,28 @@ label.t.done span {
     background: var(--bg)
 }
 
+.add input.num {
+    flex: none;
+    width: 4.5em
+}
+
+.ctr {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px
+}
+
+.ctr button {
+    padding: 2px 10px
+}
+
+.ctr b {
+    min-width: 3.5ch;
+    text-align: center;
+    font-variant-numeric: tabular-nums
+}
+
 .add button {
     background: var(--ac);
     color: var(--card);

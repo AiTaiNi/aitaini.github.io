@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- Private page template. Copy this folder to stuff/<page-name>/ and follow _docs/template/README.md.
+     --h sets the colour hue for the whole page (0 red, 140 green, 250 blue, 300 purple). -->
+<html lang="en" style="--h: 250">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Page title</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- These two lines put the page behind the sign-in screen and provide Sync. Keep them before the page's script. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+  <script src="/assets/sync.js"></script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Page title</h1>
+        <p class="sub">One line about what this page is for.</p>
+      </div>
+      <nav class="tools"><a href="/stuff/dashboard/">Dashboard</a></nav>
+    </header>
+
+    <!-- Example feature: a synced list. Replace the cards with the page's own content. -->
+    <div class="grid">
+      <section class="card">
+        <h2>Items</h2>
+        <form class="add" id="addForm">
+          <input id="newItem" placeholder="Add an item" maxlength="120" aria-label="New item" autocomplete="off">
+          <button>Add</button>
+        </form>
+        <ul class="list" id="list"></ul>
+        <p class="note" id="empty">Nothing here yet.</p>
+      </section>
+
+      <section class="card">
+        <h2>About</h2>
+        <p class="note">Saved in this browser right away and synced to your other devices when signed in.</p>
+      </section>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
