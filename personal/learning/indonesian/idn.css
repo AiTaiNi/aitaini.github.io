@@ -100,12 +100,16 @@ a.go.quiet:hover {
 .fl {
     display: grid;
     gap: 3px;
+    min-width: 0;
     font-size: .8rem;
     color: var(--sub)
 }
 
+/* fill the field, never wider than it (phones) */
 .fl input,
 .fl select {
+    width: 100%;
+    max-width: 100%;
     font-size: .95rem
 }
 

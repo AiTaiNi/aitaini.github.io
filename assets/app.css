@@ -39,11 +39,17 @@ h1 {
   margin: 4px 0 0
 }
 
+/* Links and buttons on the right; on a narrow screen they wrap onto more lines instead of widening the page */
 .tools {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: 8px 12px;
   font-size: .9rem
+}
+
+.tools > a {
+  white-space: nowrap
 }
 
 /* ---------- cards ---------- */

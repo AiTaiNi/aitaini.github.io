@@ -126,10 +126,12 @@ tr.flag td {
     margin-top: 12px
 }
 
-/* Labelled filter field: small label above its control */
+/* Labelled filter field: small label above its control. Controls fill their field and never grow past it, so a long
+   placeholder or statement name can't push into the next field on a phone. */
 .fl {
     display: grid;
     gap: 3px;
+    min-width: 0;
     font-size: .8rem;
     color: var(--sub)
 }
@@ -141,7 +143,21 @@ tr.flag td {
 
 .fl input,
 .fl select {
+    max-width: 100%;
     font-size: .9rem
+}
+
+.fl.grow input {
+    width: 100%
+}
+
+/* The statement picker can have long names ("2026-01 (2025-12-11 to 2026-01-11)") */
+.vhead .fl {
+    flex: 1 1 14em
+}
+
+.vhead .fl select {
+    width: 100%
 }
 
 .fl input.amtf {
