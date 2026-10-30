@@ -21,7 +21,7 @@ const store = {
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (n, d = 0) => Number(n).toLocaleString('en-US', { maximumFractionDigits: d });
-const DEFAULTS = { mal: 'AisareTai', channels: [] };
+const DEFAULTS = { mal: 'AisareTai' };
 const cfg = Object.assign({}, DEFAULTS, Sync.get('dash-cfg', {}));
 
 /* Settings follow you across devices; dash-fx and dash-mal are caches and stay local */
@@ -29,7 +29,6 @@ Sync.use(['dash-cfg']);
 Sync.on('dash-cfg', v => {
     Object.assign(cfg, DEFAULTS, v);
     loadMal();
-    loadYt();
 });
 let malTab = 'anime', malData = null, malNote = '';
 
@@ -181,95 +180,11 @@ document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
     drawMal();
 });
 
-/* ---------- YouTube RSS ---------- */
-const PROXIES = [u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u), u => 'https://corsproxy.io/?' + encodeURIComponent(u)];
-
-async function fetchFeed(id) {
-    const url = 'https://www.youtube.com/feeds/videos.xml?channel_id=' + id;
-
-    for (const p of PROXIES) {
-        try {
-            const r = await fetch(p(url));
-
-            if (!r.ok) continue;
-
-            const xml = new DOMParser().parseFromString(await r.text(), 'text/xml');
-            const author = (xml.querySelector('feed > author > name') || {}).textContent || '';
-
-            return [...xml.querySelectorAll('entry')].map(e => {
-                const link = e.querySelector('link').getAttribute('href');
-                const idEl = e.getElementsByTagName('yt:videoId')[0];
-
-                return { id: idEl ? idEl.textContent : link.split('v=')[1], title: e.querySelector('title').textContent, link, author, date: new Date(e.querySelector('published').textContent) };
-            });
-        } catch {
-        }
-    }
-
-    return null;
-}
-
-function ago(d) {
-    const s = (Date.now() - d) / 1000;
-    const u = [[31536000, 'year'], [2592000, 'month'], [86400, 'day'], [3600, 'hour'], [60, 'minute']];
-
-    for (const [n, l] of u) {
-        if (s >= n) {
-            const v = Math.floor(s / n);
-
-            return `${v} ${l}${v > 1 ? 's' : ''} ago`;
-        }
-    }
-
-    return 'just now';
-}
-
-async function loadYt() {
-    const box = $('#yt');
-
-    if (!cfg.channels.length) {
-        box.innerHTML = '<p class="note">Add YouTube channel IDs in Settings to see new videos here.</p>';
-        return;
-    }
-
-    box.innerHTML = '<p class="note">Loading videos…</p>';
-
-    const all = [];
-    let failed = 0, i = 0;
-
-    const worker = async () => {
-        while (i < cfg.channels.length) {
-            const r = await fetchFeed(cfg.channels[i++]);
-
-            if (r) {
-                all.push(...r.slice(0, 5));
-            } else {
-                failed++;
-            }
-        }
-    };
-
-    await Promise.all([worker(), worker(), worker(), worker()]);
-    all.sort((a, b) => b.date - a.date);
-
-    if (!all.length) {
-        box.innerHTML = '<p class="err">Couldn’t load any feeds. The free CORS proxies may be busy; press Refresh to retry.</p>';
-        return;
-    }
-
-    box.innerHTML = `<div class="vids">${all.slice(0, 24).map(v => `
-    <a class="vid" href="${esc(v.link)}" target="_blank" rel="noopener">
-      <img loading="lazy" src="https://i.ytimg.com/vi/${esc(v.id)}/mqdefault.jpg" alt="">
-      <p>${esc(v.title)}</p><span>${esc(v.author)}, ${ago(v.date)}</span></a>`).join('')}</div>`
-        + (failed ? `<p class="note">${failed} channel${failed > 1 ? 's' : ''} failed to load.</p>` : '');
-}
-
 /* ---------- settings ---------- */
 const dlg = $('#dlg');
 
 $('#open').onclick = () => {
     $('#malUser').value = cfg.mal;
-    $('#ch').value = cfg.channels.join('\n');
     dlg.showModal();
 };
 
@@ -277,7 +192,6 @@ $('#cancel').onclick = () => dlg.close();
 
 $('#save').onclick = () => {
     cfg.mal = $('#malUser').value.trim() || DEFAULTS.mal;
-    cfg.channels = [...new Set($('#ch').value.match(/UC[\w-]{22}/g) || [])];
     Sync.set('dash-cfg', cfg);
     dlg.close();
     loadAll();
@@ -289,6 +203,5 @@ function loadAll() {
     header();
     loadFx();
     loadMal();
-    loadYt();
 }
 loadAll();

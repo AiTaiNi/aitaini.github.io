@@ -158,7 +158,7 @@ usual RLS rule (grows over time, needs querying), **storage** = a private Storag
 - [x] **Calendar**: month view coloured by task completion, daily tasks (with counters), one-time and recurring
       events, countdowns (⏱ on an event, shown when at most 2 weeks away), list of all events, Today button.
       [personal/calendar/](../personal/calendar/)
-- [x] **Dashboard**: calendar and today's checklist (managed on the Calendar page), exchange rate, MAL, YouTube.
+- [x] **Dashboard**: calendar and today's checklist (managed on the Calendar page), exchange rate, MAL. (A YouTube subscription feed was removed 2026-10-30; notes in [youtube-feed.md](youtube-feed.md).)
       [personal/dashboard/](../personal/dashboard/)
 - [x] **Bank statements**: BCP credit/debit PDFs parsed locally (`tools/parse-statements.py`), stored in Supabase, with
       a filterable viewer, categories and notes. Covers the import side of the "money in two currencies" idea.

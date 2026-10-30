@@ -71,13 +71,6 @@
           <p class="note">Loading stats…</p>
         </div>
       </section>
-
-      <section class="card wide" aria-live="polite">
-        <h2>Latest from your subscriptions</h2>
-        <div id="yt">
-          <p class="note">Loading videos…</p>
-        </div>
-      </section>
     </div>
   </main>
 
@@ -86,9 +79,6 @@
     <label for="malUser">MyAnimeList username</label>
     <input id="malUser" maxlength="40" autocomplete="off">
     <p class="note">Stats come from data/mal-stats.json. After changing the name, run <code>python tools/scrape-mal.py name</code> to refresh that file.</p>
-    <label for="ch">YouTube channel IDs</label>
-    <textarea id="ch" placeholder="Paste channel IDs (UC...) or the contents of subscriptions.csv from Google Takeout, one per line"></textarea>
-    <p class="note">Your list is saved in this browser only. Takeout: takeout.google.com, choose YouTube, then Subscriptions.</p>
     <details class="bk">
       <summary>Backup: import and export</summary>
       <div class="btns" style="margin-top:10px">
