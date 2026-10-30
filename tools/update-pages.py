@@ -1,7 +1,7 @@
 """
 Scans the pages/ folder (including sub-folders) for .md files and rebuilds pages/pages.json, which the blog uses to build the top menu.
 
-    python update-pages.py        (or double-click update-pages.bat on Windows)
+    python tools/update-pages.py        (or double-click tools/update-pages.bat on Windows)
 
 * pages/about.md            -> menu item "About"       (address: #/about)
 * pages/more/links.md       -> "More" dropdown > Links (address: #/more/links)
@@ -20,7 +20,7 @@ import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent   # this script is in tools/
 PAGES = ROOT / "pages"
 OUT = PAGES / "pages.json"
 RESERVED = {"post", "page", "tag", "category", "search"}   # used by the blog itself

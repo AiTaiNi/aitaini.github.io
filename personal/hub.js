@@ -31,6 +31,21 @@
     Sync.on('expense-summary', renderExp);
     renderExp(Sync.get('expense-summary'));
 
+    /* Indonesian: saved by the study pages (personal/learning/indonesian/idn.js). Due counts are only known for the
+       day they were saved, so another day shows when you last studied. */
+    Sync.use(['idn-summary']);
+
+    function renderIdn(s) {
+        const today = new Date().toLocaleDateString('en-CA');
+
+        $('liveIdn').textContent = s && s.day
+            ? (s.day === today ? (s.due ? s.due + ' due · ' : 'Reviews done · ') + s.minutes + ' min today' : 'Not studied yet today') + (s.streak ? ' · ' + s.streak + '-day streak' : '')
+            : '';
+    }
+
+    Sync.on('idn-summary', renderIdn);
+    renderIdn(Sync.get('idn-summary'));
+
     /* ---------- install as an app ---------- */
     /* The service worker makes the pages open offline from the home screen; its scope is /personal/ */
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/personal/sw.js', { scope: '/personal/' }).catch(e => console.warn('Service worker:', e));

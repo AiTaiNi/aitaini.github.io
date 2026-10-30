@@ -212,6 +212,49 @@ revoke execute on function public.idn_review(jsonb, jsonb) from public, anon;
 grant execute on function public.idn_review(jsonb, jsonb) to authenticated;
 ```
 
+## Second step: the PDF library table
+
+Added after the first setup. `python tools/build-indonesian.py sync` (also part of `tools/update-indonesian.bat`) uploads what
+it extracted from your PDFs here, signed in as you, so the pages can use it without an import screen: extra
+examples and derived forms on cards, and topic sets (greetings, food, family…) to add as new cards. Run this once in
+the SQL Editor, the same way as above:
+
+```sql
+-- What tools/build-indonesian.py extracted from your PDFs. Private like everything else; the script upserts by id, so
+-- running it again adds and updates rows. Rows for deleted PDFs stay unless the script runs with --prune.
+create table public.idn_library (
+  id          text        not null,                 -- stable id from the script (file + text)
+  user_id     uuid        not null default auth.uid() references auth.users on delete cascade,
+  kind        text        not null,                 -- word, derived, phrase
+  indonesian  text        not null,
+  english     text        not null,
+  lemma       text,                                 -- matching dictionary word, if any
+  root        text,
+  also        text[]      not null default '{}',    -- other forms given with it (makan, memakan)
+  pos         text,
+  example     text,
+  example_en  text,
+  topic       text,                                 -- worksheet topic or book title
+  file        text,
+  page        int,
+  status      text,                                 -- in-deck, dictionary, new (when it was uploaded)
+  deck_pos    int,
+  updated_at  timestamptz not null default now(),
+  primary key (user_id, id)
+);
+
+create index idn_library_lemma on public.idn_library (user_id, lemma);
+
+alter table public.idn_library enable row level security;
+create policy "own rows" on public.idn_library for all to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+revoke all on public.idn_library from anon;
+grant select, insert, update, delete on public.idn_library to authenticated;
+```
+
+The script asks for your Supabase email and password each time; set `IDN_EMAIL` and `IDN_PASSWORD` to skip the
+prompt (like `BCP_PDF_PASSWORD` for the statements).
+
 ## Checking it worked
 
 1. **Table Editor** lists the eight `idn_` tables, each with **RLS enabled**.

@@ -3,7 +3,7 @@
 A ready-to-copy private page: sign-in screen, synced storage, the dashboard's look (light/dark, hue setting) and
 a small working example (a synced checklist) to replace. Background on `Sync`: [../private-pages.md](../private-pages.md).
 
-Preview: open `/_docs/template/` on the site, or locally with `start_server.bat` (it must be served from the repo
+Preview: open `/_docs/template/` on the site, or locally with `start-server.bat` (it must be served from the repo
 root, since the page loads `/assets/sync.js`). The example stores its data under the key `template-items`.
 
 ## Making a new page

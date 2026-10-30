@@ -97,7 +97,7 @@ small pill in the corner says "Sync not set up".
 
 ### 6. Test locally and sign in for the first time
 
-1. Run `start_server.bat` and open <http://localhost:8000/personal/dashboard/>.
+1. Run `start-server.bat` and open <http://localhost:8000/personal/dashboard/>.
 2. You should see **Private page** with an email and password form. Sign in with the user from step 4.
 3. The dashboard appears, and the pill at the bottom right goes **Syncing… → Synced** (green).
 4. Your existing tasks, history, events and settings from this browser are uploaded on this first sign-in.

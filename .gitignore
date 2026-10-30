@@ -33,3 +33,6 @@ personal/statements/json/
 tools/indonesian/raw/
 tools/indonesian/pdfs/
 tools/indonesian/out-private/
+
+# Python bytecode
+__pycache__/

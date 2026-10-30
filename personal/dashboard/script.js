@@ -131,7 +131,7 @@ async function loadMal() {
         if (d) {
             useMal(d, 'Stats loaded from file on');
         } else {
-            $('#mal').innerHTML = `<p class="note">No stats yet. Run python scrape_mal.py ${esc(cfg.mal)}, then press “Load stats file…” and choose data/mal-stats.json.</p>`;
+            $('#mal').innerHTML = `<p class="note">No stats yet. Run python tools/scrape-mal.py ${esc(cfg.mal)}, then press “Load stats file…” and choose data/mal-stats.json.</p>`;
         }
     }
 }
@@ -164,7 +164,7 @@ function drawMal() {
     const img = profile.images && profile.images.jpg ? profile.images.jpg.image_url : '';
     const total = m.keys.reduce((a, [k]) => a + (d[k] || 0), 0) || 1;
     const mismatch = profile.username && cfg.mal && profile.username.toLowerCase() !== cfg.mal.toLowerCase();
-    const hint = mismatch ? `<p class="note">These stats are for ${esc(profile.username)}. Run python scrape_mal.py ${esc(cfg.mal)} to switch.</p>` : '';
+    const hint = mismatch ? `<p class="note">These stats are for ${esc(profile.username)}. Run python tools/scrape-mal.py ${esc(cfg.mal)} to switch.</p>` : '';
     const stamp = malNote ? `<p class="note">${esc(malNote)}</p>` : '';
 
     $('#mal').innerHTML = `

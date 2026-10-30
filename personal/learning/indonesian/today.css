@@ -1,0 +1,38 @@
+/* Indonesian Today page only. Shared Indonesian styles: idn.css. */
+.session {
+    margin: 0;
+    padding-left: 20px
+}
+
+.session li {
+    margin: 6px 0
+}
+
+.session b {
+    color: var(--title)
+}
+
+#month h3 {
+    margin: 12px 0 4px;
+    font-size: .9rem;
+    color: var(--title)
+}
+
+#month p {
+    margin: 4px 0
+}
+
+.words {
+    display: grid;
+    gap: 4px;
+    margin-top: 8px
+}
+
+#lib td.topic {
+    white-space: normal;
+    min-width: 12em
+}
+
+#lib button {
+    padding: 2px 10px
+}

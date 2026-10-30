@@ -1,4 +1,4 @@
-/* Statements page: load JSON made by parse_statements.py, review, save to Supabase.
+/* Statements page: load JSON made by tools/parse-statements.py, review, save to Supabase.
    Tables, the import_statement function and the JSON format: _docs/statements.md.
    Loaded files live in memory only; nothing sensitive is written to browser storage. */
 (() => {
@@ -102,9 +102,9 @@
     const savedFor = r => saved.find(s => s.account === r.account && s.period.slice(0, 7) === r.period);
 
     /* ---------- loading JSON ---------- */
-    /* One parse_statements.py file → { st, result } or an error message */
+    /* One tools/parse-statements.py file → { st, result } or an error message */
     function load(o) {
-        if (!o || o.format !== 'bcp-statement' || !o.statement || !Array.isArray(o.transactions)) return 'Not a statement file from parse_statements.py.';
+        if (!o || o.format !== 'bcp-statement' || !o.statement || !Array.isArray(o.transactions)) return 'Not a statement file from tools/parse-statements.py.';
 
         const s = o.statement;
 

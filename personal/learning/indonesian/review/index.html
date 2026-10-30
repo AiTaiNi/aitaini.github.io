@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Review · Indonesian</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="../idn.css">
+  <link rel="stylesheet" href="review.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+  <script src="/assets/sync.js"></script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Review</h1>
+        <p class="sub" id="counts">Loading…</p>
+      </div>
+      <nav class="tools">
+        <a href="../">Today</a>
+        <a href="/personal/">All pages</a>
+      </nav>
+    </header>
+
+    <section class="card rcard" id="box">
+      <div class="front" id="front"></div>
+      <div class="back" id="back" hidden></div>
+
+      <div class="actions">
+        <button class="pri show" id="show" hidden>Show answer <kbd>Space</kbd></button>
+        <div class="rate" id="rate" hidden>
+          <button data-g="1"><b>Again</b><span></span><kbd>1</kbd></button>
+          <button data-g="2"><b>Hard</b><span></span><kbd>2</kbd></button>
+          <button data-g="3"><b>Good</b><span></span><kbd>3</kbd></button>
+          <button data-g="4"><b>Easy</b><span></span><kbd>4</kbd></button>
+        </div>
+      </div>
+
+      <div class="tools2" id="tools2" hidden>
+        <button id="suspend" title="Never show this card again (undo on the Words page later)">Suspend</button>
+      </div>
+      <p class="msg" id="msg"></p>
+    </section>
+  </main>
+
+  <script src="/assets/tasks.js"></script>
+  <script src="../idn.js"></script>
+  <script src="review.js"></script>
+</body>
+
+</html>

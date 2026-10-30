@@ -1,0 +1,169 @@
+/* Indonesian review page only. Shared Indonesian styles: ../idn.css. */
+main {
+    max-width: 720px
+}
+
+.rcard {
+    display: grid;
+    gap: 16px;
+    padding: 22px
+}
+
+.front {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    text-align: center;
+    padding: 12px 0
+}
+
+.word {
+    color: var(--title);
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1.15;
+    overflow-wrap: anywhere
+}
+
+.meaning {
+    color: var(--title);
+    font-size: 1.35rem
+}
+
+.say {
+    padding: 2px 10px;
+    font-size: 1rem
+}
+
+.front input {
+    width: min(100%, 22em);
+    font-size: 1.3rem;
+    text-align: center
+}
+
+.verdict {
+    font-weight: 500
+}
+
+.back {
+    display: grid;
+    gap: 10px;
+    border-top: var(--border);
+    padding-top: 14px
+}
+
+.back .meaning {
+    text-align: center
+}
+
+.facts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 14px;
+    color: var(--sub);
+    font-size: .9rem
+}
+
+.facts b {
+    color: var(--text);
+    font-weight: 500
+}
+
+.ex {
+    display: grid;
+    gap: 2px;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    background: var(--tint)
+}
+
+.ex .id {
+    color: var(--title)
+}
+
+.ex .en {
+    color: var(--sub);
+    font-size: .9rem
+}
+
+.ex mark {
+    background: none;
+    color: var(--primary);
+    font-weight: 700
+}
+
+.extra h3 {
+    margin: 6px 0 4px;
+    font-size: .85rem;
+    color: var(--sub);
+    font-weight: 500
+}
+
+.family {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    font-size: .9rem
+}
+
+.family span i {
+    color: var(--sub);
+    font-style: normal
+}
+
+.actions {
+    display: grid
+}
+
+.show {
+    justify-self: center;
+    padding: .6rem 1.4rem
+}
+
+.rate {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px
+}
+
+.rate button {
+    display: grid;
+    gap: 2px;
+    padding: 8px 4px
+}
+
+.rate button span {
+    font-size: .8rem;
+    color: var(--sub);
+    font-weight: 400
+}
+
+.rate button.hint {
+    outline: 2px solid var(--primary)
+}
+
+kbd {
+    font: .7rem var(--font);
+    color: var(--sub);
+    opacity: .8
+}
+
+.tools2 {
+    display: flex;
+    justify-content: flex-end
+}
+
+.tools2 button {
+    padding: 2px 10px;
+    font-size: .85rem;
+    background: transparent;
+    color: var(--sub)
+}
+
+.done {
+    text-align: center;
+    display: grid;
+    gap: 10px;
+    justify-items: center
+}

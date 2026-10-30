@@ -1,7 +1,7 @@
 """
 Scans the posts/ folder (including sub-folders) for .md files and rebuilds posts/posts.json, the index the blog reads. Run it after adding, editing or deleting a post.
 
-    python update-posts.py        (or double-click update-posts.bat on Windows)
+    python tools/update-posts.py        (or double-click tools/update-posts.bat on Windows)
 
 Post front matter (between --- lines at the top of each file):
     title, date (YYYY-MM-DD), category, tags (comma separated),
@@ -14,7 +14,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent   # this script is in tools/
 POSTS = ROOT / "posts"
 OUT = POSTS / "posts.json"
 

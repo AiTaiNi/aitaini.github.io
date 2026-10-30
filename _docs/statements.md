@@ -2,7 +2,7 @@
 
 BCP statements (one Visa credit card, one savings/debit account) go through two steps:
 
-1. **[parse_statements.py](../parse_statements.py)** (run on your PC) reads the PDFs and writes one JSON file per
+1. **[tools/parse-statements.py](../tools/parse-statements.py)** (run on your PC) reads the PDFs and writes one JSON file per
    statement to `personal/statements/json/`.
 2. **The page** loads those JSON files, lets you review and correct them, and saves them to Supabase.
 
@@ -140,7 +140,7 @@ Check **Table Editor**: `statements` and `transactions` both show **RLS enabled*
 1. Download the statements from BCP into `personal/statements/examples/` (or any folder). Keep BCP's names: files
    starting `EECC_AHORRO` are the debit account, `EECC_VISA` the credit card. `EECC_VISA (3).PDF` style
    duplicates are fine, since the month is read from inside the PDF.
-2. Run `python parse_statements.py` (or `python parse_statements.py path/to/folder-or-file.pdf …`). It asks for
+2. Run `python tools/parse-statements.py` (or `python tools/parse-statements.py path/to/folder-or-file.pdf …`). It asks for
    the PDF password once; set `BCP_PDF_PASSWORD` to skip the prompt. It needs PyMuPDF (`pip install pymupdf`).
    Each file prints a line like:
 

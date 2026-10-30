@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Learning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="/personal/hub.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+  <script src="/assets/sync.js"></script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Learning</h1>
+        <p class="sub">One page per subject.</p>
+      </div>
+      <nav class="tools"><a href="/personal/">All pages</a></nav>
+    </header>
+
+    <!-- One tile per subject, like the hub (personal/index.html) -->
+    <div class="tiles">
+      <a class="card tile" href="indonesian/">
+        <i aria-hidden="true">ID</i>
+        <b>Bahasa Indonesia</b>
+        <span>Casual Indonesian for streams, chat and social media. 1-year plan.</span>
+        <em id="liveIdn"></em>
+      </a>
+    </div>
+  </main>
+
+  <script>
+    /* Live line from the summary the Indonesian pages save (personal/learning/indonesian/idn.js) */
+    (() => {
+      Sync.use(['idn-summary']);
+
+      const show = s => {
+        const today = new Date().toLocaleDateString('en-CA');
+
+        document.getElementById('liveIdn').textContent = s && s.day ? (s.day === today ? s.due + ' due · ' + s.minutes + ' min today' : 'Last studied ' + s.day) + (s.streak ? ' · ' + s.streak + '-day streak' : '') : '';
+      };
+
+      Sync.on('idn-summary', show);
+      show(Sync.get('idn-summary'));
+    })();
+  </script>
+</body>
+
+</html>

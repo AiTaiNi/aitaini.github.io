@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Indonesian</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="idn.css">
+  <link rel="stylesheet" href="today.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+  <script src="/assets/sync.js"></script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Bahasa Indonesia</h1>
+        <p class="sub">Casual Indonesian for streams, chat and social media.</p>
+      </div>
+      <nav class="tools">
+        <a href="/personal/">All pages</a>
+        <a href="/personal/learning/">Learning</a>
+        <a href="/personal/calendar/">Calendar</a>
+      </nav>
+    </header>
+
+    <div class="grid">
+      <section class="card wide">
+        <div class="stats" id="stats"></div>
+        <div class="btns">
+          <a class="go" id="go" href="review/">Start review</a>
+        </div>
+        <p class="note" id="focus"></p>
+        <p class="msg" id="msg">Loading…</p>
+      </section>
+
+      <section class="card">
+        <h2 id="mTitle">This month</h2>
+        <div id="month"></div>
+      </section>
+
+      <section class="card">
+        <h2>A 60-minute session</h2>
+        <ol class="session" id="session"></ol>
+        <p class="note">Weekends: reviews only (10–15 min). The time counts by itself while a study page is open and in use.</p>
+      </section>
+
+      <section class="card wide">
+        <h2>From your PDFs</h2>
+        <p class="note" id="libNote"></p>
+        <div class="scroll"><table id="lib"></table></div>
+      </section>
+
+      <section class="card">
+        <h2>Log watching or reading</h2>
+        <p class="note">Streams, videos, threads: time in Indonesian outside the study pages. Kept apart from study time.</p>
+        <form class="form" id="imm">
+          <label class="fl">Minutes <input id="immMin" type="number" min="1" max="600" required></label>
+          <label class="fl">What <select id="immAct">
+              <option value="watching">Watching</option>
+              <option value="reading">Reading</option>
+              <option value="listening">Listening</option>
+              <option value="writing">Writing / chatting</option>
+            </select></label>
+          <label class="fl wide">Note <input id="immNote" maxlength="200" placeholder="Channel, stream, thread…"></label>
+          <div class="wide"><button class="pri">Log it</button> <span class="sm" id="immMsg"></span></div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Settings</h2>
+        <form class="form" id="set">
+          <label class="fl">Plan started <input id="sStart" type="date"></label>
+          <label class="fl">New cards, weekdays <input id="sNewWd" type="number" min="0" max="50"></label>
+          <label class="fl">New cards, weekends <input id="sNewWe" type="number" min="0" max="50"></label>
+          <label class="fl">Target retention <select id="sRet">
+              <option value="0.85">85% (fewer reviews)</option>
+              <option value="0.9">90% (default)</option>
+              <option value="0.95">95% (more reviews)</option>
+            </select></label>
+          <label class="fl">Type the word for deck words up to <input id="sActive" type="number" min="0" max="3000" step="50"></label>
+          <label class="fl">Reviews per day at most <input id="sMax" type="number" min="20" max="1000" step="10"></label>
+          <label class="fl wide">Voice <select id="sVoice"></select></label>
+          <label class="check wide"><input type="checkbox" id="sAuto"> Read each card aloud when it's shown</label>
+          <label class="check wide"><input type="checkbox" id="sTasks"> Keep "Indonesian reviews" and "Indonesian study" on the Calendar</label>
+        </form>
+        <p class="note">Saved as you change them, on all your devices.</p>
+      </section>
+    </div>
+  </main>
+
+  <script src="/assets/tasks.js"></script>
+  <script src="idn.js"></script>
+  <script src="today.js"></script>
+</body>
+
+</html>

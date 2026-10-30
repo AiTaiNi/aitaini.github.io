@@ -2,37 +2,48 @@
 Build the data for the Indonesian learning pages (personal/learning/indonesian/), and turn your own Indonesian PDFs
 into private import candidates. Background: _docs/indonesian-data.md.
 
-`python build_indonesian.py`         public data -> personal/learning/indonesian/data/ (dictionary, deck, forms, sentences, slang)
-`python build_indonesian.py pdfs`    private -> tools/indonesian/out-private/pdf-candidates.json, from tools/indonesian/pdfs/
-`python build_indonesian.py all`     both
+`python tools/build-indonesian.py`         public data -> personal/learning/indonesian/data/ (dictionary, deck, forms, sentences, slang, plan)
+`python tools/build-indonesian.py pdfs`    private: adds tools/indonesian/pdfs/ to tools/indonesian/out-private/library.json
+`python tools/build-indonesian.py sync`    private: uploads that library to your Supabase table idn_library (asks you to sign in)
+`python tools/build-indonesian.py all`     all three
+`--prune`                            with pdfs/sync/all: drop library entries whose PDF is no longer in the folder
+
+The PDF library is cumulative: new PDFs are added, a changed PDF replaces its own entries, and entries from PDFs you've
+deleted stay unless you pass --prune.
 
 Sources go in tools/indonesian/raw/ (git-ignored): the kaikki.org Indonesian Wiktionary extract, Tatoeba's Indonesian
 and English sentences with their links, and the FrequencyWords Indonesian list. Hand-written content is in
 tools/indonesian/content/. Needs PySastrawi and PyYAML (`pip install PySastrawi pyyaml`); the PDF step also needs
-PyMuPDF (already used by parse_statements.py).
+PyMuPDF (already used by tools/parse-statements.py).
 
 The public output contains only freely licensed material (see SOURCES); nothing from the PDFs ever goes there.
 """
 
 import argparse
 import bz2
+import getpass
 import hashlib
 import json
+import os
 import re
 import sys
+import urllib.error
+import urllib.request
 from collections import defaultdict
 from datetime import date
 from pathlib import Path
 
 import yaml
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent   # this script is in tools/
 TOOLS = ROOT / "tools" / "indonesian"
 RAW = TOOLS / "raw"
 CONTENT = TOOLS / "content"
 PDFS = TOOLS / "pdfs"
 PRIVATE = TOOLS / "out-private"
 OUT = ROOT / "personal" / "learning" / "indonesian" / "data"
+LIBRARY = PRIVATE / "library.json"
+SYNC_JS = ROOT / "assets" / "sync.js"   # the Supabase project URL and publishable key live there (public by design)
 
 KAIKKI = RAW / "kaikki.org-dictionary-Indonesian.jsonl"
 FREQ = RAW / "id_50k.txt"
@@ -642,6 +653,7 @@ def build() -> None:
     manifest["files"]["families.json"] = write_json(OUT / "families.json", families)
     manifest["files"]["sentences.json"] = write_json(OUT / "sentences.json", used)
     manifest["files"]["slang.json"] = write_json(OUT / "slang.json", slang_table(slang, lex))
+    manifest["files"]["plan.json"] = write_json(OUT / "plan.json", yaml.safe_load((CONTENT / "plan.yaml").read_text(encoding="utf-8")))
 
     manifest["version"] = hashlib.sha256(json.dumps(manifest["files"], sort_keys=True).encode()).hexdigest()[:12]
     manifest["built"] = date.today().isoformat()
@@ -707,11 +719,17 @@ class PdfReader:
 
     def candidate(self, kind: str, ind: str, en: str, src: dict, **extra: object) -> dict:
         ind, en = ind.strip(" ;,"), en.strip(" ;,")
-        head = ind.split(",")[0].strip().lower()
-        lm = self.lemma(head) if " " not in head else (head if head in self.words else None)
         c = {"id": hashlib.sha1(f"{src['file']}|{ind}|{en}".encode()).hexdigest()[:12], "kind": kind, "indonesian": ind, "english": en, **{k: v for k, v in extra.items() if v}, **src}
+
+        return self.refresh(c)
+
+    def refresh(self, c: dict) -> dict:
+        """Match against the current dictionary and deck (re-run for old entries after every rebuild)."""
+        head = c["indonesian"].split(",")[0].strip().lower()
+        lm = self.lemma(head) if " " not in head else (head if head in self.words else None)
         c["lemma"] = lm
         c["status"] = "in-deck" if lm in self.deck else "dictionary" if lm else "new"
+        c.pop("deck_pos", None)
 
         if lm in self.deck:
             c["deck_pos"] = self.deck[lm] + 1
@@ -876,48 +894,165 @@ class PdfReader:
         return ("pairs", found, "") if found else ("none", [], "no word/translation pairs found (reading material? kept for later)")
 
 
-def build_pdfs() -> None:
+def build_pdfs(prune: bool) -> None:
+    """Add the PDFs to the cumulative library. Unchanged PDFs aren't re-read; a changed one replaces its own entries;
+    a renamed one keeps its entries (matched by content); a deleted one keeps them too unless prune is set."""
     if not (OUT / "forms.json").exists():
-        sys.exit("Run `python build_indonesian.py` first: the PDF step checks words against the built dictionary.")
+        sys.exit("Run `python tools/build-indonesian.py` first: the PDF step checks words against the built dictionary.")
 
-    files = sorted(PDFS.glob("*.pdf"))
+    lib = json.loads(LIBRARY.read_text(encoding="utf-8")) if LIBRARY.exists() else {"format": "idn-library", "version": 1, "files": {}, "items": {}}
+    files_meta, items = lib["files"], lib["items"]
+    reader, today = PdfReader(), date.today().isoformat()
+    present = sorted(PDFS.glob("*.pdf"))
+    names = {f.name for f in present}
 
-    if not files:
-        sys.exit(f"No PDFs in {PDFS}")
+    for f in present:
+        digest = hashlib.sha256(f.read_bytes()).hexdigest()[:16]
+        meta = files_meta.get(f.name)
 
-    reader, report, cands = PdfReader(), [], []
+        # Same content under an old name that's gone: move its entries over instead of reading it again
+        moved = next((n for n, m in files_meta.items() if n not in names and m.get("hash") == digest), None)
 
-    for f in files:
+        if moved:
+            for it in items.values():
+                if it["file"] == moved:
+                    it["file"] = f.name
+
+            files_meta[f.name] = dict(files_meta.pop(moved), present=True, last_seen=today)
+            say(f"= {f.name}: renamed from {moved}, entries kept")
+            continue
+
+        if meta and meta.get("hash") == digest:
+            meta.update(present=True, last_seen=today)
+            say(f"= {f.name}: unchanged, {meta.get('count', 0)} entries")
+            continue
+
         try:
             parser, found, note = reader.read(f)
         except Exception as e:
             parser, found, note = "error", [], str(e)
 
-        report.append({"file": f.name, "parser": parser, "candidates": len(found), "note": note})
-        cands.extend(found)
-        say(f"{'✓' if found else '-'} {f.name}: {parser}, {len(found)} candidates" + (f"  ({note})" if note else ""))
+        for k in [k for k, it in items.items() if it["file"] == f.name]:
+            del items[k]
 
-    by_id = {c["id"]: c for c in cands}
+        items.update({c["id"]: c for c in found})
+        files_meta[f.name] = {"hash": digest, "parser": parser, "count": len(found), "note": note, "first_seen": (meta or {}).get("first_seen", today), "last_seen": today, "present": True}
+        say(f"{'✓' if found else '-'} {f.name}: {parser}, {len(found)} entries" + (f"  ({note})" if note else ""))
+
+    gone = [n for n in files_meta if n not in names]
+
+    for n in gone:
+        if prune:
+            for k in [k for k, it in items.items() if it["file"] == n]:
+                del items[k]
+
+            del files_meta[n]
+            say(f"✗ {n}: no longer in the folder, its entries were removed (--prune)")
+        else:
+            files_meta[n]["present"] = False
+            say(f"· {n}: no longer in the folder, its {files_meta[n].get('count', 0)} entries are kept (use --prune to remove them)")
+
+    for it in items.values():
+        reader.refresh(it)
+
+    lib["updated"] = today
+    write_json(LIBRARY, lib)
+
     status = defaultdict(int)
 
-    for c in by_id.values():
-        status[c["status"]] += 1
+    for it in items.values():
+        status[it["status"]] += 1
 
-    write_json(PRIVATE / "pdf-candidates.json", {"format": "idn-pdf-candidates", "version": 1, "built": date.today().isoformat(), "files": report, "candidates": list(by_id.values())})
-    say(f"✓ {(PRIVATE / 'pdf-candidates.json').relative_to(ROOT)}: {len(by_id)} candidates ({', '.join(f'{v} {k}' for k, v in sorted(status.items()))}). Private: never commit it.")
+    say(f"✓ {LIBRARY.relative_to(ROOT)}: {len(items)} entries from {len(files_meta)} PDFs ({', '.join(f'{v} {k}' for k, v in sorted(status.items()))}). Private: never commit it.")
+
+
+# ---------- library upload (private) ----------
+LIBRARY_COLUMNS = ("id", "kind", "indonesian", "english", "lemma", "root", "also", "pos", "example", "example_en", "topic", "file", "page", "status", "deck_pos")
+
+
+def supabase_request(url: str, key: str, token: str | None, method: str, path: str, body: object = None, headers: dict | None = None) -> object:
+    h = {"apikey": key, "Content-Type": "application/json", "Authorization": "Bearer " + (token or key), **(headers or {})}
+    req = urllib.request.Request(url + path, method=method, headers=h, data=json.dumps(body).encode() if body is not None else None)
+
+    with urllib.request.urlopen(req, timeout=60) as r:
+        raw = r.read()
+
+    return json.loads(raw) if raw else None
+
+
+def sync_library(prune: bool) -> None:
+    """Upload the library to idn_library as you (so the database's rules apply), adding and updating rows; with prune,
+    rows that are no longer in the library are deleted too."""
+    if not LIBRARY.exists():
+        sys.exit("No library yet: run `python tools/build-indonesian.py pdfs` first.")
+
+    js = SYNC_JS.read_text(encoding="utf-8")
+    url = re.search(r"SUPABASE_URL\s*=\s*'([^']+)'", js).group(1).rstrip("/")
+    key = re.search(r"SUPABASE_KEY\s*=\s*'([^']+)'", js).group(1)
+    items = json.loads(LIBRARY.read_text(encoding="utf-8"))["items"]
+
+    email = os.environ.get("IDN_EMAIL") or input("Supabase sign-in email: ").strip()
+    password = os.environ.get("IDN_PASSWORD") or getpass.getpass("Password (not shown): ")
+
+    try:
+        token = supabase_request(url, key, None, "POST", "/auth/v1/token?grant_type=password", {"email": email, "password": password})["access_token"]
+    except urllib.error.HTTPError as e:
+        sys.exit(f"Sign-in failed ({e.code}): check the email and password.")
+    except urllib.error.URLError as e:
+        sys.exit(f"Couldn't reach Supabase ({e.reason}). The library is saved locally; run `sync` again later.")
+
+    rows = [{c: it.get(c) for c in LIBRARY_COLUMNS} | {"also": it.get("also") or []} for it in items.values()]
+
+    try:
+        for i in range(0, len(rows), 500):
+            supabase_request(url, key, token, "POST", "/rest/v1/idn_library?on_conflict=user_id,id", rows[i:i + 500], {"Prefer": "resolution=merge-duplicates,return=minimal"})
+
+        removed = 0
+
+        if prune:
+            remote, start = [], 0
+
+            while True:
+                page = supabase_request(url, key, token, "GET", "/rest/v1/idn_library?select=id&order=id", None, {"Range": f"{start}-{start + 999}"})
+                remote += [r["id"] for r in page]
+
+                if len(page) < 1000:
+                    break
+
+                start += 1000
+
+            stale = [i for i in remote if i not in items]
+
+            for i in range(0, len(stale), 100):
+                supabase_request(url, key, token, "DELETE", "/rest/v1/idn_library?id=in.(" + ",".join(stale[i:i + 100]) + ")")
+
+            removed = len(stale)
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode(errors="replace")
+
+        if e.code == 404 or "idn_library" in detail and "does not exist" in detail:
+            sys.exit("The idn_library table doesn't exist yet: run its SQL from _docs/indonesian-database.md first.")
+
+        sys.exit(f"Upload failed ({e.code}): {detail[:300]}")
+
+    say(f"✓ Uploaded {len(rows)} library entries to idn_library" + (f", removed {removed} stale ones" if prune else ""))
 
 
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser(description="Build the Indonesian learning data.")
-    ap.add_argument("what", nargs="?", default="data", choices=["data", "pdfs", "all"])
-    what = ap.parse_args().what
+    ap.add_argument("what", nargs="?", default="data", choices=["data", "pdfs", "sync", "all"])
+    ap.add_argument("--prune", action="store_true", help="drop library entries whose PDF is gone")
+    args = ap.parse_args()
 
-    if what in ("data", "all"):
+    if args.what in ("data", "all"):
         build()
 
-    if what in ("pdfs", "all"):
-        build_pdfs()
+    if args.what in ("pdfs", "all"):
+        build_pdfs(args.prune)
+
+    if args.what in ("sync", "all"):
+        sync_library(args.prune)
 
 
 if __name__ == "__main__":

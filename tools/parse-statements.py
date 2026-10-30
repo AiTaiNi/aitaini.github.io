@@ -1,8 +1,8 @@
 """
 Turn BCP statement PDFs into JSON files for the statements page (personal/statements/).
 
-`python parse_statements.py`                     every PDF in personal/statements/examples
-`python parse_statements.py FILE_OR_FOLDER ...`  specific PDFs or folders
+`python tools/parse-statements.py`                     every PDF in personal/statements/examples
+`python tools/parse-statements.py FILE_OR_FOLDER ...`  specific PDFs or folders
 `--out DIR`                                      where the JSON goes (default personal/statements/json, git-ignored)
 
 EECC_AHORRO* is the debit (savings) account and EECC_VISA* the credit card. The account, period and currency are
@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pymupdf
 
-ROOT = Path(__file__).parent
+ROOT = Path(__file__).resolve().parent.parent   # this script is in tools/
 DEFAULT_IN = ROOT / "personal" / "statements" / "examples"
 DEFAULT_OUT = ROOT / "personal" / "statements" / "json"
 

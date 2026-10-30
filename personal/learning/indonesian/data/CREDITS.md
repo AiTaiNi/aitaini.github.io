@@ -1,6 +1,6 @@
 # Credits and licences for this data
 
-These files are built by `build_indonesian.py` (see `_docs/indonesian-data.md`) from:
+These files are built by `tools/build-indonesian.py` (see `_docs/indonesian-data.md`) from:
 
 | Source | Licence | Used for |
 | --- | --- | --- |

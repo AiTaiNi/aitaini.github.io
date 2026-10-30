@@ -80,7 +80,7 @@ Remember: page code is public; only data saved through `Sync` or Supabase tables
 
 ## Indonesian
 
-- [ ] **Bahasa Indonesia** (`/personal/learning/indonesian/`): casual Indonesian for VTubers, chat and social
+- [ ] **Bahasa Indonesia** (`/personal/learning/indonesian/`, in progress: data, Today and Review are built): casual Indonesian for VTubers, chat and social
       media. Spaced repetition, affixes, drills, sentence mining, slang, lessons and a time log, on a 1-year plan
       at 5 h a week; data prepared in Python, progress in Supabase. Design: [indonesian.md](indonesian.md),
       tables: [indonesian-database.md](indonesian-database.md), plan: [indonesian-study-plan.md](indonesian-study-plan.md).
@@ -160,7 +160,7 @@ usual RLS rule (grows over time, needs querying), **storage** = a private Storag
       [personal/calendar/](../personal/calendar/)
 - [x] **Dashboard**: calendar and today's checklist (managed on the Calendar page), exchange rate, MAL, YouTube.
       [personal/dashboard/](../personal/dashboard/)
-- [x] **Bank statements**: BCP credit/debit PDFs parsed locally (`parse_statements.py`), stored in Supabase, with
+- [x] **Bank statements**: BCP credit/debit PDFs parsed locally (`tools/parse-statements.py`), stored in Supabase, with
       a filterable viewer, categories and notes. Covers the import side of the "money in two currencies" idea.
       [personal/statements/](../personal/statements/), [statements.md](statements.md)
 - [x] **Expenses** (was "Subscriptions"): reads the saved statements and sorts spending into bills & utilities,

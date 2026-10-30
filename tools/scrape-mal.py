@@ -1,7 +1,7 @@
 """
 Save MyAnimeList profile stats to data/mal-stats.json.
 
-`python scrape_mal.py AisareTai`
+`python tools/scrape-mal.py AisareTai`
 """
 
 import argparse
@@ -126,7 +126,7 @@ def main():
     if not img:
         print("Note: no profile picture found. The profile may have none set, or MAL changed its layout.")
     data = {"updated": datetime.now(UTC).isoformat(timespec="seconds"), "profile": {"username": a.user, "url": f"https://myanimelist.net/profile/{a.user}", "images": {"jpg": {"image_url": img}}}, "stats": stats}
-    out = Path(__file__).parent / "data" / "mal-stats.json"
+    out = Path(__file__).resolve().parent.parent / "data" / "mal-stats.json"   # this script is in tools/
     out.parent.mkdir(exist_ok = True)
     out.write_text(json.dumps(data, indent = 2), encoding = "utf-8")
     print(f"Saved {out}")

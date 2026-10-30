@@ -1,0 +1,137 @@
+/* Shared by the Indonesian pages. Theme and layout come from /assets/base.css and /assets/app.css. */
+main {
+    max-width: 980px
+}
+
+/* A link that looks like the main button */
+a.go {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .55rem 1.1rem;
+    border-radius: var(--radius);
+    background: var(--primary);
+    color: var(--card);
+    font-weight: 500;
+    text-decoration: none
+}
+
+a.go:hover {
+    background: var(--link)
+}
+
+a.go.quiet {
+    background: var(--tint);
+    color: var(--link)
+}
+
+a.go.quiet:hover {
+    background: var(--tint-hi)
+}
+
+/* Number tiles */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+    margin-bottom: 14px
+}
+
+.stat {
+    display: grid;
+    gap: 2px;
+    padding: 10px 12px;
+    border: var(--border);
+    border-radius: var(--radius)
+}
+
+.stat b {
+    color: var(--title);
+    font-size: 1.4rem;
+    font-variant-numeric: tabular-nums
+}
+
+.stat span {
+    color: var(--sub);
+    font-size: .8rem
+}
+
+/* Progress bar with its numbers written beside it */
+.bar {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--tint);
+    overflow: hidden
+}
+
+.bar i {
+    display: block;
+    height: 100%;
+    border-radius: 0 4px 4px 0;
+    background: var(--primary)
+}
+
+/* Register chips: casual first, formal for recognition */
+.reg {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: var(--radius-chip);
+    font-size: .75rem;
+    background: var(--tint);
+    color: var(--link)
+}
+
+.reg.slang {
+    background: var(--accent-tint);
+    color: var(--accent)
+}
+
+.reg.formal {
+    background: transparent;
+    border: var(--border);
+    color: var(--sub)
+}
+
+.sm {
+    color: var(--sub);
+    font-size: .85rem
+}
+
+.fl {
+    display: grid;
+    gap: 3px;
+    font-size: .8rem;
+    color: var(--sub)
+}
+
+.fl input,
+.fl select {
+    font-size: .95rem
+}
+
+.form {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    align-items: end
+}
+
+.form .wide {
+    grid-column: 1 / -1
+}
+
+.check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .9rem
+}
+
+ul.plain {
+    margin: 6px 0 0;
+    padding-left: 18px
+}
+
+ul.plain li {
+    margin: 3px 0
+}

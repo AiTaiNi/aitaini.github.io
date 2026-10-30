@@ -1,19 +1,22 @@
-# Indonesian data: `build_indonesian.py`
+# Indonesian data: `tools/build-indonesian.py`
 
 Builds the files the Indonesian pages ([indonesian.md](indonesian.md)) load, so the browser only reads lookup tables:
-no stemming, parsing or ranking in the page. Also turns your own Indonesian PDFs into **private** import candidates.
+no stemming, parsing or ranking in the page. Also reads your own Indonesian PDFs into a **private** library and
+uploads it to your database, so the pages can use it without any import screen.
 
 ```
-python build_indonesian.py         public data   -> personal/learning/indonesian/data/
-python build_indonesian.py pdfs    private       -> tools/indonesian/out-private/pdf-candidates.json
-python build_indonesian.py all     both (what update-indonesian.bat runs)
+python tools/build-indonesian.py         public data   -> personal/learning/indonesian/data/
+python tools/build-indonesian.py pdfs    private       -> adds your PDFs to tools/indonesian/out-private/library.json
+python tools/build-indonesian.py sync    private       -> uploads the library to the idn_library table (asks you to sign in)
+python tools/build-indonesian.py all     all three (what tools/update-indonesian.bat runs)
+  --prune                          with pdfs/sync/all: also remove entries of PDFs no longer in the folder
 ```
 
-The public build takes about 25 seconds; the PDF step a few more.
+The public build takes about 25 seconds; the PDF step a few more (unchanged PDFs aren't read again).
 
 ## Setup (once)
 
-1. `pip install PySastrawi pyyaml` (PyMuPDF is already installed for `parse_statements.py`).
+1. `pip install PySastrawi pyyaml` (PyMuPDF is already installed for `tools/parse-statements.py`).
 2. Download into `tools/indonesian/raw/` (git-ignored, about 100 MB):
 
    | File | From |
@@ -64,7 +67,7 @@ Changing a meaning never touches your progress: cards store the word's `id`, and
 
 ## Your PDFs (private)
 
-Drop Indonesian PDFs in `tools/indonesian/pdfs/` (git-ignored) and run `python build_indonesian.py pdfs`. The
+Drop Indonesian PDFs in `tools/indonesian/pdfs/` (git-ignored) and run `python tools/build-indonesian.py pdfs`. The
 public build has to exist first, since words are checked against it.
 
 Each PDF is recognised by its layout:
@@ -78,17 +81,48 @@ Each PDF is recognised by its layout:
 
 Skipped and reported: password-protected or scanned PDFs (no text layer), and PDFs that don't contain Indonesian.
 
-Output: `tools/indonesian/out-private/pdf-candidates.json` (git-ignored). Each candidate has `kind` (word,
-derived, phrase), `indonesian`, `english`, optional `root`, `also`, `example`/`example_en`, `topic`, the `file` and
-`page` it came from, and `status`:
+### The library is cumulative
+
+`tools/indonesian/out-private/library.json` (git-ignored) keeps everything ever extracted, so the PDF folder doesn't
+have to keep every file:
+
+| You… | Next run |
+| --- | --- |
+| add a PDF | its entries are added |
+| change a PDF (new version) | its old entries are replaced by the new ones |
+| rename a PDF | recognised by its content; entries kept, nothing re-read |
+| delete a PDF | its entries **stay** (reported as kept); `--prune` removes them |
+| leave a PDF as it is | not read again |
+
+After every run, all entries (old ones too) are matched again against the current deck and dictionary, so a rebuilt
+deck updates their status.
+
+Each entry has `kind` (word, derived, phrase), `indonesian`, `english`, optional `root`, `also`, `pos`,
+`example`/`example_en`, `topic`, the `file` and `page` it came from, and `status`:
 
 - `in-deck`: already in the deck (`deck_pos` says where), so it adds an example, a root or a derived form to a word
   you'll learn anyway
 - `dictionary`: a real word that isn't in the deck
 - `new`: not found in the dictionary (phrases, compounds, or a misread)
 
-**Nothing from the PDFs goes into the public data**: most of them are copyrighted. The candidates file is imported
-on the Words page (once built), where you choose what becomes your own cards, sentences or notes in your database.
+### Upload (`sync`)
+
+Sends the library to the `idn_library` table (create it first: second step in
+[indonesian-database.md](indonesian-database.md)), signed in with your Supabase account so the table's own-rows rule
+applies. Rows are added and updated by id; with `--prune`, rows no longer in the library are deleted. Set
+`IDN_EMAIL` and `IDN_PASSWORD` to skip the sign-in prompt. If you're offline, the library stays saved locally and the
+next `sync` sends it.
+
+The pages then use it directly:
+
+- **Review**: a card shows the PDF's example sentence for its word and the derived forms the card books list for its
+  root.
+- **Today → From your PDFs**: each worksheet topic is a set ("Greetings", "Ordering food", …). **Add** turns its words
+  into new cards that come before the deck order (still within the daily new-card limit): deck words are pulled
+  forward, the rest become your own cards.
+
+**Nothing from the PDFs goes into the public data**: most of them are copyrighted. It only exists in the git-ignored
+library file and in your own database rows.
 
 ## Known limitations
 

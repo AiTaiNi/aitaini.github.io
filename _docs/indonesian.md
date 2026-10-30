@@ -5,7 +5,13 @@ is the design; nothing is built yet.
 
 - Database setup (tables, rules, how to add them in Supabase): [indonesian-database.md](indonesian-database.md) (done)
 - The 1-year study plan the pages follow: [indonesian-study-plan.md](indonesian-study-plan.md)
-- The data script, its outputs and the PDF import: [indonesian-data.md](indonesian-data.md) (built)
+- The data script, its outputs and the PDF library: [indonesian-data.md](indonesian-data.md) (built)
+
+**Built so far** (step 1 of the build order): the Learning index, **Today** (numbers, plan month, session outline,
+topic sets from your PDFs, immersion log, settings), **Review** (FSRS, recognise and typed recall, audio, examples,
+your PDFs' examples and derived forms, suspend), the hub tile and the two Calendar tasks. Shared code: `idn.js`
+(data, settings, scheduling, offline queue, time tracker, summary) and `idn.css`. Not yet: Words, Affixes, Drills,
+Mine, Slang, Lessons, Log, Speak, Credits.
 
 ## The learner
 
@@ -144,7 +150,7 @@ scheduling state, sources, mined sentences, notes and study time.
 
 ### What the script builds
 
-`build_indonesian.py` at the repo root (like `parse_statements.py`), run with `update-indonesian.bat`. Raw downloads
+`tools/build-indonesian.py` (next to `tools/parse-statements.py`), run with `tools/update-indonesian.bat`. Raw downloads
 go in `tools/indonesian/raw/` (git-ignored); hand-written content in `tools/indonesian/content/` (YAML, in git);
 output in `personal/learning/indonesian/data/` (in git, public, no personal data).
 

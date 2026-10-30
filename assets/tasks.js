@@ -10,7 +10,8 @@
      #evAll                                 every event, soonest first
      #expJson …                             backup import/export (dashboard settings)
    window.Tasks gives a read-only summary (today's progress, upcoming countdowns) for overview pages, plus
-   syncEvents for pages that keep their own events on the calendar (personal/expenses: yearly payments). */
+   syncEvents for pages that keep their own events on the calendar (personal/expenses: yearly payments) and
+   syncTask/dropTask for pages that keep their own daily tasks (personal/learning/indonesian). */
 (function () {
     var KEY = 'daily-tasks-v1';
     var CD_DAYS = 14;
@@ -783,6 +784,50 @@
             }
 
             return changed;
+        },
+
+        /* A daily task kept by another page (the Indonesian pages: reviews done, 15-minute study blocks). Adds it
+           (from today) if it's missing, keeps its name and target in step, and raises today's count to n. Counts
+           only go up, so a page never undoes a tick made on the Calendar. Call it after Sync.ready(). */
+        syncTask: function (def, n) {
+            var t = state.tasks.filter(function (x) {
+                return x.id === def.id;
+            })[0], changed = false, m = def.max > 1 ? def.max : 1;
+
+            if (!t) {
+                t = { id: def.id, name: def.name, since: todayKey };
+                state.tasks.push(t);
+                changed = true;
+            }
+
+            if (t.name !== def.name || maxOf(t) !== m) {
+                t.name = def.name;
+
+                if (m > 1) t.max = m; else delete t.max;
+
+                changed = true;
+            }
+
+            if (Math.min(n, m) > countOf(t, todayKey)) return setCount(t, todayKey, n);
+
+            if (changed) {
+                save();
+                render();
+            }
+        },
+
+        /* Removes a page-owned task (the history of past days stays in the data) */
+        dropTask: function (id) {
+            var before = state.tasks.length;
+
+            state.tasks = state.tasks.filter(function (x) {
+                return x.id !== id;
+            });
+
+            if (state.tasks.length !== before) {
+                save();
+                render();
+            }
         }
     };
 
