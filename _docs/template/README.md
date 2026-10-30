@@ -9,7 +9,7 @@ root, since the page loads `/assets/sync.js`). The example stores its data under
 ## Making a new page
 
 1. Copy this folder to `personal/<page-name>/` (lowercase-with-dashes). Delete the copied `README.md`.
-2. `index.html`: set the `<title>`, the `<h1>` and the subtitle. Replace the example cards inside
+2. `index.html`: set the `<title>` and the `<h1>` (no subtitle: the pages skip it unless it shows live information, like the hub's date). Replace the example cards inside
    `<div class="grid">`. Keep the stylesheet links (`base.css`, `app.css`, then `style.css`) and the two
    `<script>` lines in `<head>`.
 3. `script.js`: change `KEY` to a new unique key, then replace the example list with the page's feature. Keep the
@@ -37,7 +37,7 @@ Pages share the main site's look, so a change to the hue or colours in one place
 
 | From app.css | Use |
 | --- | --- |
-| `header`, `h1`, `.sub`, `.tools` | Page title row, subtitle, links/buttons on the right |
+| `header`, `h1`, `.sub`, `.tools` | Page title row, live subtitle (only when it shows something that changes), links/buttons on the right |
 | `.grid`, `.card`, `.wide`, `.stack` | Two-column card layout (one column under 720px); `.wide` spans both |
 | `.card h2` | Card title with the main site's accent bar |
 | `button`, `button.pri`, `button[aria-pressed=true]` | Tinted button, main action, selected toggle |
