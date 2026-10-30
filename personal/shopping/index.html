@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Shopping</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+  <script src="/assets/sync.js"></script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Shopping</h1>
+      </div>
+      <nav class="tools">
+        <a href="/personal/">All pages</a>
+        <a href="/personal/today/">Today</a>
+      </nav>
+    </header>
+
+    <section class="card">
+      <form class="addrow" id="addForm">
+        <input id="name" list="known" placeholder="Item" maxlength="80" aria-label="Item" autocomplete="off" required>
+        <input id="amount" placeholder="Amount" maxlength="20" aria-label="Amount (any text: 4, 2kg…)" autocomplete="off">
+        <select id="store" aria-label="Store"></select>
+        <button class="pri">Add</button>
+      </form>
+      <datalist id="known"></datalist>
+
+      <div id="lists"></div>
+      <p class="note" id="empty">Nothing to buy.</p>
+    </section>
+
+    <details class="card" id="knownBox">
+      <summary>Remembered items (<span id="knownN">0</span>)</summary>
+      <p class="note">Items you've ticked as bought, with the store you last bought them at. They're the suggestions when
+        you add something. Remove typos or things you no longer buy.</p>
+      <ul class="known" id="knownList"></ul>
+    </details>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

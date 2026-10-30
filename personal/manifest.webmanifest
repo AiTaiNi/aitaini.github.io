@@ -15,6 +15,7 @@
   ],
   "shortcuts": [
     { "name": "Today", "url": "/personal/today/" },
+    { "name": "Shopping", "url": "/personal/shopping/" },
     { "name": "Calendar", "url": "/personal/calendar/" },
     { "name": "Expenses", "url": "/personal/expenses/" },
     { "name": "Indonesian review", "url": "/personal/learning/indonesian/review/" }

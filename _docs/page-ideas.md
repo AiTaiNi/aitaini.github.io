@@ -174,6 +174,9 @@ usual RLS rule (grows over time, needs querying), **storage** = a private Storag
       before. Categories from the Statements page take priority over the automatic ones.
 - [x] **Expenses on the hub**: the current cycle's estimate on the hub tile, from a small `expense-summary` key the
       Expenses page saves, so the hub doesn't load any transactions.
+- [x] **Shopping list**: items grouped by store (Market, Corner store, Mass, Plaza Vea), free-text amounts, ✓ bought
+      or × removed. Bought items are remembered with their last store and become suggestions that pick that store by
+      themselves. Synced keys `shopping-list` and `shopping-items`; live line on the hub. [personal/shopping/](../personal/shopping/)
 - [x] **Renaming lines**: ✎ on any Expenses line. Names live in `expense-lines` next to the original description; the
       statement rows are never changed. [expenses.md](expenses.md#renaming)
 - [x] **Subscription review**: subscriptions running a year or more with their total cost, "Still using" (asks

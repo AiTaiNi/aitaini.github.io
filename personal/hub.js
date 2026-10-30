@@ -46,6 +46,18 @@
     Sync.on('idn-summary', renderIdn);
     renderIdn(Sync.get('idn-summary'));
 
+    /* Shopping: how many items, and at how many stores (personal/shopping/) */
+    Sync.use(['shopping-list']);
+
+    function renderShop(list) {
+        const items = Array.isArray(list) ? list : [], stores = new Set(items.map(i => i.store));
+
+        $('liveShop').textContent = items.length ? items.length + (items.length > 1 ? ' items' : ' item') + (stores.size > 1 ? ' at ' + stores.size + ' stores' : ' at ' + [...stores][0]) : '';
+    }
+
+    Sync.on('shopping-list', renderShop);
+    renderShop(Sync.get('shopping-list'));
+
     /* ---------- install as an app ---------- */
     /* The service worker makes the pages open offline from the home screen; its scope is /personal/ */
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/personal/sw.js', { scope: '/personal/' }).catch(e => console.warn('Service worker:', e));

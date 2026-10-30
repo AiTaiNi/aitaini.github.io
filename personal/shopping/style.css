@@ -1,0 +1,146 @@
+/* Shopping only. Theme and shared layout come from /assets/base.css and /assets/app.css. */
+main {
+    max-width: 720px
+}
+
+main > .card + .card {
+    margin-top: 12px
+}
+
+/* Item, amount, store, Add: one row on wide screens, item on its own line on phones */
+.addrow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 6.5em 9.5em auto;
+    gap: 8px
+}
+
+.addrow > * {
+    min-width: 0
+}
+
+@media (max-width: 520px) {
+    .addrow {
+        grid-template-columns: 6em minmax(0, 1fr) auto
+    }
+
+    .addrow #name {
+        grid-column: 1 / -1
+    }
+}
+
+/* One block per store */
+.store {
+    margin-top: 16px
+}
+
+.store h2 {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px
+}
+
+.store h2 span {
+    color: var(--sub);
+    font-size: .85rem;
+    font-weight: 400
+}
+
+.items {
+    list-style: none;
+    margin: 0;
+    padding: 0
+}
+
+.items li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 5.5em 8.5em auto auto;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 0;
+    border-top: var(--border)
+}
+
+.items li:first-child {
+    border-top: 0
+}
+
+.items .nm {
+    overflow-wrap: anywhere
+}
+
+.items input,
+.items select {
+    min-width: 0;
+    padding: .3rem .5rem;
+    font-size: .9rem
+}
+
+.items button {
+    padding: .3rem .6rem
+}
+
+.items button.ok {
+    background: var(--pos-tint);
+    color: var(--pos)
+}
+
+.items button.rm {
+    background: transparent;
+    color: var(--sub)
+}
+
+.items button.rm:hover {
+    background: var(--neg-tint);
+    color: var(--neg)
+}
+
+@media (max-width: 520px) {
+    .items li {
+        grid-template-columns: 5em minmax(0, 1fr) auto auto
+    }
+
+    .items .nm {
+        grid-column: 1 / -1;
+        font-weight: 500
+    }
+}
+
+/* Remembered items */
+#knownBox summary {
+    padding: 2px 0
+}
+
+.known {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    columns: 2 14em;
+    column-gap: 16px
+}
+
+.known li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 0;
+    break-inside: avoid
+}
+
+.known li span {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere
+}
+
+.known li em {
+    color: var(--sub);
+    font-style: normal;
+    font-size: .8rem
+}
+
+.known li button {
+    padding: 0 7px;
+    background: transparent;
+    color: var(--sub)
+}
