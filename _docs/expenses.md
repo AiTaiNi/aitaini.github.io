@@ -100,8 +100,10 @@ The check is `/assets/statements-due.js` and reads only the `statements` table.
 
 ## Currency
 
-Totals are shown per currency and combined in soles at the rate in the **S/ per US$** box. It starts from the
-dashboard's last fetched rate; a rate typed here is kept in this browser only.
+Totals are shown per currency and combined in soles at the site-wide exchange rate (`/assets/fx.js`, the same one the
+dashboard shows). It's fetched at most every 12 hours by whichever page needs it first and synced (`fx-rate`), so every
+page and device uses the same value. A note under the total says which rate was used (its date and source) whenever
+the total includes US$ amounts.
 
 ## Spending insights
 

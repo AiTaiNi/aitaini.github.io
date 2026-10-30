@@ -48,17 +48,10 @@
     font-variant-numeric: tabular-nums
 }
 
-/* Labelled field: small label above its control */
-.fl {
-    display: grid;
-    gap: 3px;
-    font-size: .8rem;
-    color: var(--sub)
-}
-
-.fl input.amtf {
-    width: 6.5em;
-    font-size: .9rem
+/* Which exchange rate the soles total used */
+.total .fxnote {
+    margin-top: 4px;
+    font-size: .8rem
 }
 
 /* One box per group under the total */

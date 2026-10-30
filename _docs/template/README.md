@@ -32,6 +32,8 @@ Pages share the main site's look, so a change to the hue or colours in one place
    - **`/assets/tasks.css` + `/assets/tasks.js`**: the daily tasks / calendar / events / countdowns feature,
      for pages that show any of it (dashboard, calendar, today). The script only runs the parts whose elements
      the page has (see the comment at its top), and every page shares the same data (`daily-tasks-v1`).
+   - **`/assets/fx.js`**: the US$ → S/ exchange rate (`FX.get()`), the same on every page; fetched at most every 12
+     hours and synced (`fx-rate`). Use it instead of fetching a rate yourself.
    - **`/assets/srs.js`**: flashcards with spaced repetition (FSRS), for pages with a deck of their own. Needs three
      tables per subject; SQL template, example and what the ratings mean: [../flashcards.md](../flashcards.md).
 3. **The page's `style.css`**: only what's unique to that page. Always use the tokens (`var(--primary)`,

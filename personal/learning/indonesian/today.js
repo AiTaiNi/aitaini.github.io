@@ -161,6 +161,16 @@
 
     if (window.speechSynthesis) speechSynthesis.onvoiceschanged = fillVoices;
 
+    /* The settings menu: filled when opened (another device may have changed them), saved field by field */
+    $('openSet').onclick = () => {
+        fillSettings();
+        fillVoices();
+        $('setDlg').showModal();
+    };
+
+    $('setDone').onclick = () => $('setDlg').close();
+    $('set').onsubmit = e => e.preventDefault();
+
     /* ---------- start ---------- */
     function refresh() {
         renderStats(Idn.today());

@@ -24,7 +24,7 @@ const fmt = (n, d = 0) => Number(n).toLocaleString('en-US', { maximumFractionDig
 const DEFAULTS = { mal: 'AisareTai' };
 const cfg = Object.assign({}, DEFAULTS, Sync.get('dash-cfg', {}));
 
-/* Settings follow you across devices; dash-fx and dash-mal are caches and stay local */
+/* Settings follow you across devices; dash-mal is a cache and stays local. The exchange rate is site-wide (/assets/fx.js). */
 Sync.use(['dash-cfg']);
 Sync.on('dash-cfg', v => {
     Object.assign(cfg, DEFAULTS, v);
@@ -41,63 +41,30 @@ function header() {
 }
 
 /* ---------- exchange rate ---------- */
-async function loadFx() {
-    const box = $('#fx');
-    let rate = null, when = '';
+/* The site-wide rate from /assets/fx.js (fetched at most every 12 hours, synced), with a USD <-> PEN converter */
+function showFx(v) {
+    const usd = $('#usd') ? $('#usd').value : 100;
 
-    try {
-        const j = await (await fetch('https://open.er-api.com/v6/latest/USD')).json();
-
-        rate = j.rates.PEN;
-        when = 'live, ' + new Date(j.time_last_update_utc).toLocaleDateString();
-    } catch {
-        try {
-            const j = await (await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json')).json();
-
-            rate = j.usd.pen;
-            when = 'live, ' + j.date;
-        } catch {
-        }
-    }
-
-    if (rate) {
-        store.set('dash-fx', { rate, when });
-    } else {
-        const c = store.get('dash-fx');
-
-        rate = c ? c.rate : 3.40;
-        when = c ? c.when + ' (saved)' : 'approximate default; the live fetch failed, so edit the rate if needed.';
-    }
-
-    box.innerHTML = `
-    <div class="fxtop"><div class="big">S/ <span id="rv">${rate.toFixed(3)}</span><small>per $1</small></div>
-    <span class="note" style="margin:0">S/ 1 = $<span id="rinv">${(1 / rate).toFixed(4)}</span></span></div>
+    $('#fx').innerHTML = `
+    <div class="fxtop"><div class="big">S/ ${v.rate.toFixed(3)}<small>per $1</small></div>
+    <span class="note" style="margin:0">S/ 1 = $${(1 / v.rate).toFixed(4)}</span></div>
     <div class="conv">
-      <label>USD<input id="usd" type="number" min="0" step="any" value="100"></label>
+      <label>USD<input id="usd" type="number" min="0" step="any" value="${esc(usd)}"></label>
       <label>PEN<input id="pen" type="number" min="0" step="any"></label>
-      <label>Rate<input id="rt" type="number" min="0" step="any" value="${rate}"></label>
     </div>
-    <p class="note">${esc(when)}</p>`;
+    <p class="note">${esc(FX.note(v))}</p>`;
 
-    const usd = $('#usd'), pen = $('#pen'), rt = $('#rt');
-    let r = rate;
+    const u = $('#usd'), p = $('#pen');
 
-    pen.value = (usd.value * r).toFixed(2);
-    usd.oninput = () => pen.value = (usd.value * r).toFixed(2);
-    pen.oninput = () => usd.value = (pen.value / r).toFixed(2);
+    p.value = (u.value * v.rate).toFixed(2);
+    u.oninput = () => p.value = (u.value * v.rate).toFixed(2);
+    p.oninput = () => u.value = (p.value / v.rate).toFixed(2);
+}
 
-    rt.oninput = () => {
-        const v = +rt.value;
+FX.on(showFx);
 
-        if (!(v > 0)) return;
-
-        r = v;
-
-        $('#rv').textContent = v.toFixed(3);
-        $('#rinv').textContent = (1 / v).toFixed(4);
-        pen.value = (usd.value * r).toFixed(2);
-        store.set('dash-fx', { rate: v, when: 'set manually ' + new Date().toLocaleDateString() });
-    };
+async function loadFx() {
+    showFx(await FX.get());
 }
 
 /* ---------- MyAnimeList (stats scraped to JSON) ---------- */

@@ -26,6 +26,7 @@
         <a href="/personal/">All pages</a>
         <a href="/personal/learning/">Learning</a>
         <a href="/personal/calendar/">Calendar</a>
+        <button id="openSet">Settings</button>
       </nav>
     </header>
 
@@ -56,7 +57,7 @@
         <div class="scroll"><table id="lib"></table></div>
       </section>
 
-      <section class="card">
+      <section class="card wide">
         <h2>Log watching or reading</h2>
         <p class="note">Streams, videos, threads: time in Indonesian outside the study pages. Kept apart from study time.</p>
         <form class="form" id="imm">
@@ -72,27 +73,30 @@
         </form>
       </section>
 
-      <section class="card">
-        <h2>Settings</h2>
-        <form class="form" id="set">
-          <label class="fl">Plan started <input id="sStart" type="date"></label>
-          <label class="fl">New cards, weekdays <input id="sNewWd" type="number" min="0" max="50"></label>
-          <label class="fl">New cards, weekends <input id="sNewWe" type="number" min="0" max="50"></label>
-          <label class="fl">Target retention <select id="sRet">
-              <option value="0.85">85% (fewer reviews)</option>
-              <option value="0.9">90% (default)</option>
-              <option value="0.95">95% (more reviews)</option>
-            </select></label>
-          <label class="fl">Type the word for deck words up to <input id="sActive" type="number" min="0" max="3000" step="50"></label>
-          <label class="fl">Reviews per day at most <input id="sMax" type="number" min="20" max="1000" step="10"></label>
-          <label class="fl wide">Voice <select id="sVoice"></select></label>
-          <label class="check wide"><input type="checkbox" id="sAuto"> Read each card aloud when it's shown</label>
-          <label class="check wide"><input type="checkbox" id="sTasks"> Keep "Indonesian reviews" and "Indonesian study" on the Calendar</label>
-        </form>
-        <p class="note">Saved as you change them, on all your devices.</p>
-      </section>
     </div>
   </main>
+
+  <!-- Settings menu (header button), like the dashboard's. Changes save as you make them. -->
+  <dialog id="setDlg">
+    <h3>Settings</h3>
+    <form class="form" id="set">
+      <label class="fl">Plan started <input id="sStart" type="date"></label>
+      <label class="fl">New cards, weekdays <input id="sNewWd" type="number" min="0" max="50"></label>
+      <label class="fl">New cards, weekends <input id="sNewWe" type="number" min="0" max="50"></label>
+      <label class="fl">Target retention <select id="sRet">
+          <option value="0.85">85% (fewer reviews)</option>
+          <option value="0.9">90% (default)</option>
+          <option value="0.95">95% (more reviews)</option>
+        </select></label>
+      <label class="fl">Type the word for deck words up to <input id="sActive" type="number" min="0" max="3000" step="50"></label>
+      <label class="fl">Reviews per day at most <input id="sMax" type="number" min="20" max="1000" step="10"></label>
+      <label class="fl wide">Voice <select id="sVoice"></select></label>
+      <label class="check wide"><input type="checkbox" id="sAuto"> Read each card aloud when it's shown</label>
+      <label class="check wide"><input type="checkbox" id="sTasks"> Keep "Indonesian reviews" and "Indonesian study" on the Calendar</label>
+    </form>
+    <p class="note">Saved as you change them, on all your devices.</p>
+    <div class="dlgfoot"><button class="pri" id="setDone">Done</button></div>
+  </dialog>
 
   <script src="/assets/tasks.js"></script>
   <script src="/assets/srs.js"></script>

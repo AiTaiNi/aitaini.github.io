@@ -335,36 +335,18 @@
     }
 
     /* ---------- exchange rate ---------- */
-    /* The page's own rate if set here, else the dashboard's last fetched one */
-    function loadFx() {
-        try {
-            const own = JSON.parse(localStorage.getItem('expenses-fx')), dash = JSON.parse(localStorage.getItem('dash-fx'));
+    /* The site-wide rate (/assets/fx.js): fetched at most every 12 hours, the same on every page and device */
+    let fxInfo = { rate: 3.40, at: null }, fx = fxInfo.rate;
 
-            return own || (dash && dash.rate) || 3.40;
-        } catch {
-            return 3.40;
-        }
+    function setFx(v) {
+        fxInfo = v;
+        fx = v.rate;
     }
 
-    let fx = loadFx();
-
-    $('fx').value = fx.toFixed(3);
-
-    $('fx').onchange = () => {
-        const v = parseFloat($('fx').value);
-
-        if (v > 0) {
-            fx = v;
-
-            try {
-                localStorage.setItem('expenses-fx', JSON.stringify(v));
-            } catch {
-            }
-        }
-
-        $('fx').value = fx.toFixed(3);
+    FX.on(v => {
+        setFx(v);
         render();
-    };
+    });
 
     const inPen = s => (s.PEN || 0) + Math.round((s.USD || 0) * fx);
 
@@ -499,6 +481,10 @@
         $('tLabel').textContent = done ? 'Paid in ' + monthName(V.m) : 'Expected for ' + monthName(V.m);
         $('tBig').textContent = '≈ ' + money(inPen(all), 'PEN');
         $('tSplit').textContent = split(all) + (open ? ' · ' + open + ' still estimated' : '');
+
+        const n = FX.note(fxInfo);
+
+        $('fxNote').textContent = all.USD ? 'US$ counted at S/ ' + fx.toFixed(3) + ' per US$ · ' + n.charAt(0).toLowerCase() + n.slice(1) : '';
 
         /* Only the current cycle goes to the hub, and only when it changed, so browsing months doesn't upload anything */
         const sum = { m: V.m, pen: inPen(all), est: open }, old = Sync.get(SUMMARY, {});
@@ -864,7 +850,10 @@
                 return say('No statements saved yet. Import some on the Statements page.');
             }
 
-            A = build(s.data, await fetchOut());
+            const [rows, rate] = await Promise.all([fetchOut(), FX.get()]);
+
+            setFx(rate);
+            A = build(s.data, rows);
             M = current(A);
             say('');
             render();

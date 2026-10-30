@@ -36,3 +36,15 @@
 #lib button {
     padding: 2px 10px
 }
+
+/* Settings menu */
+dialog h3 {
+    margin: 0 0 12px;
+    color: var(--title)
+}
+
+.dlgfoot {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px
+}

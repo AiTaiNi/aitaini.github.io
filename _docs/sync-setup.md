@@ -152,7 +152,8 @@ All of this happens in the Supabase dashboard. The site itself can only sign in 
   for that whole key (e.g. the whole task list). Rare in practice, but worth knowing.
 - **Offline**: everything works offline; changes upload when you're back.
 - **What syncs on the dashboard**: tasks/history/events (`daily-tasks-v1`) and settings (`dash-cfg`: MAL
-  username). The exchange rate and MAL stats are caches and stay per device.
+  username). MAL stats are a cache and stay per device. The exchange rate is shared by every page and device
+  (`fx-rate`, from `/assets/fx.js`): fetched at most every 12 hours by whichever page needs it first.
 - **Backups**: the Export JSON button still works and is still a good idea now and then.
 
 ## Things to know about the free tier
