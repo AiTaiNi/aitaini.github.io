@@ -1,0 +1,126 @@
+# Casual, chat and streaming Indonesian, hand-written for build_indonesian.py (public: no copied material).
+# Merged with the slang Wiktionary already has. Entries with `deck: true` are mixed into the learning deck early
+# (one every 10 words), in this order, so the most useful come first.
+#
+#   form:  as written casually (alternatives in `also`)
+#   std:   standard/formal equivalent, if there is one
+#   en:    English meaning
+#   kind:  pronoun | negation | aspect | particle | casual | slang | abbrev | laugh | address | stream
+#   note:  usage, shown on the card and the Slang page
+
+- {form: gue, also: [gw, gua], std: saya, en: "I, me (Jakarta casual)", kind: pronoun, deck: true, note: "With friends and online; pairs with lu. Can sound rude to strangers."}
+- {form: lu, also: [lo, loe, elu], std: kamu, en: "you (Jakarta casual)", kind: pronoun, deck: true, note: "Pairs with gue."}
+- {form: aku, also: [ak, aq], std: saya, en: "I, me (casual, warm)", kind: pronoun, deck: true, note: "Softer than gue; common with friends, family and fans."}
+- {form: kamu, also: [km, kmu], en: "you (casual)", kind: pronoun, deck: true}
+- {form: kalian, en: "you all", kind: pronoun, deck: true, note: "Streamers use it for their chat: 'makasih ya kalian'."}
+- {form: doi, std: dia, en: "he/she; one's crush or partner", kind: pronoun, deck: true}
+- {form: gak, also: [ga, nggak, ngga, gk, g], std: tidak, en: "not, no", kind: negation, deck: true, note: "The everyday negator; tidak is formal."}
+- {form: kagak, std: tidak, en: "not (rougher, Betawi)", kind: negation}
+- {form: belum, also: [blm, belom], en: "not yet", kind: aspect, deck: true}
+- {form: udah, also: [udh, dah, sdh], std: sudah, en: "already; done; enough", kind: aspect, deck: true, note: "'Udah, udah!' = 'Stop, that's enough!'"}
+- {form: lagi, also: [lg], en: "currently, -ing; again; more", kind: aspect, deck: true, note: "'Lagi makan' = eating right now."}
+- {form: mau, also: [mo], en: "want; about to", kind: aspect, deck: true}
+- {form: bakal, std: akan, en: "will, going to", kind: aspect, deck: true}
+- {form: sih, also: [si], en: "softener; 'though'; 'anyway'", kind: particle, deck: true, note: "'Kenapa sih?' = 'Why, though?' Takes the edge off or adds mild impatience."}
+- {form: dong, also: [donk], en: "urging: 'come on', 'of course'", kind: particle, deck: true, note: "'Ayo dong!' = 'Come on!'; 'Iya dong' = 'Of course!'"}
+- {form: kok, en: "how come? (surprise)", kind: particle, deck: true, note: "'Kok gitu?' = 'How come it's like that?'"}
+- {form: deh, en: "'then', 'fine', 'I guess'", kind: particle, deck: true, note: "'Ya udah deh' = 'Fine then.'"}
+- {form: kan, en: "right?; you know", kind: particle, deck: true, note: "From bukan. 'Lucu kan?' = 'Cute, right?'"}
+- {form: lho, also: [loh], en: "'you know!' (surprise, emphasis)", kind: particle, deck: true}
+- {form: nih, en: "this (here); 'here you go'", kind: particle, deck: true, note: "From ini. 'Nih, buat kamu' = 'Here, for you.'"}
+- {form: tuh, en: "that (there); 'see?'", kind: particle, deck: true, note: "From itu. 'Tuh kan!' = 'See, I told you!'"}
+- {form: ya, also: [yah, y], en: "yes; 'okay?'; 'right'", kind: particle, deck: true, note: "Ends sentences to soften them: 'Makasih ya!'"}
+- {form: yuk, also: [yok, ayo], en: "let's (go)!", kind: particle, deck: true}
+- {form: mah, en: "topic marker: 'as for…' (Sundanese)", kind: particle, note: "'Aku mah santai aja' = 'As for me, I'm relaxed.'"}
+- {form: kek, std: seperti, en: "like (casual, online)", kind: particle, note: "Short for kayak; also 'or something': 'apa kek'."}
+- {form: banget, also: [bgt, bngt, bet, bat], std: sekali, en: "very, really", kind: casual, deck: true, note: "Goes after the word: 'lucu banget' = 'so cute'."}
+- {form: aja, also: [aj], std: saja, en: "just, only; anyway", kind: casual, deck: true}
+- {form: emang, also: [emg], std: memang, en: "indeed; really?", kind: casual, deck: true, note: "'Emang kenapa?' = 'So what?'"}
+- {form: gimana, also: [gmn, gmana], std: bagaimana, en: "how; what about", kind: casual, deck: true}
+- {form: kenapa, also: [knp, napa], en: "why; what's wrong", kind: casual, deck: true}
+- {form: kayak, also: [kyk, kaya], std: seperti, en: "like, as if", kind: casual, deck: true}
+- {form: doang, std: saja, en: "only, just (that)", kind: casual, deck: true}
+- {form: gitu, also: [gt, gtu], std: begitu, en: "like that; so", kind: casual, deck: true}
+- {form: gini, std: begini, en: "like this", kind: casual, deck: true}
+- {form: terus, also: [trs, trus], en: "then; keep (doing); straight on", kind: casual, deck: true}
+- {form: tapi, also: [tp, tpi], en: "but", kind: casual, deck: true}
+- {form: sama, also: [sm], std: dengan, en: "with; and; same", kind: casual, deck: true}
+- {form: bener, also: [bnr], std: benar, en: "right, true, correct", kind: casual, deck: true}
+- {form: beneran, en: "really?; for real", kind: casual, deck: true}
+- {form: tau, also: [tw], std: tahu, en: "know", kind: casual, deck: true}
+- {form: pengen, also: [pgn, pingin], std: ingin, en: "want, feel like", kind: casual, deck: true}
+- {form: ngapain, std: mengapa / sedang apa, en: "what (are you) doing; why bother", kind: casual, deck: true}
+- {form: ngomong, std: berbicara, en: "talk, say", kind: casual, deck: true}
+- {form: nonton, std: menonton, en: "watch (a show, a stream)", kind: casual, deck: true}
+- {form: main, en: "play; hang out", kind: casual, deck: true, note: "'Main game' = play games; 'main ke rumah' = come over."}
+- {form: capek, also: [cape], std: lelah, en: "tired", kind: casual, deck: true}
+- {form: males, also: [mls], std: malas, en: "lazy; can't be bothered", kind: casual, deck: true}
+- {form: seneng, std: senang, en: "happy; glad", kind: casual, deck: true}
+- {form: temen, std: teman, en: "friend", kind: casual, deck: true}
+- {form: cewek, std: perempuan, en: "girl, woman", kind: casual, deck: true}
+- {form: cowok, std: laki-laki, en: "boy, guy", kind: casual, deck: true}
+- {form: duit, std: uang, en: "money", kind: casual, deck: true}
+- {form: bokap, std: ayah, en: "dad (Jakarta slang)", kind: slang}
+- {form: nyokap, std: ibu, en: "mom (Jakarta slang)", kind: slang}
+- {form: keren, en: "cool, awesome", kind: casual, deck: true}
+- {form: seru, en: "fun, exciting", kind: casual, deck: true}
+- {form: lucu, en: "cute; funny", kind: casual, deck: true}
+- {form: gemes, also: [gemas], en: "so cute it's frustrating; adorable", kind: casual, deck: true}
+- {form: parah, en: "terrible; insane (as an intensifier)", kind: casual, deck: true, note: "'Lucu parah' = 'insanely cute'."}
+- {form: mantap, also: [mantab, mantul], en: "great, awesome", kind: slang, deck: true, note: "Mantul = mantap betul."}
+- {form: santuy, std: santai, en: "chill, relaxed", kind: slang, deck: true}
+- {form: mager, std: malas gerak, en: "too lazy to move", kind: slang, deck: true}
+- {form: gabut, en: "bored, nothing to do", kind: slang, deck: true}
+- {form: baper, std: bawa perasaan, en: "taking things too personally; in your feelings", kind: slang, deck: true}
+- {form: kepo, en: "nosy, curious", kind: slang, deck: true}
+- {form: bucin, std: budak cinta, en: "lovestruck, whipped", kind: slang, deck: true}
+- {form: salting, std: salah tingkah, en: "flustered, awkward", kind: slang, deck: true}
+- {form: gercep, std: gerak cepat, en: "quick, fast to act", kind: slang}
+- {form: receh, en: "cheap (humour), silly; small change", kind: slang, deck: true, note: "'Humor receh' = easily amused."}
+- {form: garing, en: "dry, unfunny (joke)", kind: slang, deck: true}
+- {form: jayus, en: "lame (joke)", kind: slang}
+- {form: sotoy, std: sok tahu, en: "know-it-all", kind: slang}
+- {form: ngegas, en: "getting heated, aggressive", kind: slang, deck: true}
+- {form: ngakak, en: "laughing out loud", kind: slang, deck: true}
+- {form: anjir, also: [anjay, anjrit], en: "damn!, whoa! (mild exclamation)", kind: slang, note: "Softened from a swear word (anjing). Common in chat, but not polite."}
+- {form: sabi, std: bisa, en: "can; doable (bisa backwards)", kind: slang}
+- {form: wkwk, also: [wkwkwk, wkwkwkwk], en: "hahaha (laughing)", kind: laugh, deck: true, note: "The longer, the funnier."}
+- {form: awokwok, also: [awkwk], en: "hahaha (playful laughing)", kind: laugh}
+- {form: hehe, also: [hehehe], en: "hehe (shy or sheepish)", kind: laugh}
+- {form: xixixi, en: "hihihi (giggling)", kind: laugh}
+- {form: makasih, also: [mksh, makasi, thx], std: terima kasih, en: "thanks", kind: casual, deck: true}
+- {form: sama-sama, also: [sm2, samsam], en: "you're welcome", kind: casual, deck: true}
+- {form: maaf, also: [maap, mf, sori], en: "sorry", kind: casual, deck: true}
+- {form: gapapa, also: [gpp, ga papa, nggak apa-apa], std: tidak apa-apa, en: "it's okay, no problem", kind: casual, deck: true}
+- {form: yg, std: yang, en: "that, which, the one (writing shortcut)", kind: abbrev, deck: true}
+- {form: dgn, std: dengan, en: "with", kind: abbrev}
+- {form: utk, std: untuk, en: "for", kind: abbrev}
+- {form: krn, std: karena, en: "because", kind: abbrev}
+- {form: jg, std: juga, en: "also, too", kind: abbrev}
+- {form: bs, std: bisa, en: "can", kind: abbrev}
+- {form: org, std: orang, en: "person, people", kind: abbrev}
+- {form: skrg, std: sekarang, en: "now", kind: abbrev}
+- {form: dmn, std: di mana, en: "where", kind: abbrev}
+- {form: kpn, std: kapan, en: "when", kind: abbrev}
+- {form: td, std: tadi, en: "earlier, just now", kind: abbrev}
+- {form: nnt, std: nanti, en: "later", kind: abbrev}
+- {form: bsk, std: besok, en: "tomorrow", kind: abbrev}
+- {form: otw, en: "on the way", kind: abbrev, deck: true}
+- {form: btw, en: "by the way", kind: abbrev}
+- {form: cmiiw, en: "correct me if I'm wrong", kind: abbrev}
+- {form: kak, also: [ka, kakak], en: "older sibling; polite 'you' for someone your age or older", kind: address, deck: true, note: "How chat addresses a streamer: 'Semangat, kak!'"}
+- {form: bang, also: [abang], en: "older brother; 'bro' (to a man)", kind: address, deck: true}
+- {form: mas, en: "older brother; polite address for a young man (Javanese)", kind: address}
+- {form: mbak, also: [mba], en: "older sister; polite address for a young woman (Javanese)", kind: address}
+- {form: gan, std: juragan, en: "boss, mate (forum address)", kind: address}
+- {form: semangat, also: [smgt], en: "you can do it!; spirit, enthusiasm", kind: stream, deck: true, note: "The standard cheer in chat."}
+- {form: donasi, en: "donation, tip", kind: stream, deck: true}
+- {form: nyawer, also: [sawer], en: "tip (a performer)", kind: stream}
+- {form: nyanyi, std: bernyanyi, en: "sing", kind: stream, deck: true}
+- {form: kolab, en: "collab (collaboration stream)", kind: stream, deck: true}
+- {form: oshi, en: "your favourite (idol/VTuber), from Japanese", kind: stream}
+- {form: spill, en: "share, reveal (a secret, a link)", kind: stream, note: "English loan: 'spill dong!'"}
+- {form: ngegame, en: "play video games", kind: stream}
+- {form: gacha, en: "gacha (random pulls)", kind: stream}
+- {form: hoki, en: "lucky; luck", kind: stream, deck: true, note: "From Hokkien; for good pulls and lucky rolls."}
+- {form: ampas, en: "trash, useless (lit. dregs)", kind: slang, note: "For a bad pull or play."}

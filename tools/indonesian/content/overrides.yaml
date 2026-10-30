@@ -1,0 +1,74 @@
+# Hand corrections for build_indonesian.py (public: hand-written). Applied after everything is read from the sources.
+#
+# gloss:  a clearer card meaning than the dictionary's first sense, for very common words
+# roots:  fix a word's root; null = show no root (etymology too remote to help a learner, or wrong)
+# skip:   never put in the deck (names that are frequent in subtitles, and dictionary oddities)
+
+skip: [sarah, athan, john, tom, mary, jack, michael, david, james, frank, peter, paul, mike, george, harry, charlie, sam, max, ben, alex, jim, joe, ray, nick, kate, anna, emma, lucy, jane, rose, tony, danny, eddie, billy, bobby, henry, walter, simon, carl, dean, lisa, amy, ryan, kevin, steve, chris, mark, adam, jason, eric]
+
+gloss:
+  kau: "you (informal; common in songs, stories and subtitles)"
+  yang: "that, which, who; the one (that)"
+  tidak: "not (standard; casual: gak)"
+  ini: "this; these"
+  itu: "that; those"
+  di: "at, in, on"
+  akan: "will, going to (standard; casual: bakal)"
+  apa: "what"
+  bisa: "can, be able to"
+  ada: "there is / there are; to have; to be (somewhere)"
+  tak: "not (short for tidak)"
+  anda: "you (polite, formal)"
+  sudah: "already; done (casual: udah)"
+  apakah: "question marker for yes/no questions (formal)"
+  pernah: "ever; have (done) before"
+  adalah: "is, are (formal 'to be' between two nouns)"
+  saja: "just, only (casual: aja)"
+  juga: "also, too"
+  dalam: "in, inside; deep"
+  pada: "at, on, to (formal)"
+  lakukan: "do (it)"
+  telah: "already; have (done) (formal)"
+  jadi: "so, therefore; become"
+  sama: "same; with (casual); and"
+  lagi: "again; more; currently (doing)"
+  mau: "want; going to"
+  kalau: "if; when (casual: kalo)"
+  buat: "make; for (casual)"
+  kasih: "give (casual); love, affection"
+  bilang: "say, tell"
+  tahu: "know"
+  karena: "because"
+  hanya: "only, just"
+  seperti: "like, as (casual: kayak)"
+  jika: "if (formal)"
+  dengan: "with; by"
+  untuk: "for; to (in order to)"
+  bagaimana: "how (casual: gimana)"
+  begitu: "like that; so (casual: gitu)"
+  mengapa: "why (formal; casual: kenapa)"
+  sesuatu: "something"
+  seseorang: "someone"
+  baiklah: "all right, okay then"
+  ayolah: "come on!"
+  silakan: "please (go ahead)"
+  mereka: "they, them"
+  sekarang: "now"
+  dimana: "where (common spelling of di mana)"
+  berikan: "give (it)!; give (to someone)"     # Wiktionary only has ber- + ikan ("have fish") for this spelling
+  memberikan: "give (to someone)"
+
+roots:
+  mereka: null
+  sekarang: null
+  depan: null
+  perempuan: null
+  pesawat: null
+  pasukan: null
+  sekitar: null
+  seluruh: null
+  terlalu: null
+  berikan: beri
+  memberikan: beri
+  diberikan: beri
+  secara: cara

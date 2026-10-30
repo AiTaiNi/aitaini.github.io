@@ -78,6 +78,77 @@ Remember: page code is public; only data saved through `Sync` or Supabase tables
 - [ ] **Shared pages**: a second account (e.g. a partner) with a shared list. The database rules currently allow
       per-user rows only, so this needs a policy change.
 
+## Indonesian
+
+- [ ] **Bahasa Indonesia** (`/personal/learning/indonesian/`): casual Indonesian for VTubers, chat and social
+      media. Spaced repetition, affixes, drills, sentence mining, slang, lessons and a time log, on a 1-year plan
+      at 5 h a week; data prepared in Python, progress in Supabase. Design: [indonesian.md](indonesian.md),
+      tables: [indonesian-database.md](indonesian-database.md), plan: [indonesian-study-plan.md](indonesian-study-plan.md).
+
+## Second batch
+
+Storage hint after each: **kv** = one synced key (small, whole value), **table** = its own Supabase table with the
+usual RLS rule (grows over time, needs querying), **storage** = a private Storage bucket (files).
+
+### Reflection & time
+
+- [ ] **Decision journal**: write down a decision, what you expect to happen and how sure you are (50–95%), plus a
+      "check back" date that becomes a Calendar countdown. Scoring old decisions shows how well calibrated you are.
+      *table*
+- [ ] **Weekly review**: a short guided form every Sunday (what went well, what didn't, three priorities for next
+      week), with last week's priorities shown so they can be ticked off. *table*
+- [ ] **Letters to future me**: write a note and seal it until a date; it can't be opened early (the page hides it,
+      and it's stored encrypted with a passphrase). *table*
+- [ ] **Life in weeks**: every week of a life as one small square, past weeks filled, milestones marked and
+      labelled. A quiet perspective page. *kv*
+- [ ] **"Last time I…"**: days since haircut, changing the toothbrush, calling family, backing up the PC; each with a
+      target interval, turning amber then red when overdue. One tap resets it. *kv*
+- [ ] **Idea garden**: project and content ideas that "ripen": new ones sit for a week before they can be promoted,
+      old ones get a monthly prompt to keep, merge or compost. *kv*
+
+### Games & hobbies
+
+- [ ] **Gacha tracker**: per game (Wuthering Waves, Arknights, Genshin, Reverse 1999…), pity counter, guaranteed
+      status, premium currency, pull history and current banners with their end dates as Calendar countdowns.
+      *table*
+- [ ] **Daily check-ins**: games and apps with a daily reset (login rewards, dailies, energy), each with its server's
+      reset time shown as a local countdown, and a checkbox that clears at that reset rather than at midnight. *kv*
+- [ ] **Tonight picker**: answer "how much time / how much energy / alone or with friends", get a game, show or
+      book from your own lists, with a reroll and a "not this" that remembers. *kv*
+- [ ] **Commissions**: art commissions in progress: artist, what was ordered, price and currency, paid/deposit,
+      stage (queued, sketch, final), delivery files. *table + storage*
+- [ ] **Art practice**: timed gesture/figure drawing sessions from your own reference folder, random prompts, and a
+      practice log with thumbnails to see progress over months. *table + storage*
+- [ ] **Quotes & highlights**: lines from books, anime, games and songs with source, episode/page and tags; a random
+      one on the hub. *table*
+
+### Home & life admin
+
+- [ ] **Home maintenance**: interval chores that aren't daily (filters, descaling, deep cleaning, pet supplies), with
+      "due in" bars, the next ones on Today. *kv*
+- [ ] **Pet care**: feeding schedule, vet visits, vaccines, weight chart and medication doses with reminders. *table*
+- [ ] **Where is it?**: a searchable home inventory of *where things are* (which box has the HDMI cables), with
+      optional photos. *table + storage*
+- [ ] **Plants**: watering and fertilising intervals per plant, a photo timeline, and a "water today" list. *kv +
+      storage*
+- [ ] **Trip planner**: itinerary by day, bookings, budget in several currencies (soles, US$, rupiah), documents and a
+      packing list; a map of everywhere visited. *table*
+- [ ] **Bucket list**: things to do once, with a photo and date when done, grouped by place or theme. *kv*
+
+### Tools & infrastructure
+
+- [ ] **Private vault**: notes encrypted in the browser with a passphrase (Web Crypto, AES-GCM) before upload, so
+      even the database only holds ciphertext. For recovery codes, Wi-Fi passwords and similar. *table*
+- [ ] **Quick capture**: add a task, link or note from the phone without opening the site, e.g. a phone shortcut
+      that posts to a small Supabase Edge Function with a personal token. *table*
+- [ ] **Personal wiki**: Markdown pages with `[[links]]` and backlinks, for notes that outgrow the notepad. *table*
+- [ ] **Time zones**: friends and places with their local time and "good time to message?" shading, handy for
+      Discord friends abroad. *kv*
+- [ ] **Flashcard engine**: the spaced repetition core from the Indonesian page as a shared `/assets/` script, so any
+      page (art terms, programming, trivia) can have its own decks. *table*
+- [ ] **On this day**: everything from this date in earlier years across pages (events, finished tasks, journal,
+      quotes added, places visited). *reads other pages*
+
 ## Done
 
 - [x] **Page hub**: index of all private pages with live status (today's progress, next countdown, latest
@@ -103,7 +174,6 @@ Remember: page code is public; only data saved through `Sync` or Supabase tables
       before. Categories from the Statements page take priority over the automatic ones.
 - [x] **Expenses on the hub**: the current cycle's estimate on the hub tile, from a small `expense-summary` key the
       Expenses page saves, so the hub doesn't load any transactions.
-
 - [x] **Renaming lines**: ✎ on any Expenses line. Names live in `expense-lines` next to the original description; the
       statement rows are never changed. [expenses.md](expenses.md#renaming)
 - [x] **Subscription review**: subscriptions running a year or more with their total cost, "Still using" (asks

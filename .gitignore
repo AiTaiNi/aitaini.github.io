@@ -28,3 +28,8 @@ yarn.lock
 personal/statements/examples/
 personal/statements/**/*.pdf
 personal/statements/json/
+
+# Indonesian data sources (large downloads) and your own PDFs (may be copyrighted, never commit)
+tools/indonesian/raw/
+tools/indonesian/pdfs/
+tools/indonesian/out-private/
