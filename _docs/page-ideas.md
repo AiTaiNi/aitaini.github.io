@@ -144,8 +144,8 @@ usual RLS rule (grows over time, needs querying), **storage** = a private Storag
 - [ ] **Personal wiki**: Markdown pages with `[[links]]` and backlinks, for notes that outgrow the notepad. *table*
 - [ ] **Time zones**: friends and places with their local time and "good time to message?" shading, handy for
       Discord friends abroad. *kv*
-- [ ] **Flashcard engine**: the spaced repetition core from the Indonesian page as a shared `/assets/` script, so any
-      page (art terms, programming, trivia) can have its own decks. *table*
+- [x] **Flashcard engine**: done: `/assets/srs.js` (FSRS, card store, offline queue), with an SQL template and example
+      in [flashcards.md](flashcards.md). Any page (art terms, programming, trivia) can now have its own deck. *table*
 - [ ] **On this day**: everything from this date in earlier years across pages (events, finished tasks, journal,
       quotes added, places visited). *reads other pages*
 

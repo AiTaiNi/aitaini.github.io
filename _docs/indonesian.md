@@ -10,7 +10,8 @@ is the design; nothing is built yet.
 **Built so far** (step 1 of the build order): the Learning index, **Today** (numbers, plan month, session outline,
 topic sets from your PDFs, immersion log, settings), **Review** (FSRS, recognise and typed recall, audio, examples,
 your PDFs' examples and derived forms, suspend), the hub tile and the two Calendar tasks. Shared code: `idn.js`
-(data, settings, scheduling, offline queue, time tracker, summary) and `idn.css`. Not yet: Words, Affixes, Drills,
+(data, settings, deck order and recall cards, time tracker, summary) on top of the site-wide flashcard engine
+`/assets/srs.js` (scheduling, card store, offline queue; [flashcards.md](flashcards.md)), and `idn.css`. Not yet: Words, Affixes, Drills,
 Mine, Slang, Lessons, Log, Speak, Credits.
 
 ## The learner
