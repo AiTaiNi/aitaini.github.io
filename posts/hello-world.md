@@ -4,6 +4,7 @@ date: 2026-10-20
 category: Notes
 tags: intro, blogging
 description: A first post to show how everything looks.
+draft: true
 ---
 
 Welcome to my little corner of the internet!

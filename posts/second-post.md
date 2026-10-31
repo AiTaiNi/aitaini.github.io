@@ -3,6 +3,7 @@ title: Another post
 date: 2026-10-15
 category: Guides
 tags: blogging, customization
+draft: true
 ---
 
 Here's a second post so you can see the list and archive.
