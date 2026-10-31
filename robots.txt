@@ -1,4 +1,2 @@
 User-agent: *
-Disallow: /_astro/
-
-Sitemap: https://tai.moe/sitemap-index.xml
+Disallow: /*
