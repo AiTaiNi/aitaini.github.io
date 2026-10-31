@@ -29,12 +29,12 @@
 
     <section class="card">
       <form class="addrow" id="addForm">
-        <input id="name" list="known" placeholder="Item" maxlength="80" aria-label="Item" autocomplete="off" required>
+        <input id="name" placeholder="Item" maxlength="80" aria-label="Item" autocomplete="off" required>
         <input id="amount" placeholder="Amount" maxlength="20" aria-label="Amount (any text: 4, 2kg…)" autocomplete="off">
         <select id="store" aria-label="Store"></select>
         <button class="pri">Add</button>
       </form>
-      <datalist id="known"></datalist>
+      <div class="suggest" id="suggest" aria-label="Suggestions"></div>
 
       <div id="lists"></div>
       <p class="note" id="empty">Nothing to buy.</p>

@@ -28,6 +28,35 @@ main > .card + .card {
     }
 }
 
+/* Suggestion chips under the add row */
+.suggest {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px
+}
+
+.suggest:not(:empty) {
+    margin-top: 8px
+}
+
+.suggest button {
+    padding: .25rem .6rem;
+    border-radius: var(--radius-chip);
+    background: var(--tint);
+    color: var(--text);
+    font-size: .9rem
+}
+
+.suggest button:hover {
+    background: var(--tint-hi)
+}
+
+.suggest button span {
+    margin-left: 6px;
+    color: var(--sub);
+    font-size: .8rem
+}
+
 /* One block per store */
 .store {
     margin-top: 16px

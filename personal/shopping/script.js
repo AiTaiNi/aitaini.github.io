@@ -72,6 +72,7 @@
 
         box.innerHTML = '';
         $('empty').hidden = list.length > 0;
+        renderSuggest();
 
         STORES.forEach(store => {
             const items = list.filter(i => (STORES.includes(i.store) ? i.store : STORES[0]) === store);
@@ -132,7 +133,7 @@
     function renderKnown() {
         const all = sorted();
 
-        $('known').replaceChildren(...all.map(k => el('option', { value: k.name })));
+        renderSuggest();
         $('knownN').textContent = all.length;
 
         $('knownList').replaceChildren(...all.map(k => {
@@ -151,6 +152,28 @@
         }));
     }
 
+    /* Chips under the add row instead of a <datalist>, which most phone browsers hide or ignore. Shown from two typed
+       characters: names with a word starting with it first, then names containing it. Items already on the list are left out. */
+    function renderSuggest() {
+        const q = keyOf($('name').value), onList = new Set(list.map(i => keyOf(i.name)));
+        const pool = sorted().filter(k => !onList.has(keyOf(k.name)) && keyOf(k.name) !== q);
+        const hits = q.length < 2 ? [] : pool.filter(k => keyOf(k.name).split(' ').some(w => w.startsWith(q)))
+            .concat(pool.filter(k => !keyOf(k.name).split(' ').some(w => w.startsWith(q)) && keyOf(k.name).includes(q)));
+
+        $('suggest').replaceChildren(...hits.slice(0, 8).map(k => {
+            const b = el('button', { type: 'button' }, [k.name, el('span', { textContent: k.store })]);
+
+            b.onclick = () => {
+                $('name').value = k.name;
+                addStore.value = STORES.includes(k.store) ? k.store : STORES[0];
+                renderSuggest();
+                $('amount').focus();
+            };
+
+            return b;
+        }));
+    }
+
     /* ---------- adding ---------- */
     const addStore = storeSelect(STORES[0], () => {});
 
@@ -163,6 +186,8 @@
         const k = known[keyOf($('name').value)];
 
         if (k) addStore.value = k.store;
+
+        renderSuggest();
     });
 
     $('addForm').onsubmit = e => {
