@@ -30,6 +30,55 @@ main > .card {
     margin-top: 14px
 }
 
+/* The receipt's QR code: the lookup site's fields, to copy */
+#qrBox {
+    margin-top: 14px;
+    padding: 12px;
+    border: var(--border);
+    border-radius: var(--radius)
+}
+
+.qrhead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--title)
+}
+
+.qrhead .qrx {
+    padding: 0 8px;
+    background: transparent;
+    color: var(--sub)
+}
+
+.qrrow {
+    display: grid;
+    grid-template-columns: 9.5em minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    border-top: var(--border)
+}
+
+.qrrow b {
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums
+}
+
+.qrrow button {
+    padding: 2px 10px
+}
+
+.qrfoot {
+    align-items: center;
+    margin-top: 10px
+}
+
+.msg.warn {
+    color: var(--warn)
+}
+
 .rhead {
     display: flex;
     flex-wrap: wrap;
@@ -84,6 +133,15 @@ main > .card {
 
 #rLines td.each {
     padding-top: 9px
+}
+
+/* A line the reader wasn't sure about */
+#rLines tr.warn td {
+    background: var(--warn-tint)
+}
+
+#rLines tr.warn .sm {
+    color: var(--warn)
 }
 
 #rLines button,

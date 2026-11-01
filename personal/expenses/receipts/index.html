@@ -36,13 +36,21 @@
     <section class="card" id="scanCard">
       <h2>Add a receipt</h2>
       <div class="btns">
-        <button class="pri" id="scanBtn">Scan photo…</button>
+        <button class="pri" id="qrBtn">Scan QR code…</button>
+        <button id="xmlBtn">Import XML…</button>
+        <button id="scanBtn">Scan photo…</button>
         <button id="pasteBtn">Paste text</button>
         <button id="handBtn">Enter by hand</button>
       </div>
+      <p class="note">Best: scan the QR code, download the receipt's XML from the store's lookup site, and import it
+        (exact lines, nothing to fix). Otherwise scan a photo: lay the receipt flat on something darker than the paper and
+        photograph it straight from above in good light, the whole receipt filling the photo.</p>
+      <input type="file" id="qrPhoto" accept="image/*" hidden>
+      <input type="file" id="xmlFile" hidden>
       <input type="file" id="photo" accept="image/*" hidden>
+      <div id="qrBox" hidden></div>
       <div id="pasteBox" hidden>
-        <textarea id="pasteText" placeholder="Paste the receipt's text here, one line per row"></textarea>
+        <textarea id="pasteText" placeholder="Paste the receipt's text here, one line per row, or its QR code's text"></textarea>
         <div class="btns"><button class="pri" id="pasteRead">Read text</button><button id="pasteCancel">Cancel</button></div>
       </div>
       <p class="msg" id="scanMsg"></p>

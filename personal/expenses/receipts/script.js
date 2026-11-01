@@ -128,24 +128,26 @@
         }
 
         $('stores').replaceChildren(...list.map(n => {
-            const b = el('button', { type: 'button', textContent: n });
+            const b = el('button', { type: 'button', textContent: n, onclick: () => pick(n) });
 
             b.setAttribute('aria-pressed', n === store);
-            b.onclick = () => {
-                if (n === store) return;
-
-                store = n;
-
-                try { localStorage.setItem(PICK, n); } catch { }
-
-                closeReview();
-                renderStores();
-                renderData();
-                loadStore();
-            };
 
             return b;
         }));
+    }
+
+    /* Switch to a store (by its button, or a receipt's QR code or XML) */
+    function pick(n) {
+        if (n === store) return;
+
+        store = n;
+
+        try { localStorage.setItem(PICK, n); } catch { }
+
+        closeReview();
+        renderStores();
+        renderData();
+        loadStore();
     }
 
     Stores.onChange(list => {
@@ -156,118 +158,224 @@
     });
 
     /* ---------- reading a receipt ----------
-       Works line by line on the text. An item line ends in an amount (maybe with a tax letter after it) and may start
-       with a code: "20512345 LECHE GLORIA 400G 4.20". A quantity line ("2 X 3.50", "1.250 KG X 5.90 7.38") goes with
-       the item before it if the amounts agree, otherwise with the next one; a name with no amount waits for one.
-       Discount lines take their amount off the item before. Reading stops at the total. */
-    const AMT = /(?:S\/\.?\s*)?(-?\d{1,5}[.,]\d{2})\s*[A-Z*]{0,2}$/;
-    const QTY = /^(\d+(?:[.,]\d{1,3})?)\s*(?:UN[DI]?|KGS?|K|LT|X)?\s*[xX*@]\s*(?:S\/\.?\s*)?(\d{1,5}[.,]\d{2,3})(?:\s+(?:S\/\.?\s*)?(\d{1,5}[.,]\d{2}))?\s*[A-Z*]{0,2}$/;
-    const INQTY = /\s(\d+(?:[.,]\d{1,3})?)\s*(?:UN[DI]?|KGS?|K)?\s*[xX@*]\s*(\d{1,5}[.,]\d{2,3})$/;
-    const CODE = /^(\d{4,14})\b\s*/;
-    const SKIP = /SUB\s*TOTAL|\bIGV\b|GRAVAD|EXONERAD|INAFECT|REDONDEO|EFECTIVO|VUELTO|CAMBIO|\bVISA\b|MASTERCARD|TARJETA|\bPAGO\b|\bRUC\b|BOLETA|FACTURA|\bCAJA\b|CAJERO|FECHA|\bHORA\b|\bSON\b|ICBPER|\bDNI\b|CLIENTE|PUNTOS|\bITEMS?\b/i;
+       Tuned on real receipts with tools/purchase-receipts/read-receipt.py, which runs these same steps on a PC: change
+       both together (_docs/receipts.md has the rules and the receipts behind them). Line by line:
+       - an item starts with its code (a 13-digit barcode at Mass) and has its amount in the right-hand column, after
+         a gap of 3+ spaces; a coded line with no amount is kept and flagged, to be filled in
+       - a quantity or weight line ("2 X 3.50  7.00", ".525 KG X 2.60  1.36") belongs to the item just above it
+       - a discount line comes off the item above; items stop at the subtotal, totals and the unit count come after
+       - common misreads are fixed: O→0, l→1, S→5, a comma or colon for the point, X read as Y, a lost point (520)
+       Codes seen before at the store fix misread codes and bring their saved names. */
+    const DIG = '0-9OoUDQlI|SB';
+    const FIXES = { O: '0', o: '0', U: '0', D: '0', Q: '0', l: '1', I: '1', '|': '1', S: '5', B: '8', ',': '.', ':': '.', ';': '.' };
+    const fix = s => s.replace(/[OoUDQlI|SB,:;]/g, c => FIXES[c]);
+    const AMOUNT = new RegExp('^-?[' + DIG + ']{1,4} ?[.,:;] ?[' + DIG + ']{1,2}$');
+    const AMOUNTS = new RegExp('-?[' + DIG + ']{1,4} ?[.,:;] ?[' + DIG + ']{1,2}(?![0-9])|\\b\\d{1,3} \\d{2}\\b', 'g');
+    const CODE = new RegExp('^\\W{0,2}([' + DIG + ']{8,14})\\s+(.*)$');
+    const QTY = /^\W*(\.?\d+(?:[.,]\d+)?)?\s*(?:(K[GE]\w?|UN\w{0,2})\s*[xXyY×*@]{0,2}|[xXyY×*@]{1,2})\s+(.*)$/;
+    const TAIL = /(-?\d{1,4}[.,]\d{2})\s*[A-Z*]{0,2}$/;
+    const SKIP = /\bIGV\b|I\.G\.V|GRAVAD|EXONERAD|INAFECT|REDONDEO|EFECTIVO|VUELTO|CAMBIO|\bVISA\b|MASTERCARD|\bPAGO\b|\bRUC\b|BOLETA|FACTURA|\bCAJA\b|CAJERO|FECHA|\bHORA\b|\bSON\b|ICBPER|\bDNI\b|CLIENTE|PUNTOS/i;
+    const TOTALS = /TOTAL|PAGAR|TARJ/i;
     const DISC = /DSCTO|DESCUENTO|\bDESC\b|AHORRO|PROMOCI/i;
-    const TOTAL = /\bTOTAL\b/i;
     const LETTERS = /[A-Za-zÑñÁÉÍÓÚáéíóú].*[A-Za-zÑñÁÉÍÓÚáéíóú]/;
     const num = s => parseFloat(s.replace(',', '.'));
+    const squash = s => s.replace(/\s+/g, ' ').trim();
 
-    function parse(text) {
-        const items = [];
-        let date = null, total = null, pendName = null, pendQty = null;
+    /* A price in céntimos, misreads fixed. With whole, three or four bare digits count too (520 → 5.20). */
+    function money(tok, whole) {
+        let t = tok.trim();
 
-        const add = (code, name, price, qty) => {
-            items.push({ code: code || '', name: name.replace(/\s{2,}/g, ' ').trim(), qty: qty || pendQty || 1, price });
-            pendName = pendQty = null;
-        };
+        if (whole && /^\d{3,4}$/.test(t)) return +t;
 
-        for (const raw of text.split(/\r?\n/)) {
-            const line = raw.replace(/\s+/g, ' ').trim();
+        if (!(AMOUNT.test(t) || /^\d{1,3} \d{2}$/.test(t)) || !/\d/.test(t)) return null;
 
-            if (!line) continue;
+        t = fix(t).replace(/ /g, '');
+
+        if (!t.includes('.')) t = t.slice(0, -2) + '.' + t.slice(-2);
+
+        const [a, b] = t.split('.');
+
+        return Math.round(parseFloat(a + '.' + b.padEnd(2, '0')) * 100);
+    }
+
+    /* The amount in the right-hand column (after a gap of 3+ spaces), else one right at the end of the line */
+    function lastAmount(raw, whole) {
+        const cols = raw.trim().split(/\s{3,}/);
+
+        if (cols.length > 1) {
+            const v = money(cols[cols.length - 1], whole);
+
+            if (v != null) return [v, cols];
+        }
+
+        const m = squash(raw).match(TAIL);
+
+        return [m ? money(m[1]) : null, cols];
+    }
+
+    /* EAN-13 or EAN-8 check digit */
+    function eanOk(c) {
+        if (!/^(\d{8}|\d{13})$/.test(c)) return false;
+
+        const w = c.length === 8 ? [3, 1] : [1, 3];
+        const sum = [...c.slice(0, -1)].reduce((s, d, i) => s + d * w[i % 2], 0);
+
+        return sum * 9 % 10 === +c.slice(-1);
+    }
+
+    /* A code that isn't a valid barcode: the one known code it matches with at most one digit wrong (two for a
+       full-length code), lined up with its start or its end, since digits get lost at the edge of the paper.
+       Returns [code, still doubtful]. */
+    function repair(code, known) {
+        const codes = Object.keys(known);
+
+        if (eanOk(code) || !codes.length) return [code, !eanOk(code)];
+
+        const diff = (a, b) => [...a].filter((x, i) => x !== b[i]).length;
+        const most = code.length >= 12 ? 2 : 1;
+        const near = codes.filter(k => code.length >= 8 && k.length >= code.length && Math.min(diff(code, k.slice(0, code.length)), diff(code, k.slice(-code.length))) <= most);
+
+        return near.length === 1 ? [near[0], false] : [code, true];
+    }
+
+    /* Drops what the reader left after a name: an amount, or bits starting with a symbol ("+90", '"90') */
+    const cleanName = name => name.replace(TAIL, '').replace(/(\s+[^\p{L}\p{N}_\s]\S*|[^\p{L}\p{N}_.%/)]+)+$/u, '').trim();
+
+    /* Receipt text → { date, total, units, items: [{ code, name, qty, price, warn }] }. known: { code: name } */
+    function parse(text, known) {
+        const items = [], totals = [];
+        let date = null, units = null, done = false, pend = null, last = -9;
+
+        text.split(/\r?\n/).forEach((raw, n) => {
+            const line = squash(raw);
+
+            if (!line) return;
 
             if (!date) {
                 const d = line.match(/\b(\d{2})[/.-](\d{2})[/.-](\d{4}|\d{2})\b/);
 
-                if (d && +d[2] >= 1 && +d[2] <= 12) date = (d[3].length === 2 ? '20' + d[3] : d[3]) + '-' + d[2] + '-' + d[1];
+                if (d && +d[2] >= 1 && +d[2] <= 12 && +d[1] >= 1 && +d[1] <= 31) date = (d[3].length === 2 ? '20' + d[3] : d[3]) + '-' + d[2] + '-' + d[1];
             }
 
-            const amt = line.match(AMT);
+            const u = line.match(/(\d+)\s*UNIDAD/i);
 
-            if (TOTAL.test(line) && !/SUB\s*TOTAL/i.test(line)) {
-                /* "TOTAL DSCTO" sums discounts already taken off the items */
-                if (amt && !DISC.test(line)) {
-                    total = toCents(amt[1]);
-                    break;
+            if (u) {
+                units = +u[1];
+                done = true;
+
+                return;
+            }
+
+            if (TOTALS.test(line) && !DISC.test(line)) {
+                const [v] = lastAmount(raw);
+
+                if (v != null) totals.push(v);
+
+                done = true;
+
+                return;
+            }
+
+            if (done || SKIP.test(line)) return;
+
+            const c = raw.trim().match(CODE), q = c ? null : line.match(QTY);
+
+            /* quantity or weight line: belongs to the item just above */
+            if (q && (q[1] || q[2])) {
+                const vals = (q[3].match(AMOUNTS) || []).map(t => money(t)).filter(v => v);
+                const each = vals[0] || null, kg = (q[2] || '')[0] === 'K' || (q[1] || '').startsWith('.');
+                let paid = vals.length > 1 ? vals[vals.length - 1] : null, qty = q[1] ? num(q[1]) : null, warn = '';
+
+                if (kg && qty >= 10 && !q[1].includes('.')) qty /= 1000;   /* ".525" read as "525" */
+
+                if (each && paid) {
+                    if (qty && Math.abs(qty * each - paid) <= 1) {
+                        /* all agree */
+                    } else if (kg) {
+                        qty = Math.round(paid / each * 1000) / 1000;
+                    } else if (qty && Number.isInteger(qty) && qty >= 1 && qty < 100) {
+                        paid = Math.round(qty * each);   /* the total is the likelier misread */
+                        warn = 'amount';
+                    } else {
+                        qty = Math.max(1, Math.round(paid / each));
+                    }
+                } else if (each && qty) {
+                    paid = Math.round(qty * each);
                 }
 
-                continue;
-            }
+                if (!(qty && paid)) return;
 
-            if (SKIP.test(line)) continue;
-
-            const q = line.match(QTY);
-
-            if (q) {
-                const qty = num(q[1]), each = toCents(q[2]), paid = q[3] ? toCents(q[3]) : Math.round(qty * each);
                 const prev = items[items.length - 1];
 
-                if (pendName) add(pendName.code, pendName.name, paid, qty);
-                else if (prev && prev.qty === 1 && Math.abs(prev.price - paid) <= 2) prev.qty = qty;
-                else pendQty = qty;
+                if (prev && n - last <= 2) Object.assign(prev, { qty, price: paid, warn: prev.warn || warn });
+                else if (pend) items.push({ code: '', name: pend, qty, price: paid, warn });
 
-                continue;
+                pend = null;
+
+                return;
             }
 
-            if (amt && (DISC.test(line) || amt[1].startsWith('-'))) {
+            const [v, cols] = lastAmount(raw, !!c);
+
+            if (v != null && (DISC.test(line) || cols[cols.length - 1].trim().startsWith('-'))) {
                 const prev = items[items.length - 1];
 
-                if (prev) prev.price = Math.max(0, prev.price - Math.abs(toCents(amt[1])));
+                if (prev) prev.price = Math.max(0, prev.price - Math.abs(v));
 
-                continue;
+                return;
             }
-
-            let rest = amt ? line.slice(0, amt.index).trim() : line, code = '';
-            const c = rest.match(CODE);
 
             if (c) {
-                code = c[1];
-                rest = rest.slice(c[0].length);
+                const [code, bad] = repair(fix(c[1]), known);
+
+                items.push({ code, name: known[code] || cleanName(c[2].trim().split(/\s{3,}/)[0]), qty: 1, price: v || 0, warn: bad ? 'code' : '' });
+                last = n;
+                pend = null;
+
+                return;
             }
 
-            if (!amt) {
-                /* a name waiting for its amount on the next line */
-                if (LETTERS.test(rest)) pendName = { code, name: rest };
+            if (v != null) {
+                const name = cols.length > 1 ? cols[0] : line.replace(TAIL, '');
 
-                continue;
+                if (LETTERS.test(name) || pend) {
+                    items.push({ code: '', name: LETTERS.test(name) ? name.trim() : pend, qty: 1, price: v, warn: '' });
+                    last = n;
+                    pend = null;
+                }
+
+                return;
             }
 
-            let qty = null;
-            const iq = rest.match(INQTY);
+            if (LETTERS.test(line)) pend = line;
+        });
 
-            if (iq) {
-                qty = num(iq[1]);
-                rest = rest.slice(0, iq.index);
-            }
+        items.forEach(i => {
+            if (!i.price) i.warn ||= 'no amount';
+        });
 
-            if (LETTERS.test(rest)) add(code, rest, toCents(amt[1]), qty);
-            else if (pendName) add(pendName.code || code, pendName.name, toCents(amt[1]), qty);
-        }
+        const sum = items.reduce((s, i) => s + i.price, 0), tally = {};
 
-        return { date, total, items: items.filter(i => i.price > 0) };
+        totals.forEach(t => tally[t] = (tally[t] || 0) + 1);
+
+        const mode = Object.keys(tally).sort((a, b) => tally[b] - tally[a])[0];
+
+        return { date, units, total: totals.includes(sum) ? sum : mode != null ? +mode : null, items: items.filter(i => i.code || i.price) };
     }
 
     /* ---------- the text reader (Tesseract.js, loaded on the first scan) ---------- */
     let reader = null, onProgress = () => {};
 
-    function loadScript(src) {
+    function loadScript(src, what) {
         return new Promise((ok, fail) => {
-            const s = el('script', { src, onload: ok, onerror: () => fail(new Error('couldn’t load the text reader (offline?)')) });
+            const s = el('script', { src, onload: ok, onerror: () => fail(new Error('couldn’t load ' + what + ' (offline?)')) });
 
             document.head.append(s);
         });
     }
 
     async function getReader() {
-        if (!window.Tesseract) await loadScript(TESS);
+        if (!window.Tesseract) await loadScript(TESS, 'the text reader');
 
         if (!reader) {
             reader = await Tesseract.createWorker('spa', 1, { logger: m => onProgress(m) });
@@ -278,15 +386,190 @@
         return reader;
     }
 
-    /* Grey and at most 2400px on the long side: faster to read, and phone photos are far bigger than needed */
-    async function prepare(file) {
-        const img = await createImageBitmap(file);
-        const k = Math.min(1, 2400 / Math.max(img.width, img.height));
-        const cv = el('canvas', { width: Math.round(img.width * k), height: Math.round(img.height * k) });
-        const ctx = cv.getContext('2d');
+    /* ---------- cleaning up the photo ----------
+       Grey, the paper found and straightened to 1000px wide, then sharpened, as read-receipt.py does with OpenCV.
+       Without a clear paper outline (a busy background, or the photo is all receipt) the whole photo is used. */
+    function grey(bmp, w, h) {
+        const cv = el('canvas', { width: w, height: h }), ctx = cv.getContext('2d', { willReadFrequently: true });
 
-        ctx.filter = 'grayscale(1) contrast(1.3)';
-        ctx.drawImage(img, 0, 0, cv.width, cv.height);
+        ctx.drawImage(bmp, 0, 0, w, h);
+
+        const px = ctx.getImageData(0, 0, w, h).data, d = new Uint8ClampedArray(w * h);
+
+        for (let i = 0; i < d.length; i++) d[i] = 0.299 * px[i * 4] + 0.587 * px[i * 4 + 1] + 0.114 * px[i * 4 + 2];
+
+        return { w, h, d };
+    }
+
+    /* Separable blur with the given 1-D kernel, edges clamped */
+    function blur(g, kern) {
+        const { w, h, d } = g, r = kern.length >> 1, tmp = new Float32Array(w * h), out = new Uint8ClampedArray(w * h);
+
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                let s = 0;
+
+                for (let k = -r; k <= r; k++) s += kern[k + r] * d[y * w + Math.min(w - 1, Math.max(0, x + k))];
+
+                tmp[y * w + x] = s;
+            }
+        }
+
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                let s = 0;
+
+                for (let k = -r; k <= r; k++) s += kern[k + r] * tmp[Math.min(h - 1, Math.max(0, y + k)) * w + x];
+
+                out[y * w + x] = s;
+            }
+        }
+
+        return { w, h, d: out };
+    }
+
+    /* The paper's corners [tl, tr, br, bl]: the biggest bright blob after an Otsu threshold, if it's big enough */
+    function paper(g) {
+        const { w, h, d } = blur(g, [.2, .2, .2, .2, .2]), hist = new Array(256).fill(0);
+
+        d.forEach(v => hist[v]++);
+
+        /* Otsu: the threshold that best splits the histogram in two */
+        let sum = 0, sumB = 0, wB = 0, best = -1, t = 127;
+
+        hist.forEach((c, i) => sum += c * i);
+
+        for (let i = 0; i < 256; i++) {
+            wB += hist[i];
+
+            if (!wB || wB === d.length) continue;
+
+            sumB += hist[i] * i;
+
+            const mB = sumB / wB, mF = (sum - sumB) / (d.length - wB), v = wB * (d.length - wB) * (mB - mF) ** 2;
+
+            if (v > best) {
+                best = v;
+                t = i;
+            }
+        }
+
+        const seen = new Uint8Array(w * h), stack = new Int32Array(w * h);
+        let top = null;
+
+        for (let s = 0; s < d.length; s++) {
+            if (seen[s] || d[s] <= t) continue;
+
+            /* flood fill one blob, keeping its extreme points */
+            const ext = [s, s, s, s];   /* min x+y, max x-y, max x+y, min x-y */
+            let n = 0, sp = 0;
+
+            seen[s] = 1;
+            stack[sp++] = s;
+
+            while (sp) {
+                const p = stack[--sp], x = p % w, y = (p - x) / w;
+                const e = i => [ext[i] % w, (ext[i] - ext[i] % w) / w];
+
+                n++;
+
+                if (x + y < e(0)[0] + e(0)[1]) ext[0] = p;
+                if (x - y > e(1)[0] - e(1)[1]) ext[1] = p;
+                if (x + y > e(2)[0] + e(2)[1]) ext[2] = p;
+                if (x - y < e(3)[0] - e(3)[1]) ext[3] = p;
+
+                for (const q of [x > 0 ? p - 1 : -1, x < w - 1 ? p + 1 : -1, y > 0 ? p - w : -1, y < h - 1 ? p + w : -1]) {
+                    if (q >= 0 && !seen[q] && d[q] > t) {
+                        seen[q] = 1;
+                        stack[sp++] = q;
+                    }
+                }
+            }
+
+            if (!top || n > top.n) top = { n, ext };
+        }
+
+        return top && top.n > 0.15 * d.length ? top.ext.map(p => [p % w, (p - p % w) / w]) : null;
+    }
+
+    /* The perspective transform taking (u, v) in the output rectangle to (x, y) in the photo: 8 equations, solved */
+    function homography(from, to) {
+        const A = [];
+
+        from.forEach(([u, v], i) => {
+            const [x, y] = to[i];
+
+            A.push([u, v, 1, 0, 0, 0, -u * x, -v * x, x], [0, 0, 0, u, v, 1, -u * y, -v * y, y]);
+        });
+
+        for (let c = 0; c < 8; c++) {
+            const p = A.slice(c).reduce((m, r, i) => Math.abs(r[c]) > Math.abs(A[m][c]) ? c + i : m, c);
+
+            [A[c], A[p]] = [A[p], A[c]];
+
+            for (let r = 0; r < 8; r++) {
+                if (r === c) continue;
+
+                const f = A[r][c] / A[c][c];
+
+                for (let k = c; k < 9; k++) A[r][k] -= f * A[c][k];
+            }
+        }
+
+        return A.map((r, i) => r[8] / r[i]);
+    }
+
+    /* The paper straightened into a W-wide rectangle, sampling the photo between pixels (bilinear); white outside */
+    function warp(big, corners, W) {
+        const [tl, tr, br, bl] = corners, side = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+        const H = Math.round(W * (side(tl, bl) + side(tr, br)) / (side(tl, tr) + side(bl, br)));
+        const [a, b, c, d, e, f, g, h] = homography([[0, 0], [W, 0], [W, H], [0, H]], corners);
+        const out = new Uint8ClampedArray(W * H), src = big.d, bw = big.w;
+
+        for (let v = 0; v < H; v++) {
+            for (let u = 0; u < W; u++) {
+                const z = g * u + h * v + 1, x = (a * u + b * v + c) / z, y = (d * u + e * v + f) / z;
+                const x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
+
+                if (x0 < 0 || y0 < 0 || x0 >= bw - 1 || y0 >= big.h - 1) {
+                    out[v * W + u] = 255;
+                    continue;
+                }
+
+                const i = y0 * bw + x0;
+
+                out[v * W + u] = (src[i] * (1 - fx) + src[i + 1] * fx) * (1 - fy) + (src[i + bw] * (1 - fx) + src[i + bw + 1] * fx) * fy;
+            }
+        }
+
+        return { w: W, h: H, d: out };
+    }
+
+    /* 1.6 × the image − 0.6 × a Gaussian blur of it (sigma 2) */
+    function sharpen(g) {
+        const kern = Array.from({ length: 13 }, (_, i) => Math.exp(-((i - 6) ** 2) / 8)), ks = kern.reduce((s, v) => s + v, 0);
+        const soft = blur(g, kern.map(v => v / ks)), out = new Uint8ClampedArray(g.d.length);
+
+        for (let i = 0; i < out.length; i++) out[i] = Math.round(1.6 * g.d[i] - 0.6 * soft.d[i]);
+
+        return { w: g.w, h: g.h, d: out };
+    }
+
+    async function prepare(file) {
+        const bmp = await createImageBitmap(file), W = 1000, long = Math.max(bmp.width, bmp.height);
+        const fit = Math.min(1, 2400 / long), k = 300 / long;
+        const big = grey(bmp, Math.round(bmp.width * fit), Math.round(bmp.height * fit));
+        const small = grey(bmp, Math.round(bmp.width * k), Math.round(bmp.height * k));
+        const corners = paper(small);
+        const g = sharpen(corners ? warp(big, corners.map(([x, y]) => [x * big.w / small.w, y * big.h / small.h]), W) : grey(bmp, W, Math.round(bmp.height * W / bmp.width)));
+        const cv = el('canvas', { width: g.w, height: g.h }), ctx = cv.getContext('2d'), img = ctx.createImageData(g.w, g.h);
+
+        for (let i = 0; i < g.d.length; i++) {
+            img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = g.d[i];
+            img.data[i * 4 + 3] = 255;
+        }
+
+        ctx.putImageData(img, 0, 0);
 
         return cv;
     }
@@ -314,9 +597,12 @@
             msg.textContent = 'Reading…';
 
             const { data: { text } } = await w.recognize(img);
-            const r = parse(text);
+            const r = parse(text, knownCodes()), flagged = r.items.filter(i => i.warn).length;
 
-            msg.textContent = r.items.length ? 'Found ' + r.items.length + ' lines. Check them against the photo before saving.' : 'No item lines found. Add them by hand, or try a sharper, straighter photo.';
+            /* the QR code's date and total are exact */
+            if (qr) Object.assign(r, { date: qr.date, total: qr.total });
+
+            msg.textContent = r.items.length ? 'Found ' + r.items.length + ' lines' + (flagged ? ', ' + flagged + ' to check (marked)' : '') + '. Check them against the photo before saving.' : 'No item lines found. Add them by hand, or try a sharper, straighter photo.';
             openReview(r, { text, photo: URL.createObjectURL(file) });
         } catch (e) {
             msg.textContent = 'Couldn’t read the photo: ' + e.message;
@@ -333,10 +619,16 @@
     $('pasteCancel').onclick = () => $('pasteBox').hidden = true;
 
     $('pasteRead').onclick = () => {
-        const text = $('pasteText').value, r = parse(text);
+        const text = $('pasteText').value, r = parse(text, knownCodes());
 
         $('pasteBox').hidden = true;
         $('pasteText').value = '';
+
+        /* the QR code's text, from any QR scanner app */
+        if (parseQr(text)) return useQr(text);
+
+        if (qr) Object.assign(r, { date: qr.date, total: qr.total });
+
         $('scanMsg').textContent = r.items.length ? 'Found ' + r.items.length + ' lines.' : 'No item lines found. Add them by hand.';
         openReview(r, { text });
     };
@@ -346,10 +638,271 @@
         openReview({ date: null, total: null, items: [{ code: '', name: '', qty: 1, price: 0 }] }, {});
     };
 
+    /* ---------- the receipt's QR code ----------
+       Peruvian e-receipts carry SUNAT's QR: RUC | type | series | number | IGV | total | date | buyer's ID type |
+       buyer's ID | … Only the store's RUC, the type, series-number, total and date are kept. The RUC picks the store
+       and its lookup site, where the receipt's XML can be downloaded (after a captcha) and imported below. */
+    const JSQR = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
+    const TYPES = { '01': 'Factura', '03': 'Boleta de venta' };
+    const RUCS = { '20608280333': 'Mass', '20100070970': 'Plaza Vea' };   /* any other RUC is asked once, then synced */
+    const RUC_KEY = 'receipt-rucs';                                        /* { ruc: store } */
+    const lookupUrl = ruc => 'https://ax.axteroid.com/consulta/' + ruc;   /* Axteroid serves Mass and Plaza Vea */
+    let qr = null;
+
+    Sync.use([RUC_KEY], { merge: { [RUC_KEY]: (local, remote) => Object.assign({}, local, remote) } });
+
+    const storeOf = ruc => {
+        const n = RUCS[ruc] || (Sync.get(RUC_KEY, {}) || {})[ruc];
+
+        return Stores.list().includes(n) ? n : null;
+    };
+
+    /* "BF62-01407961" and "BF62-1407961" are the same receipt */
+    const sameRef = (a, b) => a.replace(/-0+(?=\d)/, '-') === b.replace(/-0+(?=\d)/, '-');
+
+    function parseQr(text) {
+        const f = text.trim().split('|');
+
+        if (f.length < 7 || !/^\d{11}$/.test(f[0]) || !TYPES[f[1]]) return null;
+
+        const dmy = f[6].trim().match(/^(\d{2})[/-](\d{2})[/-](\d{4})$/), date = dmy ? dmy[3] + '-' + dmy[2] + '-' + dmy[1] : f[6].trim();
+        const total = toCents(f[5]);
+
+        return /^\d{4}-\d{2}-\d{2}$/.test(date) && !isNaN(total) ? { ruc: f[0], type: f[1], ref: f[2].trim() + '-' + f[3].trim(), total, date } : null;
+    }
+
+    /* The browser's own reader where there is one (Chrome on Android), else jsQR at a few sizes */
+    async function decodeQr(file) {
+        const bmp = await createImageBitmap(file);
+
+        if ('BarcodeDetector' in window) {
+            try {
+                const found = await new BarcodeDetector({ formats: ['qr_code'] }).detect(bmp);
+
+                if (found.length) return found[0].rawValue;
+            } catch { }
+        }
+
+        if (!window.jsQR) await loadScript(JSQR, 'the QR reader');
+
+        for (const size of [1200, 2000, 800]) {
+            const k = Math.min(1, size / Math.max(bmp.width, bmp.height)), w = Math.round(bmp.width * k), h = Math.round(bmp.height * k);
+            const ctx = el('canvas', { width: w, height: h }).getContext('2d', { willReadFrequently: true });
+
+            ctx.drawImage(bmp, 0, 0, w, h);
+
+            const hit = jsQR(ctx.getImageData(0, 0, w, h).data, w, h, { inversionAttempts: 'dontInvert' });
+
+            if (hit) return hit.data;
+        }
+
+        return null;
+    }
+
+    /* The lookup site's form, value by value with copy buttons (the site can't be filled in from a link) */
+    function renderQr() {
+        const box = $('qrBox');
+
+        box.hidden = !qr;
+
+        if (!qr) return;
+
+        const s = storeOf(qr.ruc), d = qr.date.split('-');
+        const dup = s && (rows[s] || []).some(r => r.date === qr.date && r.total === qr.total);
+
+        const row = (label, value) => {
+            const b = el('button', { type: 'button', textContent: 'Copy' });
+
+            b.setAttribute('aria-label', 'Copy ' + label);
+            b.onclick = () => navigator.clipboard.writeText(value).then(() => {
+                b.textContent = 'Copied';
+                setTimeout(() => b.textContent = 'Copy', 1500);
+            }, () => b.textContent = 'Copy failed');
+
+            return el('div', { className: 'qrrow' }, [el('span', { className: 'sm', textContent: label }), el('b', { textContent: value }), b]);
+        };
+
+        const close = el('button', { type: 'button', className: 'qrx', textContent: '×', title: 'Close', onclick: () => {
+            qr = null;
+            renderQr();
+        } });
+
+        const link = el('a', { href: lookupUrl(qr.ruc), target: '_blank', rel: 'noopener', textContent: 'Open the lookup site ↗' });
+        const xml = el('button', { type: 'button', className: 'pri', textContent: 'Import XML…', onclick: () => $('xmlFile').click() });
+        const ocr = el('button', { type: 'button', textContent: 'Scan photo instead…', onclick: () => $('photo').click() });
+
+        box.replaceChildren(
+            el('div', { className: 'qrhead' }, [el('b', { textContent: TYPES[qr.type] + ' ' + qr.ref + (s ? ' · ' + s : '') }), close]),
+            s ? null : el('div', {}, [
+                el('p', { className: 'msg', textContent: 'Which store is this? (RUC ' + qr.ruc + ')' }),
+                el('div', { className: 'btns' }, Stores.list().map(n => el('button', { type: 'button', textContent: n, onclick: () => {
+                    Sync.set(RUC_KEY, Object.assign({}, Sync.get(RUC_KEY, {}), { [qr.ruc]: n }));
+                    pick(n);
+                    renderQr();
+                } })))
+            ]),
+            dup ? el('p', { className: 'msg warn', textContent: 'A receipt from this date with this total is already saved for ' + s + '.' }) : null,
+            row('Tipo de documento', TYPES[qr.type]),
+            row('Serie - Correlativo', qr.ref),
+            row('Fecha de emisión', d[2] + '-' + d[1] + '-' + d[0]),
+            row('Total', (qr.total / 100).toFixed(2)),
+            el('p', { className: 'note', textContent: 'On the lookup site, fill these in, tick the captcha and press Descargar XML, then import the file here.' }),
+            el('div', { className: 'btns qrfoot' }, [link, xml, ocr])
+        );
+    }
+
+    $('qrBtn').onclick = () => $('qrPhoto').click();
+
+    $('qrPhoto').onchange = async () => {
+        const file = $('qrPhoto').files[0], msg = $('scanMsg');
+
+        $('qrPhoto').value = '';
+
+        if (!file) return;
+
+        msg.textContent = 'Looking for the QR code…';
+
+        try {
+            const text = await decodeQr(file);
+
+            useQr(text);
+        } catch (e) {
+            msg.textContent = 'Couldn’t read the QR code: ' + e.message;
+        }
+    };
+
+    function useQr(text) {
+        const q = text ? parseQr(text) : null, msg = $('scanMsg');
+
+        if (!q) {
+            msg.textContent = text ? 'That QR code isn’t a receipt’s (' + text.slice(0, 60) + ').' : 'No QR code found. Try closer, with the QR code filling more of the photo.';
+
+            return false;
+        }
+
+        qr = q;
+        msg.textContent = '';
+
+        const s = storeOf(q.ruc);
+
+        if (s) pick(s);
+
+        renderQr();
+
+        return true;
+    }
+
+    /* ---------- the receipt's XML (UBL 2.1, the format every Peruvian e-receipt is filed in) ----------
+       Each InvoiceLine has the quantity, the store's code (SellersItemIdentification, or the barcode in
+       StandardItemIdentification), the description, and the line's value before tax plus its taxes: together what
+       was paid. The receipt's taxes themselves aren't kept.
+       Mass (Axteroid) pads the code to 14 digits (02200204244226: the 13-digit barcode on the receipt with a 0 in
+       front) and puts the printed line in the description, in fields: "2200204244226@@FRSTFREC500G@@ 2 X 6.90@@13.80@@". */
+    const kids = (node, name) => node ? [...node.children].filter(c => c.localName === name) : [];
+    const kid = (node, ...path) => path.reduce((n, p) => kids(n, p)[0] || null, node);
+    const txt = (node, ...path) => (kid(node, ...path) || { textContent: '' }).textContent.trim();
+    const cents = s => s ? Math.round(parseFloat(s) * 100) : NaN;
+    const gtin13 = c => /^0\d{13}$/.test(c) ? c.slice(1) : c;
+
+    /* The name from a description: the field after the code when it's in @@ fields, else all of it */
+    function descName(desc) {
+        const f = desc.split('@@').map(s => s.trim());
+
+        return f.length > 1 ? (/^\d+$/.test(f[0]) ? f[1] : f[0]) : desc;
+    }
+
+    /* Decoded as the file says it's encoded (Mass's are ISO-8859-1), not always as UTF-8 */
+    async function readText(file) {
+        const buf = await file.arrayBuffer(), head = new TextDecoder('latin1').decode(buf.slice(0, 200));
+        const enc = (head.match(/encoding=["']([\w-]+)["']/i) || [])[1] || 'utf-8';
+
+        try {
+            return new TextDecoder(enc).decode(buf);
+        } catch {
+            return new TextDecoder().decode(buf);
+        }
+    }
+
+    function parseXml(text) {
+        const doc = new DOMParser().parseFromString(text, 'application/xml'), inv = doc.documentElement;
+
+        if (doc.getElementsByTagName('parsererror').length || inv.localName !== 'Invoice') return null;
+
+        const items = kids(inv, 'InvoiceLine').map(line => {
+            const item = kid(line, 'Item'), qty = parseFloat(txt(line, 'InvoicedQuantity')) || 1;
+            const codes = [txt(item, 'SellersItemIdentification', 'ID'), txt(item, 'StandardItemIdentification', 'ID')].filter(Boolean);
+            const net = cents(txt(line, 'LineExtensionAmount')), tax = kids(line, 'TaxTotal').reduce((s, t) => s + (cents(txt(t, 'TaxAmount')) || 0), 0);
+            const each = kids(kid(line, 'PricingReference'), 'AlternativeConditionPrice').find(p => txt(p, 'PriceTypeCode') === '01');
+            const price = !isNaN(net) ? net + tax : each ? Math.round(cents(txt(each, 'PriceAmount')) * qty) : 0;
+
+            return {
+                code: gtin13(codes.find(c => /^\d{8,14}$/.test(c)) || codes[0] || ''),
+                name: descName(squash(kids(item, 'Description').map(d => d.textContent).join(' '))),
+                qty, price, warn: price ? '' : 'no amount'
+            };
+        });
+
+        return {
+            ruc: txt(inv, 'AccountingSupplierParty', 'Party', 'PartyIdentification', 'ID'),
+            ref: txt(inv, 'ID'), date: txt(inv, 'IssueDate'), total: cents(txt(inv, 'LegalMonetaryTotal', 'PayableAmount')), items
+        };
+    }
+
+    $('xmlBtn').onclick = () => $('xmlFile').click();
+
+    $('xmlFile').onchange = async () => {
+        const file = $('xmlFile').files[0], msg = $('scanMsg');
+
+        $('xmlFile').value = '';
+
+        if (!file) return;
+
+        const text = await readText(file);
+
+        if (text.startsWith('PK')) {
+            msg.textContent = 'That’s a zip file: open it and import the XML inside.';
+
+            return;
+        }
+
+        const x = parseXml(text);
+
+        if (!x || !x.items.length) {
+            msg.textContent = x ? 'No item lines in that XML.' : 'That doesn’t look like a receipt’s XML.';
+
+            return;
+        }
+
+        const s = storeOf(x.ruc);
+
+        if (s) {
+            pick(s);
+        } else if (!qr || qr.ruc !== x.ruc) {
+            /* an unknown store: ask, as for a QR code, then import again */
+            qr = { ruc: x.ruc, type: '03', ref: x.ref, total: x.total, date: x.date };
+            renderQr();
+            msg.textContent = 'Pick the store below, then import the XML again.';
+
+            return;
+        }
+
+        const other = qr && !sameRef(qr.ref, x.ref);
+
+        msg.textContent = 'Read ' + x.items.length + ' lines from ' + x.ref + '.' + (other ? ' That isn’t the receipt from the QR code (' + qr.ref + ').' : '');
+        qr = null;
+        renderQr();
+        openReview(x, {});
+    };
+
     /* ---------- checking what was read ---------- */
+    /* The store's codes with their names as on the receipt, for parse to fix misread codes and names */
+    const knownCodes = () => Object.fromEntries(Object.entries(names()).filter(([k]) => !k.startsWith('n:')).map(([k, v]) => [k, v.name]));
+
+    const WARN = { code: 'Check the code: not a valid barcode', amount: 'Check the amount: quantity × price didn’t match the line', 'no amount': 'No amount read' };
+
     function openReview(r, extra) {
         closeReview();
-        review = { id: r.id || null, lines: r.items.map(i => Object.assign({}, i)), photo: extra.photo || null };
+        review = { id: r.id || null, lines: r.items.map(i => Object.assign({}, i)), units: r.units || null, photo: extra.photo || null };
         $('rDate').value = r.date && !isNaN(new Date(r.date + 'T00:00')) ? r.date : today();
         $('rTotal').value = r.total != null ? (r.total / 100).toFixed(2) : '';
         $('rPhotoBox').hidden = !extra.photo;
@@ -379,6 +932,12 @@
 
                 e.oninput = () => {
                     l[field] = field === 'price' ? (toCents(e.value) || 0) : field === 'qty' ? (num(e.value || '1') || 1) : e.value.trim();
+
+                    /* a fixed field clears its warning */
+                    if (field === 'price' && l.price && (l.warn === 'amount' || l.warn === 'no amount')) l.warn = '';
+                    if (field === 'code' && l.warn === 'code' && (eanOk(l.code) || !l.code)) l.warn = '';
+
+                    row.classList.toggle('warn', !!l.warn);
                     hint.textContent = known();
                     each.textContent = l.price ? money(Math.round(l.price / l.qty)) : '';
                     renderSum();
@@ -387,11 +946,11 @@
                 return e;
             };
 
-            /* a code (or name) already seen at this store: show what it's called */
+            /* what to check, and a code (or name) already seen at this store: what it's called, its last price */
             const known = () => {
-                const k = itemKey(l), it = d.items[k];
+                const k = itemKey(l), it = d.items[k], h = hist[k];
 
-                return it ? 'Known' + (it.alias ? ' as ' + it.alias : '') + ' · bought ' + (hist[k] ? hist[k].buys.length : 0) + '×' : '';
+                return [WARN[l.warn], it ? 'Known' + (it.alias ? ' as ' + it.alias : '') + (h ? ' · last ' + money(h.buys[h.buys.length - 1].each) : '') : ''].filter(Boolean).join(' · ');
             };
 
             const hint = el('div', { className: 'sm', textContent: known() });
@@ -404,7 +963,7 @@
                 renderReview();
             };
 
-            return el('tr', {}, [
+            const row = el('tr', { className: l.warn ? 'warn' : '' }, [
                 el('td', {}, [inp('code', { value: l.code, inputMode: 'numeric', maxLength: 20, ariaLabel: 'Code' })]),
                 el('td', {}, [inp('name', { value: l.name, maxLength: 80, ariaLabel: 'Name on receipt' }), hint]),
                 el('td', { className: 'num' }, [inp('qty', { value: l.qty, inputMode: 'decimal', maxLength: 8, ariaLabel: 'Quantity' })]),
@@ -412,15 +971,20 @@
                 each,
                 el('td', {}, [rm])
             ]);
+
+            return row;
         }));
 
         renderSum();
     }
 
+    /* Against the receipt's total and its unit count (Mass prints "37 UNIDAD(ES)"; a weighed item is one unit) */
     function renderSum() {
         const sum = review.lines.reduce((s, l) => s + (l.price || 0), 0), total = toCents($('rTotal').value);
+        const units = review.lines.reduce((s, l) => s + (Number.isInteger(l.qty) ? l.qty : 1), 0);
 
-        $('rSum').textContent = 'Lines add up to ' + money(sum) + (isNaN(total) ? '' : total === sum ? ' ✓ matches the total' : ' · ' + money(Math.abs(total - sum)) + (total > sum ? ' missing' : ' too much') + ' against the total');
+        $('rSum').textContent = 'Lines add up to ' + money(sum) + (isNaN(total) ? '' : total === sum ? ' ✓ matches the total' : ' · ' + money(Math.abs(total - sum)) + (total > sum ? ' missing' : ' too much') + ' against the total') +
+            (review.units ? ' · ' + units + ' units' + (units === review.units ? ' ✓' : ', the receipt says ' + review.units + (units < review.units ? ' (a quantity may be missing)' : '')) : '');
     }
 
     $('rTotal').oninput = renderSum;
@@ -438,7 +1002,8 @@
 
     $('rSave').onclick = async () => {
         const lines = review.lines.filter(l => l.name && l.price > 0).map(l => ({ code: l.code, name: l.name, qty: l.qty || 1, price: l.price }));
-        const err = !db ? 'Supabase isn’t set up, so this can’t be saved.' : !signedIn ? 'Sign in first.' : !lines.length ? 'Nothing to save: every line needs a name and an amount.' : '';
+        const open = review.lines.findIndex(l => (l.code || l.name) && !(l.name && l.price > 0));
+        const err = !db ? 'Supabase isn’t set up, so this can’t be saved.' : !signedIn ? 'Sign in first.' : open >= 0 ? 'Line ' + (open + 1) + ' needs a name and an amount, or remove it.' : !lines.length ? 'Nothing to save: every line needs a name and an amount.' : '';
 
         if (err) {
             $('rSum').textContent = err;
@@ -475,6 +1040,8 @@
 
         closeReview();
         $('scanMsg').textContent = 'Saved ' + lines.length + ' lines from ' + dateText(row.date) + '.';
+        qr = null;
+        renderQr();
         renderData();
     };
 
