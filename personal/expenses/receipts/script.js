@@ -1007,8 +1007,8 @@
 
     $('rSave').onclick = async () => {
         const lines = review.lines.filter(l => l.name && l.price > 0).map(l => ({ code: l.code, name: l.name, qty: l.qty || 1, price: l.price }));
-        const open = review.lines.findIndex(l => (l.code || l.name) && !(l.name && l.price > 0));
-        const err = !db ? 'Supabase isn’t set up, so this can’t be saved.' : !signedIn ? 'Sign in first.' : open >= 0 ? 'Line ' + (open + 1) + ' needs a name and an amount, or remove it.' : !lines.length ? 'Nothing to save: every line needs a name and an amount.' : '';
+        const unfinished = review.lines.findIndex(l => (l.code || l.name) && !(l.name && l.price > 0));
+        const err = !db ? 'Supabase isn’t set up, so this can’t be saved.' : !signedIn ? 'Sign in first.' : unfinished >= 0 ? 'Line ' + (unfinished + 1) + ' needs a name and an amount, or remove it.' : !lines.length ? 'Nothing to save: every line needs a name and an amount.' : '';
 
         if (err) {
             $('rSum').textContent = err;
@@ -1132,12 +1132,12 @@
     function renderPrices(d) {
         const q = keyOf($('q').value);
         const all = Object.values(history(d)).sort((a, b) => b.buys[b.buys.length - 1].date.localeCompare(a.buys[a.buys.length - 1].date) || label(d, a.key, a.name).localeCompare(label(d, b.key, b.name)));
-        const rows = q ? all.filter(h => [label(d, h.key, h.name), (d.items[h.key] || {}).name || h.name, h.code].some(s => keyOf(s || '').includes(q))) : all;
+        const hits = q ? all.filter(h => [label(d, h.key, h.name), (d.items[h.key] || {}).name || h.name, h.code].some(s => keyOf(s || '').includes(q))) : all;
         const tb = $('prices');
 
         tb.replaceChildren(el('tr', {}, [el('th', { textContent: 'Item' }), el('th', { className: 'num', textContent: 'Last' }), el('th', { className: 'num', textContent: 'Change' }), el('th', { className: 'num', textContent: 'Lowest' }), el('th', { className: 'num', textContent: 'Bought' })]));
 
-        rows.forEach(h => {
+        hits.forEach(h => {
             const last = h.buys[h.buys.length - 1], low = Math.min(...h.buys.map(b => b.each));
             const more = el('button', { type: 'button', textContent: h.buys.length + '×', title: 'Show every price' });
 
@@ -1161,7 +1161,7 @@
             }
         });
 
-        $('pNote').textContent = !rows[store] ? waiting() : !all.length ? 'No receipts for ' + store + ' yet.' : q && !rows.length ? 'Nothing matches.' : 'Prices are for one (per kg for weighed items). ✎ gives an item a clear name; the name on the receipt stays underneath.';
+        $('pNote').textContent = !rows[store] ? waiting() : !all.length ? 'No receipts for ' + store + ' yet.' : q && !hits.length ? 'Nothing matches.' : 'Prices are for one (per kg for weighed items). ✎ gives an item a clear name; the name on the receipt stays underneath.';
     }
 
     $('q').oninput = () => renderPrices(data());
