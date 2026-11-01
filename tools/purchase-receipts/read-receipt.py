@@ -90,7 +90,7 @@ DISC = re.compile(r'DSCTO|DESCUENTO|\bDESC\b|AHORRO|PROMOCI', re.I)
 LETTERS = re.compile(r'[A-Za-zÑñÁÉÍÓÚáéíóú].*[A-Za-zÑñÁÉÍÓÚáéíóú]')
 
 
-def money(tok, whole=False):
+def price_of(tok, whole=False):
     """A price token in céntimos, fixing common misreads (O→0, l→1, S→5, comma or colon for the point). With whole,
     three or four bare digits count too (520 → 5.20): the point is often lost."""
     t = tok.strip()
@@ -116,14 +116,14 @@ def last_amount(raw, whole=False):
     cols = re.split(r'\s{3,}', raw.strip())
 
     if len(cols) > 1:
-        v = money(cols[-1], whole)
+        v = price_of(cols[-1], whole)
 
         if v is not None:
             return v, cols
 
     m = TAIL.search(' '.join(raw.split()))
 
-    return (money(m[1]) if m else None), cols
+    return (price_of(m[1]) if m else None), cols
 
 
 def ean_ok(c):
@@ -203,7 +203,7 @@ def parse(text, known=None):
 
         # quantity or weight line: "2 X 3.50 7.00", ".525 KG X 2.60 1.36"; belongs to the item just above
         if q and (q[1] or q[2]):
-            vals = [money(t) for t in AMOUNTS.findall(q[3])]
+            vals = [price_of(t) for t in AMOUNTS.findall(q[3])]
             vals = [v for v in vals if v]
             each = vals[0] if vals else None
             paid = vals[-1] if len(vals) > 1 else None

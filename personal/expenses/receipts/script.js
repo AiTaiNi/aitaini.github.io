@@ -182,7 +182,7 @@
     const squash = s => s.replace(/\s+/g, ' ').trim();
 
     /* A price in céntimos, misreads fixed. With whole, three or four bare digits count too (520 → 5.20). */
-    function money(tok, whole) {
+    function priceOf(tok, whole) {
         let t = tok.trim();
 
         if (whole && /^\d{3,4}$/.test(t)) return +t;
@@ -203,14 +203,14 @@
         const cols = raw.trim().split(/\s{3,}/);
 
         if (cols.length > 1) {
-            const v = money(cols[cols.length - 1], whole);
+            const v = priceOf(cols[cols.length - 1], whole);
 
             if (v != null) return [v, cols];
         }
 
         const m = squash(raw).match(TAIL);
 
-        return [m ? money(m[1]) : null, cols];
+        return [m ? priceOf(m[1]) : null, cols];
     }
 
     /* EAN-13 or EAN-8 check digit */
@@ -282,7 +282,7 @@
 
             /* quantity or weight line: belongs to the item just above */
             if (q && (q[1] || q[2])) {
-                const vals = (q[3].match(AMOUNTS) || []).map(t => money(t)).filter(v => v);
+                const vals = (q[3].match(AMOUNTS) || []).map(t => priceOf(t)).filter(v => v);
                 const each = vals[0] || null, kg = (q[2] || '')[0] === 'K' || (q[1] || '').startsWith('.');
                 let paid = vals.length > 1 ? vals[vals.length - 1] : null, qty = q[1] ? num(q[1]) : null, warn = '';
 
@@ -823,7 +823,12 @@
         }
     }
 
+    /* Mass's XML declares xmlns:schemaLocation="urn:… ..\xsd\maindoc\UBLPE-Invoice-2.1.xsd" (meant as
+       xsi:schemaLocation): not a valid namespace, so browsers refuse the whole file. Elements are only matched by their
+       local names here, so namespace declarations with spaces or backslashes are dropped before parsing. */
     function parseXml(text) {
+        text = text.replace(/\s+xmlns:[\w.-]+\s*=\s*("[^"]*[\s\\][^"]*"|'[^']*[\s\\][^']*')/g, '');
+
         const doc = new DOMParser().parseFromString(text, 'application/xml'), inv = doc.documentElement;
 
         if (doc.getElementsByTagName('parsererror').length || inv.localName !== 'Invoice') return null;

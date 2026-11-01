@@ -104,6 +104,9 @@ Plus the store's RUC (`cac:AccountingSupplierParty`), the receipt's `cbc:ID` and
 What Mass's XML (from Axteroid) does differently, all handled:
 
 - It's encoded as ISO-8859-1, so the file is decoded as its first line says, not always as UTF-8.
+- Its root declares `xmlns:schemaLocation="urn:… ..\xsd\maindoc\UBLPE-Invoice-2.1.xsd"` (meant as
+  `xsi:schemaLocation`). That isn't a valid namespace, so browsers refuse the whole file; namespace declarations
+  containing spaces or backslashes are removed before parsing (elements are matched by local name only).
 - The code is padded to 14 digits (`02200204244226`); the leading 0 is dropped to get the 13-digit barcode printed
   on the receipt, so items from XML and from photos share one history.
 - The description is the printed line in `@@` fields: `2200204244226@@FRSTFREC500G@@ 2 X      6.90@@13.80@@`
