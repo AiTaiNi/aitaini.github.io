@@ -68,7 +68,8 @@ page under `/personal/` opens inside it, so a new page needs nothing extra.
   shortcuts to Today, Calendar and Expenses. A new page can get a shortcut there.
 - [personal/sw.js](../personal/sw.js): the service worker, registered by `personal/hub.js` with scope `/personal/`.
   It's **network first**: the network copy is used whenever there is one, so a deploy shows up on the next load,
-  and the cached copy is only used offline. It caches page files only (this site, supabase-js, the font).
+  and the cached copy is only used offline. Site files are fetched with `cache: 'no-cache'` (GitHub Pages sends
+  `max-age=600`, which could otherwise mix a new page with an old script). It caches page files only (this site, supabase-js, the font).
   Supabase API calls never go through the cache, so private data stays in Sync's local copy and the database.
 - Offline, pages open with Sync's local copy and upload changes when back online. Pages that read tables
   (Statements, Expenses) need the network.
