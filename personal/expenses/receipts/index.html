@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Receipts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+  <script src="/assets/sync.js"></script>
+  <script src="/personal/shopping/stores.js"></script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Receipts</h1>
+      </div>
+      <nav class="tools">
+        <a href="/personal/">All pages</a>
+        <a href="/personal/expenses/">Expenses</a>
+        <a href="/personal/shopping/">Shopping</a>
+      </nav>
+    </header>
+
+    <!-- Everything below is for the chosen store: each store has its own codes, names and prices -->
+    <div class="seg stores" id="stores" role="group" aria-label="Store"></div>
+    <p class="note">Stores come from the <a href="/personal/shopping/">Shopping</a> list's Settings.</p>
+
+    <section class="card" id="scanCard">
+      <h2>Add a receipt</h2>
+      <div class="btns">
+        <button class="pri" id="scanBtn">Scan photo…</button>
+        <button id="pasteBtn">Paste text</button>
+        <button id="handBtn">Enter by hand</button>
+      </div>
+      <input type="file" id="photo" accept="image/*" hidden>
+      <div id="pasteBox" hidden>
+        <textarea id="pasteText" placeholder="Paste the receipt's text here, one line per row"></textarea>
+        <div class="btns"><button class="pri" id="pasteRead">Read text</button><button id="pasteCancel">Cancel</button></div>
+      </div>
+      <p class="msg" id="scanMsg"></p>
+
+      <!-- Check what was read before saving: the text reader makes mistakes -->
+      <div id="review" hidden>
+        <div class="rhead">
+          <label>Date <input type="date" id="rDate" required></label>
+          <label>Receipt total <input id="rTotal" inputmode="decimal" placeholder="0.00" autocomplete="off"></label>
+        </div>
+        <div class="scroll">
+          <table class="lines" id="rLines">
+            <thead>
+              <tr><th>Code</th><th>Name on receipt</th><th class="num">Qty</th><th class="num">Paid</th><th class="num">Each</th><th></th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="btns rfoot">
+          <button id="addLine">+ Line</button>
+          <span class="msg" id="rSum"></span>
+        </div>
+        <details id="rPhotoBox" hidden>
+          <summary>Photo</summary>
+          <img id="rPhoto" alt="The scanned receipt">
+        </details>
+        <details id="rTextBox" hidden>
+          <summary>Text as read</summary>
+          <pre id="rText"></pre>
+        </details>
+        <div class="btns rfoot">
+          <button class="pri" id="rSave">Save receipt</button>
+          <button id="rCancel">Cancel</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Prices</h2>
+      <input type="search" id="q" placeholder="Search names and codes…" aria-label="Search items">
+      <div class="scroll"><table class="lines" id="prices"></table></div>
+      <p class="note" id="pNote"></p>
+    </section>
+
+    <section class="card">
+      <h2>Saved receipts</h2>
+      <div class="scroll"><table class="lines" id="receipts"></table></div>
+      <p class="note" id="rNote"></p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

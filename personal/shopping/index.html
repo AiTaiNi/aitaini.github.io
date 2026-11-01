@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
   <script src="/assets/sync.js"></script>
+  <script src="stores.js"></script>
 </head>
 
 <body>
@@ -24,6 +25,8 @@
       <nav class="tools">
         <a href="/personal/">All pages</a>
         <a href="/personal/today/">Today</a>
+        <a href="/personal/expenses/receipts/">Receipts</a>
+        <button id="openSet">Settings</button>
       </nav>
     </header>
 
@@ -47,6 +50,22 @@
       <ul class="known" id="knownList"></ul>
     </details>
   </main>
+
+  <!-- Settings menu (header button), like the dashboard's. Changes save as you make them. -->
+  <dialog id="setDlg">
+    <h3>Settings</h3>
+    <h4>Stores</h4>
+    <ul class="storelist" id="storeList"></ul>
+    <form class="add" id="storeAdd">
+      <input id="storeName" placeholder="New store" maxlength="40" aria-label="New store" autocomplete="off">
+      <button>Add</button>
+    </form>
+    <p class="msg" id="storeMsg"></p>
+    <p class="note">The order here is the order on the list. Items at a removed store show under the first one.
+      Receipts uses the same stores, and keeps a removed store's prices in case you add it back.</p>
+    <p class="note">Saved as you change them, on all your devices.</p>
+    <div class="dlgfoot"><button class="pri" id="setDone">Done</button></div>
+  </dialog>
 
   <script src="script.js"></script>
 </body>

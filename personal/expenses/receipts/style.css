@@ -1,0 +1,185 @@
+/* Receipts only. Theme and shared layout come from /assets/base.css and /assets/app.css. */
+main {
+    max-width: 900px
+}
+
+main > .card {
+    margin-top: 12px
+}
+
+.stores {
+    flex-wrap: wrap
+}
+
+.sm {
+    color: var(--sub);
+    font-size: .8rem;
+    font-weight: 400
+}
+
+/* ---------- adding ---------- */
+#pasteBox textarea {
+    width: 100%;
+    min-height: 160px;
+    margin: 10px 0 8px;
+    resize: vertical;
+    font: 13px ui-monospace, Menlo, monospace
+}
+
+#review {
+    margin-top: 14px
+}
+
+.rhead {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px
+}
+
+.rhead label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500
+}
+
+.rhead #rTotal {
+    width: 7em
+}
+
+#rLines input {
+    width: 100%;
+    min-width: 0;
+    padding: 3px 6px
+}
+
+#rLines td {
+    vertical-align: top
+}
+
+#rLines td:nth-child(1) {
+    width: 9em
+}
+
+#rLines td:nth-child(2) {
+    min-width: 12em;
+    white-space: normal
+}
+
+#rLines td:nth-child(3) {
+    width: 4.5em
+}
+
+#rLines td:nth-child(4) {
+    width: 6em
+}
+
+#rLines td.num input {
+    text-align: right
+}
+
+#rLines .sm {
+    margin-top: 2px
+}
+
+#rLines td.each {
+    padding-top: 9px
+}
+
+#rLines button,
+.lines button.ren {
+    padding: 0 6px;
+    background: transparent;
+    color: var(--sub)
+}
+
+#rLines button:hover,
+.lines button.ren:hover,
+.lines button.ren:focus {
+    background: var(--tint);
+    color: var(--link)
+}
+
+.rfoot {
+    align-items: center;
+    margin-top: 10px
+}
+
+.rfoot .msg {
+    margin: 0
+}
+
+#review details {
+    margin-top: 10px
+}
+
+#rPhoto {
+    display: block;
+    max-width: 100%;
+    max-height: 70vh;
+    margin-top: 8px;
+    border-radius: var(--radius)
+}
+
+#rText {
+    max-height: 50vh;
+    overflow: auto;
+    margin: 8px 0 0;
+    padding: 8px;
+    border-radius: var(--radius);
+    background: var(--tint);
+    font-size: .8rem;
+    white-space: pre-wrap
+}
+
+/* ---------- prices and receipts ---------- */
+#q {
+    width: 100%
+}
+
+.lines td.name {
+    white-space: normal;
+    min-width: 12em
+}
+
+.lines td.name .sm {
+    overflow-wrap: anywhere
+}
+
+.lines button.ren {
+    margin-left: 6px;
+    font-size: .85rem
+}
+
+.lines input.ren-in {
+    width: 100%;
+    min-width: 10em;
+    padding: 3px 6px
+}
+
+.lines tr.more td {
+    border-top: 0;
+    padding-top: 0;
+    white-space: normal
+}
+
+.hist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: .85rem;
+    font-variant-numeric: tabular-nums
+}
+
+.hist span {
+    color: var(--sub)
+}
+
+.lines td .btns {
+    flex-wrap: nowrap;
+    gap: 6px
+}
+
+.lines td .btns button {
+    padding: 2px 10px
+}

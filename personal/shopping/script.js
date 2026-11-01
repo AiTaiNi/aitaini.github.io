@@ -1,10 +1,12 @@
 /* Shopping list. Two synced keys (see _docs/private-pages.md):
      shopping-list   the current list: [{ id, name, store, amount, added }]; amount is free text ("4", "2kg")
      shopping-items  what's been bought before: { lowercased name: { name, store, n, last } }, the suggestions
-   Only ✓ (bought) adds an item to shopping-items or updates its store; × just removes it from the list. */
+   Only ✓ (bought) adds an item to shopping-items or updates its store; × just removes it from the list.
+   The stores are a third key, edited in Settings and shared with Receipts (stores.js). An item whose store was
+   removed shows under the first store. */
 (() => {
     const LIST = 'shopping-list', KNOWN = 'shopping-items';
-    const STORES = ['Market', 'Corner store', 'Mass', 'Plaza Vea'];
+    let STORES = Stores.list();
 
     /* First sync on a device that already has data: keep both copies. List items by id; remembered items by name,
        the most recently bought copy winning. */
@@ -52,10 +54,15 @@
         return e;
     }
 
-    function storeSelect(value, onchange) {
-        const s = el('select', {}, STORES.map(n => el('option', { value: n, textContent: n })));
-
+    function fillStores(s, value) {
+        s.replaceChildren(...STORES.map(n => el('option', { value: n, textContent: n })));
         s.value = STORES.includes(value) ? value : STORES[0];
+    }
+
+    function storeSelect(value, onchange) {
+        const s = el('select');
+
+        fillStores(s, value);
         s.onchange = () => onchange(s.value);
 
         return s;
@@ -185,7 +192,7 @@
     $('name').addEventListener('input', () => {
         const k = known[keyOf($('name').value)];
 
-        if (k) addStore.value = k.store;
+        if (k) addStore.value = STORES.includes(k.store) ? k.store : STORES[0];
 
         renderSuggest();
     });
@@ -213,6 +220,67 @@
         $('name').focus();
         saveList();
     };
+
+    /* ---------- settings: the store list ---------- */
+    function renderStores() {
+        $('storeList').replaceChildren(...STORES.map((n, i) => {
+            const btn = (text, label, disabled, fn) => {
+                const b = el('button', { type: 'button', textContent: text, disabled, onclick: fn });
+
+                b.setAttribute('aria-label', label + ' ' + n);
+
+                return b;
+            };
+
+            const move = d => {
+                const v = STORES.slice();
+
+                [v[i], v[i + d]] = [v[i + d], v[i]];
+                Stores.save(v);
+            };
+
+            return el('li', {}, [
+                el('span', { textContent: n }),
+                btn('↑', 'Move up', i === 0, () => move(-1)),
+                btn('↓', 'Move down', i === STORES.length - 1, () => move(1)),
+                btn('×', 'Remove', STORES.length < 2, () => Stores.save(STORES.filter(x => x !== n)))
+            ]);
+        }));
+    }
+
+    /* Any change, here or from another device: the list, the add row's menu and the dialog follow */
+    Stores.onChange(v => {
+        STORES = v;
+        fillStores(addStore, addStore.value);
+        render();
+        renderStores();
+    });
+
+    $('storeAdd').onsubmit = e => {
+        e.preventDefault();
+
+        const n = $('storeName').value.trim().replace(/\s+/g, ' ');
+
+        if (!n) return;
+
+        if (STORES.some(x => x.toLowerCase() === n.toLowerCase())) {
+            $('storeMsg').textContent = n + ' is already on the list.';
+
+            return;
+        }
+
+        $('storeMsg').textContent = '';
+        $('storeName').value = '';
+        Stores.save(STORES.concat(n));
+    };
+
+    $('openSet').onclick = () => {
+        renderStores();
+        $('storeMsg').textContent = '';
+        $('setDlg').showModal();
+    };
+
+    $('setDone').onclick = () => $('setDlg').close();
 
     render();
     renderKnown();
