@@ -123,7 +123,7 @@ Scheduling and saving are in ../idn.js.
 
         face.ex.slice(0, 2).forEach(([id, en]) => back.push(el('div', { className: 'ex' }, [el('div', {}, [marked(id, face.w), ' ', sayButton(id)]), el('span', { className: 'en', textContent: en })])));
 
-        /* From your PDFs: their example for this word, and derived forms built on it */
+        /* From PDFs. Their example for this word, derived forms built on it */
         const extra = el('div', { className: 'extra' });
         const mine = (libLemma.get(face.lemma) || []).filter(r => r.example);
         const derived = (libRoot.get(face.root || face.lemma) || []).filter(r => r.indonesian !== face.w).slice(0, 8);

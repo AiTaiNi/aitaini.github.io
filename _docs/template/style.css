@@ -1,4 +1,4 @@
-/* This page's own styles only. Theme (colors, hue, borders, radii) comes from /assets/base.css and the shared layout and controls (.grid, .card, .add, .btns, .seg, tables…) from /assets/app.css. Use their tokens (var(--primary), var(--line), var(--radius)…) instead of fixed colors so the page follows the main site. */
+/* This page's own styles only. Theme (colors, hue, borders, radii) comes from /assets/base.css and the shared layout and controls (.grid, .card, .add, .btns, .seg, tables ...) from /assets/app.css. Use their tokens (var(--primary), var(--line), var(--radius) ...) instead of fixed colors so the page follows the main site. */
 
 /* Example: the synced checklist. Replace with the page's own styles. */
 .list {

@@ -161,7 +161,7 @@
        - an item starts with its code (a 13-digit barcode at Mass) and has its amount in the right-hand column, after a gap of 3+ spaces; a coded line with no amount is kept and flagged, to be filled in
        - a quantity or weight line ("2 X 3.50  7.00", ".525 KG X 2.60  1.36") belongs to the item just above it
        - a discount line comes off the item above; items stop at the subtotal, totals and the unit count come after
-       - common misreads are fixed: O→0, l→1, S→5, a comma or colon for the point, X read as Y, a lost point (520)
+       - common misreads are fixed: O -> 0, l -> 1, S -> 5, a comma or colon for the point, X read as Y, a lost point (520)
        Codes seen before at the store fix misread codes and bring their saved names. */
     const DIG = '0-9OoUDQlI|SB';
     const FIXES = { O: '0', o: '0', U: '0', D: '0', Q: '0', l: '1', I: '1', '|': '1', S: '5', B: '8', ',': '.', ':': '.', ';': '.' };
@@ -178,7 +178,7 @@
     const num = s => parseFloat(s.replace(',', '.'));
     const squash = s => s.replace(/\s+/g, ' ').trim();
 
-    /* A price in céntimos, misreads fixed. With whole, three or four bare digits count too (520 → 5.20). */
+    /* A price in céntimos, misreads fixed. With whole, three or four bare digits count too (520 -> 5.20). */
     function priceOf(tok, whole) {
         let t = tok.trim();
 
@@ -237,7 +237,7 @@
     /* Drops what the reader left after a name: an amount, or bits starting with a symbol ("+90", '"90') */
     const cleanName = name => name.replace(TAIL, '').replace(/(\s+[^\p{L}\p{N}_\s]\S*|[^\p{L}\p{N}_.%/)]+)+$/u, '').trim();
 
-    /* Receipt text → { date, total, units, items: [{ code, name, qty, price, warn }] }. known: { code: name } */
+    /* Receipt text -> { date, total, units, items: [{ code, name, qty, price, warn }] }. known: { code: name } */
     function parse(text, known) {
         const items = [], totals = [];
         let date = null, units = null, done = false, pend = null, last = -9;
@@ -541,7 +541,7 @@
         return { w: W, h: H, d: out };
     }
 
-    /* 1.6 × the image − 0.6 × a Gaussian blur of it (sigma 2) */
+    /* 1.6 x the image - 0.6 x a Gaussian blur of it (sigma 2) */
     function sharpen(g) {
         const kern = Array.from({ length: 13 }, (_, i) => Math.exp(-((i - 6) ** 2) / 8)), ks = kern.reduce((s, v) => s + v, 0);
         const soft = blur(g, kern.map(v => v / ks)), out = new Uint8ClampedArray(g.d.length);
@@ -635,7 +635,7 @@
     };
 
     /* MARK: QR code
-       Peruvian e-receipts carry SUNAT's QR: RUC | type | series | number | IGV | total | date | buyer's ID type | buyer's ID | …
+       Peruvian e-receipts carry SUNAT's QR: RUC | type | series | number | IGV | total | date | buyer's ID type | buyer's ID | ...
        Only the store's RUC, the type, series-number, total and date are kept.
        The RUC picks the store and its lookup site, where the receipt's XML can be downloaded (after a captcha) and imported below. */
     const JSQR = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
@@ -818,7 +818,7 @@
         }
     }
 
-    /* Mass's XML declares xmlns:schemaLocation="urn:… ..\xsd\maindoc\UBLPE-Invoice-2.1.xsd" (meant as xsi:schemaLocation): not a valid namespace, so browsers refuse the whole file. Elements are only matched by their local names here, so namespace declarations with spaces or backslashes are dropped before parsing. */
+    /* Mass's XML declares xmlns:schemaLocation="urn:... ..\xsd\maindoc\UBLPE-Invoice-2.1.xsd" (meant as xsi:schemaLocation): not a valid namespace, so browsers refuse the whole file. Elements are only matched by their local names here, so namespace declarations with spaces or backslashes are dropped before parsing. */
     function parseXml(text) {
         text = text.replace(/\s+xmlns:[\w.-]+\s*=\s*("[^"]*[\s\\][^"]*"|'[^']*[\s\\][^']*')/g, '');
 

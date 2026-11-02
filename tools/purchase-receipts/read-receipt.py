@@ -90,8 +90,8 @@ DISC = re.compile(r'DSCTO|DESCUENTO|\bDESC\b|AHORRO|PROMOCI', re.I)
 LETTERS = re.compile(r'[A-Za-zÑñÁÉÍÓÚáéíóú].*[A-Za-zÑñÁÉÍÓÚáéíóú]')
 
 
-def price_of(tok, whole=False):
-    """A price token in céntimos, fixing common misreads (O→0, l→1, S→5, comma or colon for the point). With whole, three or four bare digits count too (520 → 5.20): the point is often lost."""
+def price_of(tok: str, whole=False):
+    """A price token in céntimos, fixing common misreads (O -> 0, l -> 1, S -> 5, comma or colon for the point). With whole, three or four bare digits count too (520 -> 5.20): the point is often lost."""
     t = tok.strip()
 
     if whole and re.fullmatch(r'\d{3,4}', t):
@@ -155,7 +155,7 @@ def clean_name(name):
 
 
 def parse(text, known=None):
-    """Receipt text → { date, total, units, items: [{ code, name, qty, price, warn }] }. known: { code: name } for the store, used to fix misread codes and names."""
+    """Receipt text -> { date, total, units, items: [{ code, name, qty, price, warn }] }. known: { code: name } for the store, used to fix misread codes and names."""
     known = known or {}
     items, totals = [], []
     date = units = None

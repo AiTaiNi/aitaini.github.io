@@ -8,7 +8,7 @@
      #newTask #newMax #addBtn #manage       add/remove daily tasks
      #countdowns                            events marked "show countdown" that are at most CD_DAYS away
      #evAll                                 every event, soonest first
-     #expJson …                             backup import/export (dashboard settings)
+     #expJson ...                             backup import/export (dashboard settings)
    window.Tasks gives a read-only summary (today's progress, upcoming countdowns) for overview pages, plus syncEvents for pages that keep their own events on the calendar (personal/expenses: yearly payments) and syncTask/dropTask for pages that keep their own daily tasks (personal/learning/indonesian). */
 (function () {
     var KEY = 'daily-tasks-v1';

@@ -2,7 +2,7 @@
    _docs/flashcards.md. First user: personal/learning/indonesian/idn.js.
 
      SRS.outcomes(cur, now, retention)   the four possible results of rating a card (pure, for previews and tests)
-     SRS.label(ms)                       "10 min", "4 d", "3 mo"…
+     SRS.label(ms)                       "10 min", "4 d", "3 mo"...
      SRS.deck(options)                   a store for one set of tables, see below
      SRS.all(db, table, cols, ...order)  every row of a table, 1000 at a time
      SRS.uuid(), SRS.dayKey(date), SRS.startOfDay(date)
@@ -15,7 +15,7 @@
                        second one switches to the first one's row instead of failing
      ops               extra write types: { type: async op => supabase result } (e.g. study-time rows)
      coalesce          op => key: queued writes with the same key replace each other (only the latest is sent)
-     retention         () => target retention, 0.7–0.97 (default 0.9)
+     retention         () => target retention, 0.7-0.97 (default 0.9)
      onFlush           called after each upload attempt (e.g. to show "3 changes waiting")
    It gives: cards (Map id -> row), sched (Map "cardId|direction" -> FSRS state), load(), due(), preview(), answer(), addCard(), patchCard(), enqueue(), flush(), pending(). */
 window.SRS = (() => {
@@ -279,7 +279,7 @@ window.SRS = (() => {
                 return { 1: label(out[1].wait), 2: label(out[2].wait), 3: label(out[3].wait), 4: label(out[4].wait) };
             },
 
-            /* Rate a card (1–4) in one direction: schedules it, saves the review; returns the new state */
+            /* Rate a card (1-4) in one direction: schedules it, saves the review; returns the new state */
             answer(card, dir, rating, ms) {
                 const cur = sched.get(key(card.id, dir)) || null, now = Date.now();
                 const out = outcomes(cur, now, retention())[rating];

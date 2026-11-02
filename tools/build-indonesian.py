@@ -7,7 +7,7 @@ Build the data for the Indonesian learning pages (personal/learning/indonesian/)
 `python tools/build-indonesian.py all`     all three
 `--prune`                            with pdfs/sync/all: drop library entries whose PDF is no longer in the folder
 
-The PDF library is cumulative: new PDFs are added, a changed PDF replaces its own entries, and entries from PDFs you've deleted stay unless you pass --prune.
+The PDF library is cumulative: new PDFs are added, a changed PDF replaces its own entries, and entries from deleted PDFs stay unless --prune is passed.
 
 Sources go in tools/indonesian/raw/ (git-ignored): the kaikki.org Indonesian Wiktionary extract, Tatoeba's Indonesian and English sentences with their links, and the FrequencyWords Indonesian list. Hand-written content is in tools/indonesian/content/. Needs PySastrawi and PyYAML (`pip install PySastrawi pyyaml`); the PDF step also needs PyMuPDF (already used by tools/parse-statements.py).
 
@@ -54,8 +54,8 @@ SOURCES = [
 ]
 
 DECK_SIZE = 3000       # about a year at the study plan's pace (_docs/indonesian-study-plan.md)
-SLANG_START = 20       # hand-written casual words are mixed into the deck from this position…
-SLANG_EVERY = 10       # …one every this many words
+SLANG_START = 20       # hand-written casual words are mixed into the deck from this position
+SLANG_EVERY = 10       # one every this many words
 FORMS_TOP = 30000      # how many of the most frequent words get an entry in forms.json
 EXAMPLES = 3           # example sentences kept per deck word
 MAX_SENSES = 6
@@ -319,7 +319,7 @@ def short_gloss(lex: dict[str, list[dict]], w: str, depth: int = 0) -> tuple[str
 
 # MARK: Forms
 class Analyser:
-    """Maps any surface form to a dictionary word: itself, minus clitics (-nya, -ku…), casual affixes, or a stem."""
+    """Maps any surface form to a dictionary word: itself, minus clitics (-nya, -ku, ...), casual affixes, or a stem."""
 
     def __init__(self, lex: dict[str, list[dict]]) -> None:
         from Sastrawi.Stemmer.StemmerFactory import StemmerFactory

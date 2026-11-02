@@ -106,7 +106,7 @@ def read_rows(doc: pymupdf.Document) -> list[Row]:
 
 # MARK: Tokens
 def cents(s: str) -> tuple[int, bool] | None:
-    """'1,234.56' → (123456, False); '45.00-' → (4500, True)."""
+    """'1,234.56' -> (123456, False); '45.00-' -> (4500, True)."""
     m = AMOUNT.match(s)
 
     if not m: return None
@@ -128,7 +128,7 @@ def full_date(s: str) -> date | None:
 
 
 def short_date(s: str, end: date) -> date | None:
-    """'05DIC' → the latest such date on or shortly after the statement's end (so December rows in a January statement get last year)."""
+    """'05DIC' -> the latest such date on or shortly after the statement's end (so December rows in a January statement get last year)."""
     m = SHORT_DATE.match(s)
 
     if not m or norm(m[2]) not in MONTHS: return None
@@ -187,7 +187,8 @@ class Statement:
 
 
 def find_period(rows: list[Row]) -> tuple[date, date]:
-    """First line with two full dates: "DEL 01/12/25 AL 31/12/25" (debit) or the card's "Del … Al …" line (credit)."""
+    """First line with two full dates: "DEL 01/12/25 AL 31/12/25" (debit) or the card's "Del ... Al ..." line (credit)."""
+
     for r in rows:
         if r.page > 1: break
 

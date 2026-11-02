@@ -102,7 +102,7 @@
     const savedFor = r => saved.find(s => s.account === r.account && s.period.slice(0, 7) === r.period);
 
     /* MARK: Loading JSON */
-    /* One tools/parse-statements.py file → { st, result } or an error message */
+    /* One tools/parse-statements.py file -> { st, result } or an error message */
     function load(o) {
         if (!o || o.format !== 'bcp-statement' || !o.statement || !Array.isArray(o.transactions)) return 'Not a statement file from tools/parse-statements.py.';
 

@@ -221,7 +221,7 @@ summary {
   color: var(--card)
 }
 
-/* Segmented toggle: <div class="seg"><button aria-pressed="true">…</button>…</div> */
+/* Segmented toggle: <div class="seg"><button aria-pressed="true">...</button>...</div> */
 .seg {
   display: inline-flex;
   gap: 2px;

@@ -110,7 +110,7 @@
 
     /* MARK: Analysis */
     /* Card purchases are grouped by merchant, so "DLC*MICROSOFT LIMA" and "DLC*Microsoft 365 F" are one line:
-       drop the payment processor (DLC*, PAYPAL *, Google …) and anything with digits, keep the first word (two if the first is short, so DIDI DRIVE and DIDI FOOD stay apart). */
+       drop the payment processor (DLC*, PAYPAL *, Google ...) and anything with digits, keep the first word (two if the first is short, so DIDI DRIVE and DIDI FOOD stay apart). */
     function merchant(d) {
         const w = d.replace(/^[A-Z-]{1,8} ?\*\s*/, '').replace(/^GOOGLE /, '').replace(/[^A-Z0-9.&' ]/g, ' ').split(' ').filter(t => t && !/\d/.test(t));
 
@@ -136,7 +136,7 @@
         return l.ref === 'CONSUMO' ? l.name.split(' ').map(nice).join(' ') : nice(l.name);
     }
 
-    /* periods: { credit: ['2026-01', …], debit: […] }, lines: { key: { acc, cur, ref, name, desc, by: {period: cents}, n: {period: count} } } */
+    /* periods: { credit: ['2026-01', ...], debit: [...] }, lines: { key: { acc, cur, ref, name, desc, by: {period: cents}, n: {period: count} } } */
     function build(stmts, txs) {
         const periods = {}, sp = {}, lines = {};
 

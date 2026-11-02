@@ -50,7 +50,7 @@
   visibility: hidden
 }
 
-/* Graded days get a red→green background from tasks.js */
+/* Graded days get a red to green background from tasks.js */
 .day.graded {
   color: #111
 }
@@ -149,7 +149,7 @@ label.t.done span {
   text-decoration: line-through
 }
 
-/* Counter tasks: − 2/3 + */
+/* Counter tasks: - 2/3 + */
 .ctr {
   margin-left: auto;
   display: flex;

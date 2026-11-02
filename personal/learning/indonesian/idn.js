@@ -24,8 +24,8 @@ window.Idn = (() => {
 
     const DEFAULTS = {
         start: '',            /* first day of the plan (YYYY-MM-DD), set on first use */
-        newWeekday: 10,       /* new cards Monday–Friday… */
-        newWeekend: 0,        /* …and at weekends (the plan: reviews only) */
+        newWeekday: 10,       /* new cards Monday-Friday ... */
+        newWeekend: 0,        /* ... and at weekends (the plan: reviews only) */
         retention: 0.9,       /* FSRS target: chance of remembering a card when it's due */
         activeUpTo: 800,      /* deck words up to here are also reviewed English -> Indonesian (typed) */
         maxReviews: 200,      /* reviews per day at most; the rest move on (after missed days) */
@@ -215,7 +215,7 @@ window.Idn = (() => {
         changed();
     };
 
-    /* Immersion time logged by hand (watching, reading…), queued like everything else */
+    /* Immersion time logged by hand (watching, reading, etc), queued like everything else */
     api.logSession = row => store.enqueue({ t: 'session', row: Object.assign({ id: uuid(), day: dayKey(), started_at: new Date().toISOString() }, row) });
 
     /* MARK: PDF library */
