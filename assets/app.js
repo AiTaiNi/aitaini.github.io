@@ -235,9 +235,9 @@ async function view(hash) {
   const paged = base => n => n === 1 ? base : `${base}/${n}`;
   const homeHref = n => n === 1 ? '#/' : `#/page/${n}`;
 
-  if (route === '') return { title: '', nav: '', html: cards(posts, '', 1, homeHref) };
+  if (route === '') return { title: '', nav: 'home', html: cards(posts, '', 1, homeHref) };
 
-  if (route === 'page') { const n = num(arg); return { title: n > 1 ? `Page ${n}` : '', nav: '', html: cards(posts, '', n, homeHref) }; }
+  if (route === 'page') { const n = num(arg); return { title: n > 1 ? `Page ${n}` : '', nav: 'home', html: cards(posts, '', n, homeHref) }; }
 
   if (route === 'post') {
     const p = posts.find(x => x.id === a);
@@ -280,7 +280,7 @@ async function go() {
   main.innerHTML = v.html;
   document.title = v.title ? `${v.title} - ${SITE}` : SITE;
 
-  document.querySelectorAll('.links a[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === v.nav));
+  document.querySelectorAll('.nav a[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === v.nav));
   document.querySelectorAll('.dd').forEach(d => {
     const l = d.querySelector('.dd-label');
     if (l) l.classList.toggle('on', !!d.querySelector('.sub .on') || l.dataset.nav === v.nav);

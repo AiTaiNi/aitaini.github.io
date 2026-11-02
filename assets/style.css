@@ -26,16 +26,18 @@
   box-shadow: var(--shadow-hi)
 }
 
+/* Home looks like the other header links (.btn); it just sits on the left */
 .logo {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--link);
-  padding: .5rem .9rem;
-  border-radius: .65rem;
   margin-right: auto
 }
 
-.logo:hover {
+/* The current page: bold and in the link colour, no background */
+.nav .btn.on {
+  background: transparent;
+  font-weight: 700
+}
+
+.nav .btn.on:hover {
   background: var(--tint)
 }
 
