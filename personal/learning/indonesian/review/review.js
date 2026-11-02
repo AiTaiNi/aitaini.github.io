@@ -1,7 +1,7 @@
 /*
 Indonesian review session: learning cards due now, then today's reviews, then new cards.
 
-Recognise cards show the Indonesian; recall cards show the meaning and asks for the word to be typed.
+Recognise cards show the Indonesian; recall cards show the meaning and ask for the word to be typed.
 
 Scheduling and saving are in ../idn.js.
 */

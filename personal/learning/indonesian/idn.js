@@ -9,7 +9,7 @@
      Idn.data(name)            a file from data/, fetched once per data version
      Idn.settings, Idn.setSettings(patch)
      Idn.cards, Idn.sched      Map id -> card row; Map "cardId|direction" -> schedule row (FSRS state)
-     Idn.face(card, deck)      what a card shows: word, meaning, forms, examples (deck entry and your edits merged)
+     Idn.face(card, deck)      what a card shows: word, meaning, forms, examples (deck entry and edits merged)
      Idn.queue()               today's work: learning, review and new items, in order
      Idn.answer(item, rating)  schedule a review, save it (queued offline, sent when possible); returns the new state
      Idn.preview(item)         the wait each rating would give, for the buttons
@@ -208,7 +208,7 @@ window.Idn = (() => {
         return s;
     };
 
-    /* Cards you add (a topic set from your PDFs, or pulled forward from the deck); they come first among new cards */
+    /* Cards added (topic set from PDFs, pulled forward from the deck). They come first among new cards */
     api.addCards = rows => {
         rows.forEach(r => store.addCard(Object.assign({ active: true }, r)));
         changed();

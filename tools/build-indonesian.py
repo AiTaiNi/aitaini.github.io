@@ -3,7 +3,7 @@ Build the data for the Indonesian learning pages (personal/learning/indonesian/)
 
 `python tools/build-indonesian.py`         public data -> personal/learning/indonesian/data/ (dictionary, deck, forms, sentences, slang, plan)
 `python tools/build-indonesian.py pdfs`    private: adds tools/indonesian/pdfs/ to tools/indonesian/out-private/library.json
-`python tools/build-indonesian.py sync`    private: uploads that library to Supabase table idn_library (asks you to sign in)
+`python tools/build-indonesian.py sync`    private: uploads that library to Supabase table idn_library, requires credentials
 `python tools/build-indonesian.py all`     all three
 `--prune`                            with pdfs/sync/all: drop library entries whose PDF is no longer in the folder
 

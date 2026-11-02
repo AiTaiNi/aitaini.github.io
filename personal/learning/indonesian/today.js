@@ -1,4 +1,4 @@
-/* Indonesian Today page: today's numbers,current position in the plan, topic sets from your PDFs, immersion log and
+/* Indonesian Today page: today's numbers,current position in the plan, topic sets from PDFs, immersion log and
    settings. Shared logic (cards, scheduling, time, summary) is in idn.js. */
 (() => {
     const $ = id => document.getElementById(id), el = Idn.el;

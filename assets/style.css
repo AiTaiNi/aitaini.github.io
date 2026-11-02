@@ -26,7 +26,7 @@
   box-shadow: var(--shadow-hi)
 }
 
-/* Home looks like the other header links (.btn); sits on the left */
+/* Home looks like the other header links (.btn), sits on the left */
 .logo {
   margin-right: auto
 }

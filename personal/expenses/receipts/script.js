@@ -2,7 +2,7 @@
      receipts table                one row per receipt: { id, store, date, total, lines: [{ code, name, qty, price }] }
      receipt-names-<store slug>    synced key, the store's item names: { key: { name, alias } }
    An item's key is its code on the receipt, or n:<lowercased name> when it has none. `name` is the name as first read
-   off a receipt, `alias` is a natural/redable name. Amounts are céntimos; `price` is what the line cost in total.
+   off a receipt, `alias` is a natural/readable name. Amounts are céntimos; `price` is what the line cost in total.
    Not linked to Shopping's history or the statements: each store's codes and names stay separate. */
 (() => {
     const TESS = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
