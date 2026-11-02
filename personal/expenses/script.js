@@ -1,5 +1,4 @@
-/* Expenses page: sorts saved statement rows (see _docs/statements.md) into subscriptions, bills and transport, and
-   estimates the next cycle. How the sorting and estimates work: _docs/expenses.md.
+/* Expenses page: sorts saved statement rows (see _docs/statements.md) into subscriptions, bills and transport, and estimates the next cycle. How the sorting and estimates work: _docs/expenses.md.
    A "month" is a statement's period: the card's cycle and the debit account's calendar month that end in it.
    Corrections made on the page are synced under KEY; the statement rows themselves are only read. */
 (() => {
@@ -16,8 +15,7 @@
     /* Service payments (PAGOSERVIC) are named by the provider code in front of the account number */
     const PROVIDERS = { LUZ: 'Electricity', SEDA: 'Water', BITE: 'Bitel', CLAR: 'Claro', WIN: 'WIN', BFT: 'BFT' };
 
-    /* Insights: bills, subscriptions and transport keep their group as the category. Anything else uses the category
-       set on the Statements page, else the first of these that matches the description, else Other. */
+    /* Insights: bills, subscriptions and transport keep their group as the category. Anything else uses the category set on the Statements page, else the first of these that matches the description, else Other. */
     const CATS = [
         ['Groceries & snacks', /\bMASS\b|OXXO|TAMBO|FOOD RETAIL|PLAZA ?VEA|TOTTUS|\bWONG\b|\bMETRO\b|MAKRO|VEND|FENIX|MARKET|BODEGA/],
         ['Food & delivery', /FOOD|RAPPI|PEDIDOSYA|\bKFC\b|DOMINO|CHINAWOK|DUNKIN|CAFE|CHIFA|PIZZA|BURGER|POLLER|RESTAURANT|HIGUERA|RAMBLA/],
@@ -37,9 +35,7 @@
     /* A small summary for the hub's Expenses tile, so the hub doesn't have to load every transaction */
     const SUMMARY = 'expense-summary';
 
-    /* Per line: { name, original, reviewed }. A name is shown in place of the automatic one; the statement rows are
-       never changed, and `original` keeps the description the line had when it was renamed. `reviewed` is the date
-       a long-running subscription was last confirmed as still used. */
+    /* Per line: { name, original, reviewed }. A name is shown in place of the automatic one; the statement rows are never changed, and `original` keeps the description the line had when it was renamed. `reviewed` is the date a long-running subscription was last confirmed as still used. */
     const LINES = 'expense-lines';
     const REVIEW_AGAIN = 6;   /* months before a reviewed subscription asks again */
 
@@ -114,8 +110,7 @@
 
     /* MARK: Analysis */
     /* Card purchases are grouped by merchant, so "DLC*MICROSOFT LIMA" and "DLC*Microsoft 365 F" are one line:
-       drop the payment processor (DLC*, PAYPAL *, Google …) and anything with digits, keep the first word
-       (two if the first is short, so DIDI DRIVE and DIDI FOOD stay apart). */
+       drop the payment processor (DLC*, PAYPAL *, Google …) and anything with digits, keep the first word (two if the first is short, so DIDI DRIVE and DIDI FOOD stay apart). */
     function merchant(d) {
         const w = d.replace(/^[A-Z-]{1,8} ?\*\s*/, '').replace(/^GOOGLE /, '').replace(/[^A-Z0-9.&' ]/g, ' ').split(' ').filter(t => t && !/\d/.test(t));
 
@@ -185,8 +180,7 @@
 
     const charged = l => Object.keys(l.by).sort();
 
-    /* Yearly: charged once in each of 2+ statements, 11 to 13 months apart (a charge near the card's closing day can
-       move a cycle either way), for about the same amount. Uses all history, so it doesn't depend on the month shown. */
+    /* Yearly: charged once in each of 2+ statements, 11 to 13 months apart (a charge near the card's closing day can move a cycle either way), for about the same amount. Uses all history, so it doesn't depend on the month shown. */
     function yearly(l) {
         const ps = charged(l), last = l.by[ps[ps.length - 1]];
 
@@ -214,8 +208,7 @@
 
         if (l.ref !== 'CONSUMO') return 'bill';   /* installments, insurance, regular transfers */
 
-        /* A purchase is a subscription if the amount also repeats (within 5%, for USD prices billed via soles and back);
-           a shop visited monthly for similar but not equal amounts stays other */
+        /* A purchase is a subscription if the amount also repeats (within 5%, for USD prices billed via soles and back); a shop visited monthly for similar but not equal amounts stays other */
         const v = hit.map(p => l.by[p]).sort((a, b) => a - b), med = v[v.length >> 1];
 
         return v.filter(x => Math.abs(x - med) <= med * 0.05).length >= 3 ? 'sub' : 'other';
@@ -245,8 +238,7 @@
         return { l, g, has, actual, est, basis, fixed, amount: has ? actual : est };
     }
 
-    /* A yearly line in month m: due 12 months after its last charge, or the month after that if the due month's
-       statement came without it. Expected at the last amount charged (yearly prices tend to go up, not average out). */
+    /* A yearly line in month m: due 12 months after its last charge, or the month after that if the due month's statement came without it. Expected at the last amount charged (yearly prices tend to go up, not average out). */
     function yearItem(A, l, m, g) {
         const has = (A.periods[l.acc] || []).includes(m), actual = l.by[m] || 0;
         const prev = charged(l).filter(p => p < m), last = prev[prev.length - 1], due = last && nextMonth(last, 12);
@@ -379,8 +371,7 @@
         return sel;
     }
 
-    /* Line name with a rename button; the statement description stays underneath. An empty name goes back to the
-       automatic one. Saving stores the name next to the original description in LINES, never in the statement rows. */
+    /* Line name with a rename button; the statement description stays underneath. An empty name goes back to the automatic one. Saving stores the name next to the original description in LINES, never in the statement rows. */
     function nameCell(l, prefix) {
         const td = el('td', { className: 'name' }), m = meta[l.key] || {};
         const sub = el('div', { className: 'sm', textContent: (prefix || '') + ACC[l.acc] + ' · ' + (m.name ? 'from ' : '') + l.desc });
@@ -634,8 +625,7 @@
     }
 
     /* Subscriptions that have been running a year or more: what they've cost, and a prompt to keep or cancel them.
-       "Still using" hides the prompt for REVIEW_AGAIN months; "Cancelled" stops the forecast right away (a later
-       charge still shows up as real). */
+       "Still using" hides the prompt for REVIEW_AGAIN months; "Cancelled" stops the forecast right away (a later charge still shows up as real). */
     function renderReview() {
         const t = $('gReview'), C = current(A), today = new Date().toISOString().slice(0, 10);
 
@@ -679,8 +669,7 @@
     }
 
     /* MARK: Calendar */
-    /* Yearly payments as yearly Calendar events on their last charge date, kept in step on every render. Waits for
-       the first sync so an old copy of the calendar on this device can't replace newer events. */
+    /* Yearly payments as yearly Calendar events on their last charge date, kept in step on every render. Waits for the first sync so an old copy of the calendar on this device can't replace newer events. */
     let calReady = false;
 
     Sync.ready().then(() => {

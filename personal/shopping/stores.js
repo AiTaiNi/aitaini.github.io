@@ -1,7 +1,6 @@
 /* The store list, shared by Shopping (which edits it in its Settings) and Receipts. One synced key:
      shopping-stores   ['Market', 'Corner store', …] in the order they're shown
-   Load after /assets/sync.js. Stores.list() reads it, Stores.save(list) saves it, Stores.onChange(fn) runs fn(list)
-   when another device or tab changes it. Stores.slug(name) is the name as a key part ('Plaza Vea' → 'plaza-vea'). */
+   Load after /assets/sync.js. Stores.list() reads it, Stores.save(list) saves it, Stores.onChange(fn) runs fn(list) when another device or tab changes it. Stores.slug(name) is the name as a key part ('Plaza Vea' → 'plaza-vea'). */
 (() => {
     const KEY = 'shopping-stores';
     const DEFAULTS = ['Market', 'Corner store', 'Mass', 'Plaza Vea', 'Dollar City'];

@@ -4,8 +4,7 @@
      StatementsDue.check()  → Promise of [{ account, label, month: 'YYYY-MM', ready: 'YYYY-MM-DD' }], oldest first
      StatementsDue.text(list) → one line for a page, or '' when nothing is due
 
-   A statement is expected GRACE days after its cycle closes: the card's closing day a month after the last
-   imported statement's end, or the end of the next calendar month for the debit account. */
+   A statement is expected GRACE days after its cycle closes: the card's closing day a month after the last imported statement's end, or the end of the next calendar month for the debit account. */
 (() => {
     const GRACE = 3;
     const LABEL = { credit: 'Credit card', debit: 'Debit account' };

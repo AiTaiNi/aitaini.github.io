@@ -2,14 +2,12 @@
      shopping-list   the current list: [{ id, name, store, amount, added }]; amount is free text ("4", "2kg")
      shopping-items  what's been bought before: { lowercased name: { name, store, n, last } }, the suggestions
    Only ✓ (bought) adds an item to shopping-items or updates its store; × just removes it from the list.
-   The stores are a third key, edited in Settings and shared with Receipts (stores.js). An item whose store was
-   removed shows under the first store. */
+   The stores are a third key, edited in Settings and shared with Receipts (stores.js). An item whose store was removed shows under the first store. */
 (() => {
     const LIST = 'shopping-list', KNOWN = 'shopping-items';
     let STORES = Stores.list();
 
-    /* First sync on a device that already has data: keep both copies. List items by id; remembered items by name,
-       the most recently bought copy winning. */
+    /* First sync on a device that already has data: keep both copies. List items by id; remembered items by name, the most recently bought copy winning. */
     const merge = {
         [LIST]: (local, remote) => {
             const ids = new Set(remote.map(i => i.id));
@@ -159,8 +157,7 @@
         }));
     }
 
-    /* Chips under the add row instead of a <datalist>, which most phone browsers hide or ignore. Shown from two typed
-       characters: names with a word starting with it first, then names containing it. Items already on the list are left out. */
+    /* Chips under the add row instead of a <datalist>, which most phone browsers hide or ignore. Shown from two typed characters: names with a word starting with it first, then names containing it. Items already on the list are left out. */
     function renderSuggest() {
         const q = keyOf($('name').value), onList = new Set(list.map(i => keyOf(i.name)));
         const pool = sorted().filter(k => !onList.has(keyOf(k.name)) && keyOf(k.name) !== q);

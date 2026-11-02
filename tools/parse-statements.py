@@ -5,8 +5,7 @@ Turn BCP statement PDFs into JSON files for the statements page (personal/statem
 `python tools/parse-statements.py FILE_OR_FOLDER ...`  specific PDFs or folders
 `--out DIR`                                      where the JSON goes (default personal/statements/json, git-ignored)
 
-EECC_AHORRO* is the debit (savings) account and EECC_VISA* the credit card. The account, period and currency are
-read from the PDF itself. The PDF password is asked for once (or set BCP_PDF_PASSWORD).
+EECC_AHORRO* is the debit (savings) account and EECC_VISA* the credit card. The account, period and currency are read from the PDF itself. The PDF password is asked for once (or set BCP_PDF_PASSWORD).
 Output format: _docs/statements.md.
 """
 

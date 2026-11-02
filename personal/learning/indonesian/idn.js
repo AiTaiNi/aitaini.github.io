@@ -1,8 +1,6 @@
 /* Shared code for the Indonesian pages (personal/learning/indonesian/). Design: _docs/indonesian.md, tables:
    _docs/indonesian-database.md, data files: _docs/indonesian-data.md.
-   Scheduling, the card store and the offline queue are the shared flashcard engine, /assets/srs.js (window.SRS);
-   this file adds what's Indonesian: the prepared deck and its order, recall cards, the plan, study time, the hub
-   summary and Calendar tasks, speech and the PDF library.
+   Scheduling, the card store and the offline queue are the shared flashcard engine, /assets/srs.js (window.SRS); this file adds what's Indonesian: the prepared deck and its order, recall cards, the plan, study time, the hub summary and Calendar tasks, speech and the PDF library.
    Load after sync.js and srs.js (and /assets/tasks.js, which keeps the two Calendar tasks in step). Gives window.Idn:
 
      Idn.start(activity)       promise, once signed in and loaded; starts the study-time tracker for `activity`
@@ -149,9 +147,7 @@ window.Idn = (() => {
         return s.day === dayKey() ? s : { day: dayKey(), newToday: 0 };
     }
 
-    /* Today's work: learning cards due now, reviews due today (capped), then new cards: added cards that
-       haven't been studied, then the deck in order. Recall (typed) for active cards starts the day after their
-       first recognition review. */
+    /* Today's work: learning cards due now, reviews due today (capped), then new cards: added cards that haven't been studied, then the deck in order. Recall (typed) for active cards starts the day after their first recognition review. */
     api.queue = () => {
         const now = Date.now(), today = startOfDay();
         const { learn, review } = store.due();

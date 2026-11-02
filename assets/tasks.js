@@ -9,9 +9,7 @@
      #countdowns                            events marked "show countdown" that are at most CD_DAYS away
      #evAll                                 every event, soonest first
      #expJson …                             backup import/export (dashboard settings)
-   window.Tasks gives a read-only summary (today's progress, upcoming countdowns) for overview pages, plus
-   syncEvents for pages that keep their own events on the calendar (personal/expenses: yearly payments) and
-   syncTask/dropTask for pages that keep their own daily tasks (personal/learning/indonesian). */
+   window.Tasks gives a read-only summary (today's progress, upcoming countdowns) for overview pages, plus syncEvents for pages that keep their own events on the calendar (personal/expenses: yearly payments) and syncTask/dropTask for pages that keep their own daily tasks (personal/learning/indonesian). */
 (function () {
     var KEY = 'daily-tasks-v1';
     var CD_DAYS = 14;
@@ -743,9 +741,7 @@
             listeners.push(fn);
         },
 
-        /* Events kept up to date by another page (the Expenses page's yearly payments): every event whose id starts
-           with `prefix` is replaced by `list` ([{ id, name, date, rep, icon }]). Missing ones are added with the
-           countdown on, name/date/repeat follow the list, and an icon or countdown changed on the Calendar is kept.
+        /* Events kept up to date by another page (the Expenses page's yearly payments): every event whose id starts with `prefix` is replaced by `list` ([{ id, name, date, rep, icon }]). Missing ones are added with the countdown on, name/date/repeat follow the list, and an icon or countdown changed on the Calendar is kept.
            Call it after Sync.ready(), so an older copy on this device can't overwrite newer events. */
         syncEvents: function (prefix, list) {
             var want = {}, changed = false;
@@ -786,9 +782,7 @@
             return changed;
         },
 
-        /* A daily task kept by another page (the Indonesian pages: reviews done, 15-minute study blocks). Adds it
-           (from today) if it's missing, keeps its name and target in step, and raises today's count to n. Counts
-           only go up, so a page never undoes a tick made on the Calendar. Call it after Sync.ready(). */
+        /* A daily task kept by another page (the Indonesian pages: reviews done, 15-minute study blocks). Adds it (from today) if it's missing, keeps its name and target in step, and raises today's count to n. Counts only go up, so a page never undoes a tick made on the Calendar. Call it after Sync.ready(). */
         syncTask: function (def, n) {
             var t = state.tasks.filter(function (x) {
                 return x.id === def.id;

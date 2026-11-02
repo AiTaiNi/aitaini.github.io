@@ -1,8 +1,7 @@
 /* Receipts: price history per store, from scanned receipts (see _docs/receipts.md).
      receipts table                one row per receipt: { id, store, date, total, lines: [{ code, name, qty, price }] }
      receipt-names-<store slug>    synced key, the store's item names: { key: { name, alias } }
-   An item's key is its code on the receipt, or n:<lowercased name> when it has none. `name` is the name as first read
-   off a receipt, `alias` is a natural/readable name. Amounts are céntimos; `price` is what the line cost in total.
+   An item's key is its code on the receipt, or n:<lowercased name> when it has none. `name` is the name as first read off a receipt, `alias` is a natural/readable name. Amounts are céntimos; `price` is what the line cost in total.
    Not linked to Shopping's history or the statements: each store's codes and names stay separate. */
 (() => {
     const TESS = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
@@ -158,10 +157,8 @@
     });
 
     /* MARK: Reading a receipt
-       Tuned on real receipts with tools/purchase-receipts/read-receipt.py, which runs these same steps on a PC: change
-       both together (_docs/receipts.md has the rules and the receipts behind them). Line by line:
-       - an item starts with its code (a 13-digit barcode at Mass) and has its amount in the right-hand column, after
-         a gap of 3+ spaces; a coded line with no amount is kept and flagged, to be filled in
+       Tuned on real receipts with tools/purchase-receipts/read-receipt.py, which runs these same steps on a PC: change both together (_docs/receipts.md has the rules and the receipts behind them). Line by line:
+       - an item starts with its code (a 13-digit barcode at Mass) and has its amount in the right-hand column, after a gap of 3+ spaces; a coded line with no amount is kept and flagged, to be filled in
        - a quantity or weight line ("2 X 3.50  7.00", ".525 KG X 2.60  1.36") belongs to the item just above it
        - a discount line comes off the item above; items stop at the subtotal, totals and the unit count come after
        - common misreads are fixed: O→0, l→1, S→5, a comma or colon for the point, X read as Y, a lost point (520)
@@ -223,8 +220,7 @@
         return sum * 9 % 10 === +c.slice(-1);
     }
 
-    /* A code that isn't a valid barcode: the one known code it matches with at most one digit wrong (two for a
-       full-length code), lined up with its start or its end, since digits get lost at the edge of the paper.
+    /* A code that isn't a valid barcode: the one known code it matches with at most one digit wrong (two for a full-length code), lined up with its start or its end, since digits get lost at the edge of the paper.
        Returns [code, still doubtful]. */
     function repair(code, known) {
         const codes = Object.keys(known);
@@ -639,8 +635,7 @@
     };
 
     /* MARK: QR code
-       Peruvian e-receipts carry SUNAT's QR: RUC | type | series | number | IGV | total | date | buyer's ID type |
-       buyer's ID | …
+       Peruvian e-receipts carry SUNAT's QR: RUC | type | series | number | IGV | total | date | buyer's ID type | buyer's ID | …
        Only the store's RUC, the type, series-number, total and date are kept.
        The RUC picks the store and its lookup site, where the receipt's XML can be downloaded (after a captcha) and imported below. */
     const JSQR = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
@@ -796,11 +791,8 @@
     }
 
     /* MARK: XML import
-       Each InvoiceLine has the quantity, the store's code (SellersItemIdentification, or the barcode in
-       StandardItemIdentification), the description, and the line's value before tax plus its taxes: together what
-       was paid. The receipt's taxes themselves aren't kept.
-       Mass (Axteroid) pads the code to 14 digits (02200204244226: the 13-digit barcode on the receipt with a 0 in
-       front) and puts the printed line in the description, in fields: "2200204244226@@FRSTFREC500G@@ 2 X 6.90@@13.80@@". */
+       Each InvoiceLine has the quantity, the store's code (SellersItemIdentification, or the barcode in StandardItemIdentification), the description, and the line's value before tax plus its taxes: together what was paid. The receipt's taxes themselves aren't kept.
+       Mass (Axteroid) pads the code to 14 digits (02200204244226: the 13-digit barcode on the receipt with a 0 in front) and puts the printed line in the description, in fields: "2200204244226@@FRSTFREC500G@@ 2 X 6.90@@13.80@@". */
     const kids = (node, name) => node ? [...node.children].filter(c => c.localName === name) : [];
     const kid = (node, ...path) => path.reduce((n, p) => kids(n, p)[0] || null, node);
     const txt = (node, ...path) => (kid(node, ...path) || { textContent: '' }).textContent.trim();
@@ -826,9 +818,7 @@
         }
     }
 
-    /* Mass's XML declares xmlns:schemaLocation="urn:… ..\xsd\maindoc\UBLPE-Invoice-2.1.xsd" (meant as
-       xsi:schemaLocation): not a valid namespace, so browsers refuse the whole file. Elements are only matched by their
-       local names here, so namespace declarations with spaces or backslashes are dropped before parsing. */
+    /* Mass's XML declares xmlns:schemaLocation="urn:… ..\xsd\maindoc\UBLPE-Invoice-2.1.xsd" (meant as xsi:schemaLocation): not a valid namespace, so browsers refuse the whole file. Elements are only matched by their local names here, so namespace declarations with spaces or backslashes are dropped before parsing. */
     function parseXml(text) {
         text = text.replace(/\s+xmlns:[\w.-]+\s*=\s*("[^"]*[\s\\][^"]*"|'[^']*[\s\\][^']*')/g, '');
 

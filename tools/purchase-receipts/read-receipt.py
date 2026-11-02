@@ -5,9 +5,9 @@
     python tools/purchase-receipts/read-receipt.py photo.jpg --image out.png save the cleaned-up image
     python tools/purchase-receipts/read-receipt.py --from-text ocr.txt       rules only, on text already read
 
-Mirrors the page step by step: the same Spanish model as Tesseract.js (4.0.0_best_int, downloaded to ./tessdata on
-the first run), the same image cleanup (prepare) and the same line rules (parse). Change both together; see
-_docs/receipts.md. Needs Tesseract (winget install UB-Mannheim.TesseractOCR) and: pip install opencv-python pytesseract
+Mirrors the page step by step: the same Spanish model as Tesseract.js (4.0.0_best_int, downloaded to ./tessdata on the first run), the same image cleanup (prepare) and the same line rules (parse). Change both together; see _docs/receipts.md.
+
+Needs Tesseract (winget install UB-Mannheim.TesseractOCR) and pip install opencv-python pytesseract
 """
 import argparse, gzip, os, re, shutil, sys, urllib.request
 from collections import Counter
@@ -91,8 +91,7 @@ LETTERS = re.compile(r'[A-Za-zÑñÁÉÍÓÚáéíóú].*[A-Za-zÑñÁÉÍÓÚá
 
 
 def price_of(tok, whole=False):
-    """A price token in céntimos, fixing common misreads (O→0, l→1, S→5, comma or colon for the point). With whole,
-    three or four bare digits count too (520 → 5.20): the point is often lost."""
+    """A price token in céntimos, fixing common misreads (O→0, l→1, S→5, comma or colon for the point). With whole, three or four bare digits count too (520 → 5.20): the point is often lost."""
     t = tok.strip()
 
     if whole and re.fullmatch(r'\d{3,4}', t):
@@ -137,9 +136,7 @@ def ean_ok(c):
 
 
 def repair(code, known):
-    """A code that isn't a valid barcode: the one known code it matches with at most one digit wrong, lining up with
-    its start or its end (digits are often lost at the edge of the paper); two wrong for a full-length code. Returns
-    (code, still doubtful)."""
+    """A code that isn't a valid barcode: the one known code it matches with at most one digit wrong, lining up with its start or its end (digits are often lost at the edge of the paper); two wrong for a full-length code. Returns (code, still doubtful)."""
     if ean_ok(code) or not known:
         return code, not ean_ok(code)
 
@@ -158,8 +155,7 @@ def clean_name(name):
 
 
 def parse(text, known=None):
-    """Receipt text → { date, total, units, items: [{ code, name, qty, price, warn }] }. known: { code: name } for
-    the store, used to fix misread codes and names."""
+    """Receipt text → { date, total, units, items: [{ code, name, qty, price, warn }] }. known: { code: name } for the store, used to fix misread codes and names."""
     known = known or {}
     items, totals = [], []
     date = units = None

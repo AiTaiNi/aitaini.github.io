@@ -1,7 +1,6 @@
 /* The US$ -> S/ exchange rate, the same on every page (dashboard, expenses) and device. Load after sync.js.
    Whichever page needs it first fetches it, at most once every 12 hours, and stores it in the synced key `fx-rate`:
-   { rate, at (when it was fetched), date (the rate's own date), source }. Everyone else uses that copy, so the free
-   rate services get a request or two a day.
+   { rate, at (when it was fetched), date (the rate's own date), source }. Everyone else uses that copy, so the free rate services get a request or two a day.
 
      FX.get()    promise of { rate, at, date, source, stale }; stale = the fetch failed and this is the last known
                  rate (or a rough default if there has never been one)

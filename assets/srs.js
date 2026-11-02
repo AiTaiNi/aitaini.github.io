@@ -1,5 +1,4 @@
-/* Spaced repetition for any private page: FSRS scheduling, an offline write queue, and a card/schedule store kept in
-   Supabase tables. Load after sync.js. How to give a page its own deck (tables, code, what the ratings mean):
+/* Spaced repetition for any private page: FSRS scheduling, an offline write queue, and a card/schedule store kept in Supabase tables. Load after sync.js. How to give a page its own deck (tables, code, what the ratings mean):
    _docs/flashcards.md. First user: personal/learning/indonesian/idn.js.
 
      SRS.outcomes(cur, now, retention)   the four possible results of rating a card (pure, for previews and tests)
@@ -18,8 +17,7 @@
      coalesce          op => key: queued writes with the same key replace each other (only the latest is sent)
      retention         () => target retention, 0.7–0.97 (default 0.9)
      onFlush           called after each upload attempt (e.g. to show "3 changes waiting")
-   It gives: cards (Map id -> row), sched (Map "cardId|direction" -> FSRS state), load(), due(), preview(),
-   answer(), addCard(), patchCard(), enqueue(), flush(), pending(). */
+   It gives: cards (Map id -> row), sched (Map "cardId|direction" -> FSRS state), load(), due(), preview(), answer(), addCard(), patchCard(), enqueue(), flush(), pending(). */
 window.SRS = (() => {
     const MIN = 6e4, DAY = 864e5;
     const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
@@ -41,9 +39,7 @@ window.SRS = (() => {
     const shortS = (s, g) => s * Math.exp(W[17] * (g - 3 + W[18]));
 
     /* The four outcomes (1 Again, 2 Hard, 3 Good, 4 Easy) for a card; cur = its schedule row, or null when new.
-       States: 0 new, 1 learning, 2 review, 3 relearning. Learning steps: a new card comes back after 1 / 6 / 10 min
-       (Again / Hard / Good) and graduates to days with Good (from learning) or Easy (straight away). In review,
-       Again sends it back to relearning for 10 min. Intervals always keep Hard < Good < Easy. */
+       States: 0 new, 1 learning, 2 review, 3 relearning. Learning steps: a new card comes back after 1 / 6 / 10 min (Again / Hard / Good) and graduates to days with Good (from learning) or Easy (straight away). In review, Again sends it back to relearning for 10 min. Intervals always keep Hard < Good < Easy. */
     function outcomes(cur, now, retention = 0.9) {
         const res = {};
 

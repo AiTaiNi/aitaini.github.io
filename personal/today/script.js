@@ -1,5 +1,4 @@
-/* Today page: one general, synced notepad (not per day; it stays until edited). The checklist and countdowns next to
-   it come from /assets/tasks.js (same data as the calendar and dashboard). */
+/* Today page: one general, synced notepad (not per day; it stays until edited). The checklist and countdowns next to it come from /assets/tasks.js (same data as the calendar and dashboard). */
 (() => {
     const KEY = 'notepad';
     const box = document.getElementById('notes'), state = document.getElementById('notesState');
@@ -51,8 +50,7 @@
         }, 0);
     });
 
-    /* The site-wide rate from /assets/fx.js (fetched at most every 12 hours, synced), with a USD <-> PEN converter;
-       the same widget as on the dashboard */
+    /* The site-wide rate from /assets/fx.js (fetched at most every 12 hours, synced), with a USD <-> PEN converter; the same widget as on the dashboard */
     const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
     function showFx(v) {

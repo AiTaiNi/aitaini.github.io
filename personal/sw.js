@@ -1,8 +1,6 @@
 /* Service worker for the installed Personal app (scope /personal/). Registered by personal/hub.js.
    Network first, so a deploy shows up on the next load; the cached copy is only used offline.
-   Caches page files only (this site, plus the pinned supabase-js and the font). Supabase API calls and anything
-   else from other sites always go to the network and are never stored, so private data stays in Sync's own
-   copy (localStorage) and the database. */
+   Caches page files only (this site, plus the pinned supabase-js and the font). Supabase API calls and anything else from other sites always go to the network and are never stored, so private data stays in Sync's own copy (localStorage) and the database. */
 const CACHE = 'personal-v2';
 const OTHER = ['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@', 'https://fonts.googleapis.com/', 'https://fonts.gstatic.com/'];
 
@@ -20,9 +18,7 @@ self.addEventListener('fetch', e => {
     /* Statement files are git-ignored and shouldn't exist on the site, but never cache them if they do */
     if (url.pathname.startsWith('/personal/statements/json/') || /\.pdf$/i.test(url.pathname)) return;
 
-    /* The site is served with max-age=600, so a plain fetch could pair a new page with an old script from the
-       browser's cache. Same-origin files are re-checked with the server instead (a 304 when unchanged); the CDN
-       files are pinned to a version and can come from the cache. */
+    /* The site is served with max-age=600, so a plain fetch could pair a new page with an old script from the browser's cache. Same-origin files are re-checked with the server instead (a 304 when unchanged); the CDN files are pinned to a version and can come from the cache. */
     e.respondWith(fetch(r, url.origin === location.origin ? { cache: 'no-cache' } : {}).then(res => {
         if (res.ok || res.type === 'opaque') {
             const copy = res.clone();

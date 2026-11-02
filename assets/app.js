@@ -105,8 +105,7 @@ document.addEventListener('click', e => {
   if (l) placeSubs(l.parentElement);
 });
 
-/* A submenu opens to the right, or to the left when it would run off the right edge. If neither side fits (narrow
-   phones), it takes the side that sticks out less and is nudged back on screen, so the page never gets wider. */
+/* A submenu opens to the right, or to the left when it would run off the right edge. If neither side fits (narrow phones), it takes the side that sticks out less and is nudged back on screen, so the page never gets wider. */
 function placeSub(dd) {
   const sub = dd.querySelector(':scope > .sub');
   if (!sub || getComputedStyle(sub).display === 'none') return;

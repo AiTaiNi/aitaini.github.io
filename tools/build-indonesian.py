@@ -7,13 +7,9 @@ Build the data for the Indonesian learning pages (personal/learning/indonesian/)
 `python tools/build-indonesian.py all`     all three
 `--prune`                            with pdfs/sync/all: drop library entries whose PDF is no longer in the folder
 
-The PDF library is cumulative: new PDFs are added, a changed PDF replaces its own entries, and entries from PDFs you've
-deleted stay unless you pass --prune.
+The PDF library is cumulative: new PDFs are added, a changed PDF replaces its own entries, and entries from PDFs you've deleted stay unless you pass --prune.
 
-Sources go in tools/indonesian/raw/ (git-ignored): the kaikki.org Indonesian Wiktionary extract, Tatoeba's Indonesian
-and English sentences with their links, and the FrequencyWords Indonesian list. Hand-written content is in
-tools/indonesian/content/. Needs PySastrawi and PyYAML (`pip install PySastrawi pyyaml`); the PDF step also needs
-PyMuPDF (already used by tools/parse-statements.py).
+Sources go in tools/indonesian/raw/ (git-ignored): the kaikki.org Indonesian Wiktionary extract, Tatoeba's Indonesian and English sentences with their links, and the FrequencyWords Indonesian list. Hand-written content is in tools/indonesian/content/. Needs PySastrawi and PyYAML (`pip install PySastrawi pyyaml`); the PDF step also needs PyMuPDF (already used by tools/parse-statements.py).
 
 The public output contains only freely licensed material (see SOURCES); nothing from the PDFs ever goes there.
 """
@@ -240,8 +236,7 @@ def base_root(w: str, root_of: dict[str, str]) -> str:
 
 
 def primary(entries: list[dict]) -> tuple[dict, dict] | None:
-    """The entry and sense to show first. A word with several entries (bisa: "venom" and "can") shows the one with
-    the most current senses, which is nearly always the everyday one; archaic senses only when there's nothing else."""
+    """The entry and sense to show first. A word with several entries (bisa: "venom" and "can") shows the one with the most current senses, which is nearly always the everyday one; archaic senses only when there's nothing else."""
     current = lambda e: [s for s in e["s"] if not OLD & set(s.get("t", []))]   # noqa: E731
     ranked = sorted(entries, key=lambda e: -len(current(e)))
 
@@ -253,8 +248,7 @@ def primary(entries: list[dict]) -> tuple[dict, dict] | None:
 
 
 def inflection_of(lex: dict[str, list[dict]], w: str) -> str | None:
-    """The base word when w is only an inflected form (dilakukan -> lakukan, jadilah -> jadi), so the deck doesn't
-    get a card for each. Casual and alternative spellings (tau -> tahu) aren't inflections: they keep their own card."""
+    """The base word when w is only an inflected form (dilakukan -> lakukan, jadilah -> jadi), so the deck doesn't get a card for each. Casual and alternative spellings (tau -> tahu) aren't inflections: they keep their own card."""
     p = primary(lex.get(w, []))
 
     if not p:
@@ -788,8 +782,7 @@ class PdfReader:
 
         return out
 
-    # Worksheets and similar. A table under an "Indonesian | Meaning" header pairs by column; otherwise a bold
-    # Indonesian line pairs with plain English on the same row (to the right) or just below it.
+    # Worksheets and similar. A table under an "Indonesian | Meaning" header pairs by column; otherwise a bold Indonesian line pairs with plain English on the same row (to the right) or just below it.
     def pairs(self, doc, name: str) -> list[dict]:
         out, seen = [], set()
         topic = re.sub(r"^\d+\+?\s*", "", Path(name).stem).strip()
@@ -894,8 +887,7 @@ class PdfReader:
 
 
 def build_pdfs(prune: bool) -> None:
-    """Add the PDFs to the cumulative library. Unchanged PDFs aren't re-read; a changed one replaces its own entries;
-    a renamed one keeps its entries (matched by content); a deleted one keeps them too unless prune is set."""
+    """Add the PDFs to the cumulative library. Unchanged PDFs aren't re-read; a changed one replaces its own entries; a renamed one keeps its entries (matched by content); a deleted one keeps them too unless prune is set."""
     if not (OUT / "forms.json").exists():
         sys.exit("Run `python tools/build-indonesian.py` first: the PDF step checks words against the built dictionary.")
 
