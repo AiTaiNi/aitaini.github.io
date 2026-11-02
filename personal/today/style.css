@@ -16,3 +16,52 @@
     resize: vertical;
     line-height: 1.55
 }
+
+/* ---------- exchange rate (as on the dashboard) ---------- */
+.big {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--title);
+    letter-spacing: -.02em;
+    line-height: 1
+}
+
+.big small {
+    font-size: .85rem;
+    font-weight: 500;
+    color: var(--sub);
+    margin-left: 6px;
+    letter-spacing: 0
+}
+
+.fxtop {
+    display: flex;
+    align-items: baseline;
+    gap: 4px 12px;
+    flex-wrap: wrap
+}
+
+.conv {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    align-items: center
+}
+
+.conv label {
+    flex: 1;
+    display: block;
+    font-size: .85rem;
+    color: var(--sub)
+}
+
+.conv input {
+    width: 100%;
+    margin-top: 2px
+}
+
+@media(max-width:720px) {
+    .big {
+        font-size: 1.5rem
+    }
+}

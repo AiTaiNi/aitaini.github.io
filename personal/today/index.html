@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
   <script src="/assets/sync.js"></script>
+  <script src="/assets/fx.js"></script>
 </head>
 
 <body>
@@ -45,11 +46,20 @@
         </section>
       </div>
 
-      <section class="card">
-        <h2>Notes</h2>
-        <textarea id="notes" placeholder="Anything…" aria-label="Notes" spellcheck="true"></textarea>
-        <p class="note" id="notesState"></p>
-      </section>
+      <div class="stack">
+        <section class="card">
+          <h2>Notes</h2>
+          <textarea id="notes" placeholder="Anything…" aria-label="Notes" spellcheck="true"></textarea>
+          <p class="note" id="notesState"></p>
+        </section>
+
+        <section class="card" aria-live="polite">
+          <h2>US dollar in Peruvian soles</h2>
+          <div id="fx">
+            <p class="note">Loading rate…</p>
+          </div>
+        </section>
+      </div>
     </div>
   </main>
 

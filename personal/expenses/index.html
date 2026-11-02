@@ -53,17 +53,23 @@
     <div class="grid">
       <section class="card wide">
         <h2>Bills &amp; utilities</h2>
-        <div class="scroll"><table class="lines" id="gBill"></table></div>
+        <div class="scroll">
+          <table class="lines" id="gBill"></table>
+        </div>
       </section>
 
       <section class="card">
         <h2>Subscriptions</h2>
-        <div class="scroll"><table class="lines" id="gSub"></table></div>
+        <div class="scroll">
+          <table class="lines" id="gSub"></table>
+        </div>
       </section>
 
       <section class="card">
         <h2>Transport</h2>
-        <div class="scroll"><table class="lines" id="gTransport"></table></div>
+        <div class="scroll">
+          <table class="lines" id="gTransport"></table>
+        </div>
       </section>
 
       <section class="card wide" id="insights">
@@ -77,7 +83,9 @@
           </div>
           <div>
             <h3>Top merchants</h3>
-            <div class="scroll"><table class="lines" id="iTop"></table></div>
+            <div class="scroll">
+              <table class="lines" id="iTop"></table>
+            </div>
           </div>
         </div>
       </section>
@@ -85,32 +93,40 @@
       <section class="card wide">
         <h2>Yearly</h2>
         <p class="note">Paid once a year. Each one is added to its group above in the month it’s due.</p>
-        <div class="scroll"><table class="lines" id="gYear"></table></div>
+        <div class="scroll">
+          <table class="lines" id="gYear"></table>
+        </div>
         <p class="note" id="yTotal"></p>
       </section>
 
       <section class="card wide">
         <h2>Subscription review</h2>
         <p class="note" id="rvNote"></p>
-        <div class="scroll"><table class="lines" id="gReview"></table></div>
+        <div class="scroll">
+          <table class="lines" id="gReview"></table>
+        </div>
       </section>
 
       <section class="card wide">
         <h2>History</h2>
         <p class="note">Months up to the one shown above. <i>est.</i> = an account’s statement isn’t imported yet, so its part is estimated.</p>
-        <div class="scroll"><table id="hist"></table></div>
+        <div class="scroll">
+          <table id="hist"></table>
+        </div>
       </section>
 
       <section class="card wide">
         <h2>Everything else</h2>
-        <p class="note">Spending that isn’t a bill, subscription or transport, over the last 12 statements. Move anything
-          that was missed into a group; the choice is saved and applies to every month. Search covers all statements,
-          for yearly charges from longer ago.</p>
+        <p class="note">Spending that isn’t a bill, subscription or transport, over the last 12 statements. Move anything that was missed into a group; the choice is saved and applies to every month.</p>
         <input type="search" id="oQ" placeholder="Search merchants and descriptions…" aria-label="Search other spending">
-        <div class="scroll"><table class="lines" id="gOther"></table></div>
+        <div class="scroll">
+          <table class="lines" id="gOther"></table>
+        </div>
         <details id="rulesBox">
           <summary>Your changes (<span id="rulesN">0</span>)</summary>
-          <div class="scroll"><table class="lines" id="rules"></table></div>
+          <div class="scroll">
+            <table class="lines" id="rules"></table>
+          </div>
         </details>
       </section>
     </div>

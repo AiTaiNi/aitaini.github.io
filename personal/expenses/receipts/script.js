@@ -1163,7 +1163,7 @@
             }
         });
 
-        $('pNote').textContent = !rows[store] ? waiting() : !all.length ? 'No receipts for ' + store + ' yet.' : q && !hits.length ? 'Nothing matches.' : 'Prices are for one (per kg for weighed items). ✎ gives an item a clear name; the name on the receipt stays underneath.';
+        $('pNote').textContent = !rows[store] ? waiting() : !all.length ? 'No receipts for ' + store + ' yet.' : q && !hits.length ? 'Nothing matches.' : 'Prices are for one (per kg for weighed items).';
     }
 
     $('q').oninput = () => renderPrices(data());

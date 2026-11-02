@@ -557,7 +557,6 @@
         const change = (v, a) => !a ? (prev.length ? 'new' : '') : (v >= a ? '▲ ' : '▼ ') + Math.abs(Math.round((v / a - 1) * 100)) + '% vs average';
 
         $('iNote').textContent = 'Real amounts from the ' + accs.map(a => ACC[a].toLowerCase()).join(' and ') + ' statement' +
-            (V.pending.length ? ' (the ' + V.pending.map(a => ACC[a].toLowerCase()).join(' and ') + ' statement isn’t in yet)' : '') +
             ', in soles at S/ ' + fx.toFixed(3) + ' per US$' + (prev.length ? ', compared with the average of the ' + prev.length + ' months before.' : '.') +
             ' Card payments from the debit account aren’t counted.';
 
