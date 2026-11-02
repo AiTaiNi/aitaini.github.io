@@ -18,7 +18,7 @@ TESSDATA = HERE / 'tessdata'
 MODEL = 'https://cdn.jsdelivr.net/npm/@tesseract.js-data/spa/4.0.0_best_int/spa.traineddata.gz'
 
 
-# ---------- image ----------
+# MARK: Image
 def prepare(path):
     """Grey, paper found and straightened to 1000px wide, then sharpened. Falls back to the whole photo."""
     import cv2, numpy as np
@@ -75,7 +75,7 @@ def read(img):
     return pytesseract.image_to_string(img, lang='spa', config='--psm 4 -c preserve_interword_spaces=1')
 
 
-# ---------- text ----------
+# MARK: Text
 DIG = '0-9OoUDQlI|SB'
 FIX = str.maketrans({'O': '0', 'o': '0', 'U': '0', 'D': '0', 'Q': '0', 'l': '1', 'I': '1', '|': '1', 'S': '5', 'B': '8',
                      ',': '.', ':': '.', ';': '.'})

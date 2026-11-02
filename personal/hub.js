@@ -31,8 +31,7 @@
     Sync.on('expense-summary', renderExp);
     renderExp(Sync.get('expense-summary'));
 
-    /* Indonesian: saved by the study pages (personal/learning/indonesian/idn.js). Due counts are only known for the
-       day they were saved, so another day shows when you last studied. */
+    /* Indonesian: saved by the study pages (personal/learning/indonesian/idn.js). Due counts are only known for the day they were saved. */
     Sync.use(['idn-summary']);
 
     function renderIdn(s) {
@@ -58,7 +57,6 @@
     Sync.on('shopping-list', renderShop);
     renderShop(Sync.get('shopping-list'));
 
-    /* ---------- install as an app ---------- */
     /* The service worker makes the pages open offline from the home screen; its scope is /personal/ */
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('/personal/sw.js', { scope: '/personal/' }).catch(e => console.warn('Service worker:', e));
 

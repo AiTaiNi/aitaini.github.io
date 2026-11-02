@@ -1,6 +1,6 @@
 /* Statements only. Theme and shared layout come from /assets/base.css and /assets/app.css. */
 
-/* ---------- import ---------- */
+/* MARK: Import */
 #manage {
     margin-bottom: 12px
 }
@@ -54,7 +54,7 @@ td.desc {
     min-width: 14em
 }
 
-/* ---------- review ---------- */
+/* MARK: Review */
 .rhead {
     display: flex;
     flex-wrap: wrap;
@@ -113,7 +113,7 @@ tr.flag td {
     color: var(--title)
 }
 
-/* ---------- viewer ---------- */
+/* MARK: Viewer */
 .vhead,
 .filters {
     display: flex;

@@ -1,5 +1,4 @@
-/* Blog engine. You normally don't need to edit this file.
-   Posts live in /posts, pages in /pages. */
+/* Blog engine. Posts live in /posts, pages in /pages. */
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -12,7 +11,7 @@ const coverUrl = p => !p.image ? '' : /^(https?:)?\/\//.test(p.image) ? p.image 
 const POSTS_PER_PAGE = 5;   /* posts shown per page on the front page, categories and search */
 const yr = $('#yr'); if (yr) yr.textContent = new Date().getFullYear();
 
-/* ---------- File loading ---------- */
+/* MARK: File loading */
 const cache = {};
 const getText = path => cache[path] ||= fetch(path).then(r => {
   if (!r.ok) throw new Error(`${path} (${r.status})`);
@@ -60,7 +59,7 @@ async function body(p) {
   return p;
 }
 
-/* ---------- Menu ---------- */
+/* MARK: Menu */
 let pagesIdx = [], folderTitles = {};
 const prettify = t => t.replace(/[-_]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
@@ -68,7 +67,7 @@ async function loadMenu() {
   try {
     const data = JSON.parse(await getText('pages/pages.json'));
     pagesIdx = data.pages || []; folderTitles = data.folders || {};
-  } catch (e) { return; }               /* don't index yet since the menu is just empty */
+  } catch (e) { return; }               /* don't index yet since the menu is empty */
 
   const root = { kids: new Map() };
   pagesIdx.filter(p => p.menu !== false).forEach(p => {
@@ -147,7 +146,7 @@ addEventListener('hashchange', () => document.querySelectorAll('.dd.open').forEa
 
 const init = Promise.all([loadPosts(), loadMenu()]).catch(e => { loadError = e; });
 
-/* ---------- Sidebar widgets ---------- */
+/* MARK: Sidebar widgets */
 function buildSidebar() {
   const count = arr => arr.reduce((m, k) => (m[k] = (m[k] || 0) + 1, m), {});
   const cats = count(posts.map(p => p.cat).filter(Boolean));
@@ -158,7 +157,7 @@ function buildSidebar() {
   if (!Object.keys(cats).length) $('#w-cats').remove();
 }
 
-/* ---------- Views ---------- */
+/* MARK: Views */
 const metaLine = p => `<div class="meta">${esc(p.date)}` +
   (p.cat ? ` · <a href="#/category/${enc(p.cat)}">${esc(p.cat)}</a>` : '') + '</div>';
 
@@ -264,7 +263,7 @@ async function view(hash) {
   return pageView(hash);
 }
 
-/* ---------- Router with fade transition  ---------- */
+/* MARK: Router with fade transition */
 let first = true, prev = '', token = 0;
 const isSearchTyping = h => /^#\/search\/[^/]*$/.test(h);
 
@@ -294,7 +293,7 @@ async function go() {
 }
 window.addEventListener('hashchange', go);
 
-/* ---------- Search ---------- */
+/* MARK: Search */
 let st;
 const q = $('#q');
 
@@ -307,7 +306,8 @@ if (q) {
   q.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
 }
 
-/* ---------- Preload a post when the pointer nears its link ---------- */
+/* MARK: Preload */
+/* Preload a post when the pointer nears its link */
 const warm = e => {
   const a = e.target.closest && e.target.closest('a[href^="#/post/"]');
   const p = a && posts.find(x => x.id === decodeURIComponent(a.getAttribute('href').slice(7)));
@@ -319,12 +319,10 @@ document.addEventListener('touchstart', warm, { passive: true });
 /* Stronger header shadow once the page is scrolled */
 addEventListener('scroll', () => $('.top')?.classList.toggle('scrolled', scrollY > 4), { passive: true });
 
-/* ---------- MyAnimeList sidebar widget --------- */
+/* MARK: MyAnimeList widget */
 const MAL = {
-  anime: { keys: [['watching','Watching','#2db039'],['completed','Completed','#2e51a2'],['on_hold','On hold','#f9d457'],['dropped','Dropped','#a12f31'],['plan_to_watch','Plan to watch','#9aa0a6']],
-           top: [['total_entries','Entries'],['episodes_watched','Episodes'],['days_watched','Days']] },
-  manga: { keys: [['reading','Reading','#2db039'],['completed','Completed','#2e51a2'],['on_hold','On hold','#f9d457'],['dropped','Dropped','#a12f31'],['plan_to_read','Plan to read','#9aa0a6']],
-           top: [['total_entries','Entries'],['chapters_read','Chapters'],['days_read','Days']] }
+  anime: { keys: [['watching','Watching','#2db039'],['completed','Completed','#2e51a2'],['on_hold','On hold','#f9d457'],['dropped','Dropped','#a12f31'],['plan_to_watch','Plan to watch','#9aa0a6']] },
+  manga: { keys: [['reading','Reading','#2db039'],['completed','Completed','#2e51a2'],['on_hold','On hold','#f9d457'],['dropped','Dropped','#a12f31'],['plan_to_read','Plan to read','#9aa0a6']] }
 };
 let malData = null, malTab = 'anime';
 const fmt = (n, d = 0) => Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: d });
@@ -337,13 +335,11 @@ function drawMal() {
 
   box.innerHTML = `
     <h4>MyAnimeList</h4>
-    <div class="mal-tabs">${['anime', 'manga'].map(t =>
-      `<button type="button" class="btn${t === malTab ? ' on' : ''}" data-t="${t}">${t[0].toUpperCase() + t.slice(1)}</button>`).join('')}</div>
+    <div class="mal-tabs" role="group" aria-label="List">${['anime', 'manga'].map(t =>
+      `<button type="button" class="btn" data-t="${t}" aria-pressed="${t === malTab}">${t[0].toUpperCase() + t.slice(1)}</button>`).join('')}</div>
     <div class="mal-user">${/^https:\/\//.test(img) ? `<img src="${esc(img)}" alt="">` : ''}
       <div>${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(profile.username || '')}</a>` : `<b>${esc(profile.username || '')}</b>`}
-      <span>Mean score ${fmt(d.mean_score, 2)}</span></div></div>
-    <div class="mal-stats">${m.top.map(([k, l]) => `<div><b>${fmt(d[k], k.startsWith('days') ? 1 : 0)}</b><span>${l}</span></div>`).join('')}</div>
-    <div class="mal-bar" role="img" aria-label="Status breakdown">${m.keys.map(([k, , c]) => `<div style="width:${(d[k] || 0) / total * 100}%;background:${c}"></div>`).join('')}</div>
+      <span>Mean score ${fmt(d.mean_score, 2)}</span></div></div>    <div class="mal-bar" role="img" aria-label="Status breakdown">${m.keys.map(([k, , c]) => `<div style="width:${(d[k] || 0) / total * 100}%;background:${c}"></div>`).join('')}</div>
     <div class="mal-legend">${m.keys.map(([k, l, c]) => `<span><i style="background:${c}"></i>${l} ${fmt(d[k])}</span>`).join('')}</div>` +
     (malData.updated ? `<p class="mal-note">Updated ${esc(new Date(malData.updated).toLocaleDateString())}</p>` : '');
 }

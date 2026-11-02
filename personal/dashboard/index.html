@@ -63,8 +63,10 @@
       <section class="card" aria-live="polite">
         <h2>MyAnimeList</h2>
         <div class="tabs">
-          <button data-t="anime" aria-pressed="true">Anime</button>
-          <button data-t="manga" aria-pressed="false">Manga</button>
+          <div class="seg" role="group" aria-label="List">
+            <button data-t="anime" aria-pressed="true">Anime</button>
+            <button data-t="manga" aria-pressed="false">Manga</button>
+          </div>
           <button id="malLoad" class="sp">Load stats file…</button>
           <input type="file" id="malFile" accept=".json,application/json" hidden>
         </div>

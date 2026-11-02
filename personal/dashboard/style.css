@@ -24,7 +24,7 @@ input[type=range] {
     letter-spacing: 0
 }
 
-/* ---------- exchange rate ---------- */
+/* MARK: Exchange rate */
 .fxtop {
     display: flex;
     align-items: baseline;
@@ -51,7 +51,7 @@ input[type=range] {
     margin-top: 2px
 }
 
-/* ---------- MyAnimeList ---------- */
+/* MARK: MyAnimeList */
 .tabs {
     display: flex;
     align-items: center;
@@ -83,26 +83,6 @@ input[type=range] {
     font-weight: 700
 }
 
-.stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 10px
-}
-
-.stats b {
-    display: block;
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--title);
-    line-height: 1.1
-}
-
-.stats span {
-    font-size: .8rem;
-    color: var(--sub)
-}
-
 .bar {
     display: flex;
     height: 12px;
@@ -127,7 +107,7 @@ input[type=range] {
     margin-right: 5px
 }
 
-/* ---------- settings dialog ---------- */
+/* MARK: Settings dialog */
 dialog h3 {
     color: var(--title)
 }

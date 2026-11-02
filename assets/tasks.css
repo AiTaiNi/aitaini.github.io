@@ -1,7 +1,7 @@
 /* Daily tasks, calendar, events and countdowns (/assets/tasks.js), shared by personal/dashboard, personal/calendar and
    personal/today. Load after base.css and app.css. */
 
-/* ---------- calendar ---------- */
+/* MARK: Calendar */
 .nav {
   display: flex;
   align-items: center;
@@ -98,7 +98,7 @@
   background: linear-gradient(90deg, hsl(0, 75%, 62%), hsl(60, 75%, 60%), hsl(120, 60%, 55%))
 }
 
-/* ---------- day checklist ---------- */
+/* MARK: Day checklist */
 .thead {
   display: flex;
   justify-content: space-between;
@@ -168,7 +168,7 @@ label.t.done span {
   font-variant-numeric: tabular-nums
 }
 
-/* ---------- managing daily tasks ---------- */
+/* MARK: Managing daily tasks */
 .add input.num {
   flex: none;
   width: 4.5em
@@ -194,7 +194,7 @@ label.t.done span {
   padding: 2px 8px
 }
 
-/* ---------- events ---------- */
+/* MARK: Events */
 #evs:not(:empty) {
   margin-bottom: 8px
 }
@@ -308,7 +308,7 @@ label.t.done span {
   min-width: 28px
 }
 
-/* ---------- countdowns ---------- */
+/* MARK: Countdowns */
 .cd {
   display: grid;
   grid-template-columns: 5.5em 1fr auto;

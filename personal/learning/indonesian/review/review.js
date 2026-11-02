@@ -1,5 +1,11 @@
-/* Indonesian review session: learning cards due now, then today's reviews, then new cards. Recognise cards show the
-   Indonesian; recall cards show the meaning and ask you to type the word. Scheduling and saving are in ../idn.js. */
+/*
+Indonesian review session: learning cards due now, then today's reviews, then new cards.
+
+Recognise cards show the Indonesian; recall cards show the meaning and asks for the word to be typed.
+
+Scheduling and saving are in ../idn.js.
+*/
+
 (() => {
     const $ = id => document.getElementById(id), el = Idn.el;
     let learn = [], review = [], news = [], item = null, face = null, shownAt = 0, revealed = false, hint = 0;
@@ -45,7 +51,7 @@
         return p;
     }
 
-    /* ---------- front ---------- */
+    /* MARK: Card front */
     function show() {
         item = pick();
         counts();
@@ -82,7 +88,7 @@
         shownAt = Date.now();
     }
 
-    /* ---------- back ---------- */
+    /* MARK: Card back */
     function reveal() {
         if (revealed || !item) return;
 
@@ -185,7 +191,7 @@
         $('tools2').hidden = true;
     }
 
-    /* ---------- controls ---------- */
+    /* MARK: Controls */
     $('show').onclick = reveal;
     $('rate').querySelectorAll('button').forEach(b => b.onclick = () => answer(Number(b.dataset.g)));
 
@@ -225,7 +231,7 @@
         }
     });
 
-    /* ---------- start ---------- */
+    /* MARK: Start */
     Idn.start('review').then(async () => {
         const q = Idn.queue();
 

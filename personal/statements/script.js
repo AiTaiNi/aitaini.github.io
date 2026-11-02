@@ -9,7 +9,7 @@
     const files = [];    /* { id, name, status, msg, st: statement fields from the JSON, result } */
     let saved = [], current = null, seq = 0;
 
-    /* ---------- helpers ---------- */
+    /* MARK: Helpers */
     const cur = c => c === 'USD' ? 'US$' : 'S/';
 
     function money(cents, c) {
@@ -101,7 +101,7 @@
 
     const savedFor = r => saved.find(s => s.account === r.account && s.period.slice(0, 7) === r.period);
 
-    /* ---------- loading JSON ---------- */
+    /* MARK: Loading JSON */
     /* One tools/parse-statements.py file → { st, result } or an error message */
     function load(o) {
         if (!o || o.format !== 'bcp-statement' || !o.statement || !Array.isArray(o.transactions)) return 'Not a statement file from tools/parse-statements.py.';
@@ -173,7 +173,7 @@
         renderFiles();
     }
 
-    /* ---------- saving ---------- */
+    /* MARK: Saving */
     function problems(r) {
         if (!r.transactions.length) return 'No transactions to save.';
 
@@ -242,7 +242,7 @@
         say('Saved ' + n + ' of ' + ready.length + '.');
     };
 
-    /* ---------- file list ---------- */
+    /* MARK: File list */
     function checkChip(account, balances, s) {
         const ch = check(account, balances, s);
 
@@ -307,7 +307,7 @@
         });
     }
 
-    /* ---------- review ---------- */
+    /* MARK: Review */
     function openFile(f) {
         current = { f };
         renderReview();
@@ -458,7 +458,7 @@
         });
     }
 
-    /* ---------- saved statements ---------- */
+    /* MARK: Saved statements */
     async function loadSaved() {
         const { data, error } = await db.from('statements')
             .select('id,account,period,period_start,period_end,parser,file_name,file_hash,balances,totals,tx_count,imported_at')
@@ -547,7 +547,7 @@
         $('review').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    /* ---------- viewer ---------- */
+    /* MARK: Viewer */
     const DEFAULTS = { from: '', to: '', q: '', kind: '', cur: '', min: '', max: '' };
     const F = Object.assign({ account: 'credit', stmt: null }, DEFAULTS);   /* stmt: statement id, '' = all, null = not chosen yet */
     const INPUTS = { from: 'vFrom', to: 'vTo', q: 'vQ', kind: 'vKind', cur: 'vCur', min: 'vMin', max: 'vMax' };
@@ -838,7 +838,7 @@
         ensureStmt();
     };
 
-    /* ---------- drop zone ---------- */
+    /* MARK: Drop zone */
     const drop = $('drop');
 
     $('fileIn').onchange = e => {
@@ -863,7 +863,7 @@
         if (files.some(f => f.status === 'parsed')) e.preventDefault();
     });
 
-    /* ---------- start ---------- */
+    /* MARK: Start */
     if (!db) {
         $('saved').innerHTML = '';
         $('saved').append(el('p', { className: 'note', textContent: 'Supabase isn’t set up (see _docs/sync-setup.md), so statements can be loaded but not saved.' }));

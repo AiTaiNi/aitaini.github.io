@@ -16,29 +16,20 @@ from typing import Any
 
 SPEC: dict[str, list[tuple[str, str, float | int]]] = {
     "anime": [
-        ("days_watched", "Days:", float),
         ("mean_score", "Mean Score:", float),
         ("watching", "Watching", int),
         ("completed", "Completed", int),
         ("on_hold", "On-Hold", int),
         ("dropped", "Dropped", int),
         ("plan_to_watch", "Plan to Watch", int),
-        ("total_entries", "Total Entries", int),
-        ("rewatched", "Rewatched", int),
-        ("episodes_watched", "Episodes", int),
     ],
     "manga": [
-        ("days_read", "Days:", float),
         ("mean_score", "Mean Score:", float),
         ("reading", "Reading", int),
         ("completed", "Completed", int),
         ("on_hold", "On-Hold", int),
         ("dropped", "Dropped", int),
         ("plan_to_read", "Plan to Read", int),
-        ("total_entries", "Total Entries", int),
-        ("reread", "Reread", int),
-        ("chapters_read", "Chapters", int),
-        ("volumes_read", "Volumes", int),
     ],
 }
 

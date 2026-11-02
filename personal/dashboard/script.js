@@ -1,4 +1,4 @@
-/* ---------- helpers ---------- */
+/* MARK: Helpers */
 const $ = s => document.querySelector(s);
 
 const store = {
@@ -24,7 +24,7 @@ const fmt = (n, d = 0) => Number(n).toLocaleString('en-US', { maximumFractionDig
 const DEFAULTS = { mal: 'AisareTai' };
 const cfg = Object.assign({}, DEFAULTS, Sync.get('dash-cfg', {}));
 
-/* Settings follow you across devices; dash-mal is a cache and stays local. The exchange rate is site-wide (/assets/fx.js). */
+/* dash-mal is a cache and stays local. The exchange rate is site-wide (/assets/fx.js). */
 Sync.use(['dash-cfg']);
 Sync.on('dash-cfg', v => {
     Object.assign(cfg, DEFAULTS, v);
@@ -32,7 +32,7 @@ Sync.on('dash-cfg', v => {
 });
 let malTab = 'anime', malData = null, malNote = '';
 
-/* ---------- header ---------- */
+/* MARK: Header */
 function header() {
     const h = new Date().getHours();
 
@@ -40,8 +40,8 @@ function header() {
     $('#date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 }
 
-/* ---------- exchange rate ---------- */
-/* The site-wide rate from /assets/fx.js (fetched at most every 12 hours, synced), with a USD <-> PEN converter */
+/* MARK: Exchange rate */
+/* The site-wide rate from /assets/fx.js (fetched at most every 12 hours, synced), USD-PEN converter */
 function showFx(v) {
     const usd = $('#usd') ? $('#usd').value : 100;
 
@@ -67,12 +67,10 @@ async function loadFx() {
     showFx(await FX.get());
 }
 
-/* ---------- MyAnimeList (stats scraped to JSON) ---------- */
+/* MARK: MyAnimeList */
 const MAL = {
-    anime: { keys: [['watching', 'Watching', '#2db039'], ['completed', 'Completed', '#2e51a2'], ['on_hold', 'On hold', '#f9d457'], ['dropped', 'Dropped', '#a12f31'], ['plan_to_watch', 'Plan to watch', '#9aa0a6']],
-        top: [['total_entries', 'Entries'], ['episodes_watched', 'Episodes'], ['days_watched', 'Days watched']] },
-    manga: { keys: [['reading', 'Reading', '#2db039'], ['completed', 'Completed', '#2e51a2'], ['on_hold', 'On hold', '#f9d457'], ['dropped', 'Dropped', '#a12f31'], ['plan_to_read', 'Plan to read', '#9aa0a6']],
-        top: [['total_entries', 'Entries'], ['chapters_read', 'Chapters'], ['days_read', 'Days read']] }
+    anime: { keys: [['watching', 'Watching', '#2db039'], ['completed', 'Completed', '#2e51a2'], ['on_hold', 'On hold', '#f9d457'], ['dropped', 'Dropped', '#a12f31'], ['plan_to_watch', 'Plan to watch', '#9aa0a6']] },
+    manga: { keys: [['reading', 'Reading', '#2db039'], ['completed', 'Completed', '#2e51a2'], ['on_hold', 'On hold', '#f9d457'], ['dropped', 'Dropped', '#a12f31'], ['plan_to_read', 'Plan to read', '#9aa0a6']] }
 };
 
 function useMal(d, note) {
@@ -136,18 +134,17 @@ function drawMal() {
     $('#mal').innerHTML = `
     <div class="user">${img ? `<img src="${esc(img)}" alt="">` : ''}
       <div><a href="${esc(profile.url)}" target="_blank" rel="noopener">${esc(profile.username)}</a>
-      <div class="note" style="margin:0">Mean score ${fmt(d.mean_score, 2)}</div></div></div>
-    <div class="stats">${m.top.map(([k, l]) => `<div><b>${fmt(d[k], k.startsWith('days') ? 1 : 0)}</b><span>${l}</span></div>`).join('')}</div>
-    <div class="bar" role="img" aria-label="Status breakdown">${m.keys.map(([k, , c]) => `<div style="width:${(d[k] || 0) / total * 100}%;background:${c}"></div>`).join('')}</div>
+      <div class="note" style="margin:0">Mean score ${fmt(d.mean_score, 2)}</div></div></div>    <div class="bar" role="img" aria-label="Status breakdown">${m.keys.map(([k, , c]) => `<div style="width:${(d[k] || 0) / total * 100}%;background:${c}"></div>`).join('')}</div>
     <div class="legend">${m.keys.map(([k, l, c]) => `<span><i style="background:${c}"></i>${l} ${fmt(d[k] || 0)}</span>`).join('')}</div>` + hint + stamp;
 }
-document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+/* Only the Anime/Manga toggle (not "Load stats file…" next to it) */
+document.querySelectorAll('.tabs [data-t]').forEach(b => b.onclick = () => {
     malTab = b.dataset.t;
-    document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    document.querySelectorAll('.tabs [data-t]').forEach(x => x.setAttribute('aria-pressed', x === b));
     drawMal();
 });
 
-/* ---------- settings ---------- */
+/* MARK: Settings */
 const dlg = $('#dlg');
 
 $('#open').onclick = () => {

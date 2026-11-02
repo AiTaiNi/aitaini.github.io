@@ -17,8 +17,8 @@ main > .card {
     font-weight: 400
 }
 
-/* ---------- adding ---------- */
-/* the camera button only where there's a camera to open: phones and tablets (a computer would show the same file picker twice) */
+/* MARK: Adding */
+/* Camera only for phone or tablet. Hide on desktop. */
 @media (hover: hover) and (pointer: fine) {
     .touch-only {
         display: none
@@ -197,7 +197,7 @@ main > .card {
     white-space: pre-wrap
 }
 
-/* ---------- prices and receipts ---------- */
+/* MARK: Prices and receipts */
 #q {
     width: 100%
 }

@@ -2,7 +2,7 @@
      receipts table                one row per receipt: { id, store, date, total, lines: [{ code, name, qty, price }] }
      receipt-names-<store slug>    synced key, the store's item names: { key: { name, alias } }
    An item's key is its code on the receipt, or n:<lowercased name> when it has none. `name` is the name as first read
-   off a receipt, `alias` the clear name you gave it. Amounts are céntimos; `price` is what the line cost in total.
+   off a receipt, `alias` is a natural/redable name. Amounts are céntimos; `price` is what the line cost in total.
    Not linked to Shopping's history or the statements: each store's codes and names stay separate. */
 (() => {
     const TESS = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
@@ -44,8 +44,8 @@
         return false;
     }
 
-    /* ---------- names (synced keys) ---------- */
-    /* First sync on a device that already has names: a name you gave wins over none */
+    /* MARK: Names (db keys) */
+    /* First sync on a device that already has names. Custom name preferred over default. */
     function merge(local, remote) {
         const out = Object.assign({}, local, remote);
 
@@ -79,7 +79,7 @@
 
     const saveNames = items => Sync.set(namesKey(store), items);
 
-    /* ---------- receipts (table) ---------- */
+    /* MARK: Receipts table */
     let store, review = null, signedIn = false;
     const rows = {}, failed = {};   /* per store: its receipts once loaded, or why they couldn't be */
     const data = () => ({ items: names(), receipts: rows[store] || [] });
@@ -115,7 +115,7 @@
     const loadStore = () => signedIn && !rows[store] && load(store);
     const waiting = () => failed[store] || (db ? 'Loading…' : 'Supabase isn’t set up (see _docs/sync-setup.md), so there are no receipts to read.');
 
-    /* ---------- store picker ---------- */
+    /* MARK: Store picker */
     function renderStores() {
         const list = Stores.list();
 
@@ -157,7 +157,7 @@
         loadStore();
     });
 
-    /* ---------- reading a receipt ----------
+    /* MARK: Reading a receipt
        Tuned on real receipts with tools/purchase-receipts/read-receipt.py, which runs these same steps on a PC: change
        both together (_docs/receipts.md has the rules and the receipts behind them). Line by line:
        - an item starts with its code (a 13-digit barcode at Mass) and has its amount in the right-hand column, after
@@ -363,7 +363,7 @@
         return { date, units, total: totals.includes(sum) ? sum : mode != null ? +mode : null, items: items.filter(i => i.code || i.price) };
     }
 
-    /* ---------- the text reader (Tesseract.js, loaded on the first scan) ---------- */
+    /* MARK: Tesseract text reader */
     let reader = null, onProgress = () => {};
 
     function loadScript(src, what) {
@@ -386,7 +386,7 @@
         return reader;
     }
 
-    /* ---------- cleaning up the photo ----------
+    /* MARK: Cleaning up the photo
        Grey, the paper found and straightened to 1000px wide, then sharpened, as read-receipt.py does with OpenCV.
        Without a clear paper outline (a busy background, or the photo is all receipt) the whole photo is used. */
     function grey(bmp, w, h) {
@@ -638,10 +638,11 @@
         openReview({ date: null, total: null, items: [{ code: '', name: '', qty: 1, price: 0 }] }, {});
     };
 
-    /* ---------- the receipt's QR code ----------
+    /* MARK: QR code
        Peruvian e-receipts carry SUNAT's QR: RUC | type | series | number | IGV | total | date | buyer's ID type |
-       buyer's ID | … Only the store's RUC, the type, series-number, total and date are kept. The RUC picks the store
-       and its lookup site, where the receipt's XML can be downloaded (after a captcha) and imported below. */
+       buyer's ID | …
+       Only the store's RUC, the type, series-number, total and date are kept.
+       The RUC picks the store and its lookup site, where the receipt's XML can be downloaded (after a captcha) and imported below. */
     const JSQR = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js';
     const TYPES = { '01': 'Factura', '03': 'Boleta de venta' };
     const RUCS = { '20608280333': 'Mass', '20100070970': 'Plaza Vea' };   /* any other RUC is asked once, then synced */
@@ -794,7 +795,7 @@
         return true;
     }
 
-    /* ---------- the receipt's XML (UBL 2.1, the format every Peruvian e-receipt is filed in) ----------
+    /* MARK: XML import
        Each InvoiceLine has the quantity, the store's code (SellersItemIdentification, or the barcode in
        StandardItemIdentification), the description, and the line's value before tax plus its taxes: together what
        was paid. The receipt's taxes themselves aren't kept.
@@ -901,7 +902,7 @@
         openReview(x, {});
     };
 
-    /* ---------- checking what was read ---------- */
+    //* MARK: Checking what was read */
     /* The store's codes with their names as on the receipt, for parse to fix misread codes and names */
     const knownCodes = () => Object.fromEntries(Object.entries(names()).filter(([k]) => !k.startsWith('n:')).map(([k, v]) => [k, v.name]));
 
@@ -1052,7 +1053,7 @@
         renderData();
     };
 
-    /* ---------- prices ---------- */
+    /* MARK: Prices */
     /* Every purchase per item, oldest first, with the price of one */
     function history(d) {
         const out = {};
@@ -1168,7 +1169,7 @@
 
     $('q').oninput = () => renderPrices(data());
 
-    /* ---------- saved receipts ---------- */
+    /* MARK: Saved receipts */
     let shown = null;
 
     function renderReceipts(d) {

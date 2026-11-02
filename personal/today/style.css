@@ -1,5 +1,5 @@
 /* Today only. Theme, layout and the checklist styles come from /assets/base.css, app.css and tasks.css. */
-/* Import reminder above the countdowns */
+
 .due {
     margin: 0 0 10px;
     padding: 8px 12px;
@@ -17,7 +17,6 @@
     line-height: 1.55
 }
 
-/* ---------- exchange rate (as on the dashboard) ---------- */
 .big {
     font-size: 1.7rem;
     font-weight: 700;

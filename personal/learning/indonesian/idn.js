@@ -13,8 +13,8 @@
      Idn.queue()               today's work: learning, review and new items, in order
      Idn.answer(item, rating)  schedule a review, save it (queued offline, sent when possible); returns the new state
      Idn.preview(item)         the wait each rating would give, for the buttons
-     Idn.library()             your PDF library rows (idn_library), [] if the table isn't there
-     Idn.addCards(rows)        add your own / pulled-forward cards
+     Idn.library()             PDF library rows (idn_library), [] if the table isn't there
+     Idn.addCards(rows)        add custom or pulled-forward cards
      Idn.today()               { due, newToday, newLimit, minutes, week, streak }
      Idn.speak(text)           read Indonesian aloud with the browser's id-ID voice
      Idn.plan(planJson)        { week, month, day }: where today is in the 1-year plan */
@@ -47,7 +47,7 @@ window.Idn = (() => {
         return e;
     }
 
-    /* ---------- settings ---------- */
+    /* MARK: Settings */
     const api = { el, dayKey, deck: [], deckIndex: new Map(), sentences: {} };
 
     api.settings = Object.assign({}, DEFAULTS, Sync.get(SETTINGS, {}));
@@ -59,7 +59,7 @@ window.Idn = (() => {
 
     Sync.on(SETTINGS, v => api.settings = Object.assign({}, DEFAULTS, v));
 
-    /* ---------- the card store (shared engine) ---------- */
+    /* MARK: Card store (shared engine) */
     const store = SRS.deck({
         cards: 'idn_cards', schedule: 'idn_schedule', review: 'idn_review', queue: 'idn-queue',
         uniqueBy: 'deck_id',
@@ -75,7 +75,7 @@ window.Idn = (() => {
     api.cards = store.cards;
     api.sched = store.sched;
 
-    /* ---------- data files ---------- */
+    /* MARK: Data files */
     let manifest = null;
     const files = {};
 
@@ -91,7 +91,7 @@ window.Idn = (() => {
         });
     };
 
-    /* ---------- loading ---------- */
+    /* MARK: Loading */
     let base = { minutes: 0, week: 0, days: new Set() };
 
     async function load() {
@@ -127,8 +127,8 @@ window.Idn = (() => {
         api.pending = store.pending();
     }
 
-    /* ---------- cards ---------- */
-    /* What a card shows: your own edits win over the deck entry */
+    /* MARK: Cards */
+    /* Edits win over the deck entry */
     api.face = (card, deck) => {
         const d = deck || (card && card.deck_id ? api.deckIndex.get(card.deck_id) : null) || {};
         const c = card || {};
@@ -149,7 +149,7 @@ window.Idn = (() => {
         return s.day === dayKey() ? s : { day: dayKey(), newToday: 0 };
     }
 
-    /* Today's work: learning cards due now, reviews due today (capped), then new cards: cards you added that
+    /* Today's work: learning cards due now, reviews due today (capped), then new cards: added cards that
        haven't been studied, then the deck in order. Recall (typed) for active cards starts the day after their
        first recognition review. */
     api.queue = () => {
@@ -222,7 +222,7 @@ window.Idn = (() => {
     /* Immersion time logged by hand (watching, reading…), queued like everything else */
     api.logSession = row => store.enqueue({ t: 'session', row: Object.assign({ id: uuid(), day: dayKey(), started_at: new Date().toISOString() }, row) });
 
-    /* ---------- PDF library ---------- */
+    /* MARK: PDF library */
     let lib = null;
 
     api.library = () => lib = lib || SRS.all(db, 'idn_library', 'id,kind,indonesian,english,lemma,root,also,pos,example,example_en,topic,file,page,status,deck_pos', 'id').catch(e => {
@@ -231,7 +231,7 @@ window.Idn = (() => {
         return [];
     });
 
-    /* ---------- study time ---------- */
+    /* MARK: Study time */
     let session = null, secs = 0, lastInput = Date.now();
 
     function track(activity) {
@@ -290,7 +290,7 @@ window.Idn = (() => {
         return { due, newToday: summary().newToday, newLimit: api.newLimit(), newLeft: q.news.length, minutes, week: base.week + secs / 60, streak, known, cards: store.cards.size };
     };
 
-    /* ---------- hub summary and Calendar tasks ---------- */
+    /* MARK: Hub summary and Calendar tasks */
     let syncReady = false, last = '';
 
     Sync.ready().then(() => {
@@ -328,7 +328,7 @@ window.Idn = (() => {
         listeners.forEach(fn => fn(t));
     }
 
-    /* ---------- speech ---------- */
+    /* MARK: Speech */
     api.voices = () => (window.speechSynthesis ? speechSynthesis.getVoices() : []).filter(v => /^(id|in)\b/i.test(v.lang));
 
     api.speak = text => {
@@ -346,7 +346,7 @@ window.Idn = (() => {
         speechSynthesis.speak(u);
     };
 
-    /* ---------- plan ---------- */
+    /* MARK: Plan */
     api.plan = plan => {
         const start = new Date((api.settings.start || dayKey()) + 'T00:00').getTime();
         const week = Math.max(1, Math.floor((startOfDay() - start) / (7 * DAY)) + 1);
@@ -356,7 +356,7 @@ window.Idn = (() => {
         return { week, month: plan.months.find(m => m.n === month), day: plan.week[wd], wd };
     };
 
-    /* ---------- start ---------- */
+    /* MARK: Start */
     let loaded = false, starting = null;
 
     api.start = activity => starting = starting || new Promise((resolve, reject) => {

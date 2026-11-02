@@ -1,4 +1,4 @@
-/* Indonesian Today page: today's numbers, where you are in the plan, topic sets from your PDFs, immersion log and
+/* Indonesian Today page: today's numbers,current position in the plan, topic sets from your PDFs, immersion log and
    settings. Shared logic (cards, scheduling, time, summary) is in idn.js. */
 (() => {
     const $ = id => document.getElementById(id), el = Idn.el;
@@ -53,8 +53,7 @@
         $('session').replaceChildren(...plan.session.map(s => el('li', {}, [el('b', { textContent: s.minutes + ' min · ' + s.block }), ' ', el('span', { className: 'sm', textContent: s.note })])));
     }
 
-    /* Topic sets from the PDF library. Adding one makes its words your new cards (before the deck order); words that
-       are in the deck are pulled forward as deck cards, the rest become your own cards. */
+    /* Topic sets from the PDF library. Adding one makes its words the next new cards (before the deck order); words in the deck are pulled forward as deck cards, the rest become custom cards. */
     async function renderLibrary() {
         const rows = await Idn.library(), t = $('lib');
 
@@ -113,7 +112,7 @@
         });
     }
 
-    /* ---------- immersion ---------- */
+    /* MARK: Immersion */
     $('imm').onsubmit = e => {
         e.preventDefault();
 
@@ -127,7 +126,7 @@
         $('immMsg').textContent = 'Logged ' + m + ' min.';
     };
 
-    /* ---------- settings ---------- */
+    /* MARK: Settings */
     const S = { sStart: 'start', sNewWd: 'newWeekday', sNewWe: 'newWeekend', sRet: 'retention', sActive: 'activeUpTo', sMax: 'maxReviews', sVoice: 'voice' };
 
     function fillSettings() {
@@ -171,7 +170,7 @@
     $('setDone').onclick = () => $('setDlg').close();
     $('set').onsubmit = e => e.preventDefault();
 
-    /* ---------- start ---------- */
+    /* MARK: Start */
     function refresh() {
         renderStats(Idn.today());
 

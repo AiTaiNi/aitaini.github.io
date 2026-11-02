@@ -18,7 +18,7 @@
   const SUPABASE_KEY = 'sb_publishable_FaCgeELZ3-Yj-q1o_eLCrA_f-J9lsCc';   /* Publishable (or legacy anon) key. Meant to be public; the database rules protect the data. */
   const TABLE = 'kv';
 
-  /* ---------- local copy ---------- */
+  /* MARK: Local copy */
   const read = k => { try { const v = localStorage.getItem(k); return v === null ? undefined : JSON.parse(v); } catch { return undefined; } };
   const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { } };
   const ms = t => t ? Date.parse(t) : 0;
@@ -48,7 +48,7 @@
     }
   });
 
-  /* ---------- server ---------- */
+  /* MARK: Server */
   async function push(k) {
     const m = meta[k], value = read(k);
     if (!user || !m || !m.dirty || value === undefined) return;
@@ -115,7 +115,7 @@
   let markReady;
   const ready = new Promise(r => markReady = r);
 
-  /* ---------- page API ---------- */
+  /* MARK: Page API */
   let pullTimer;
   const schedulePull = () => { clearTimeout(pullTimer); pullTimer = setTimeout(pull, 0); };
 
@@ -149,7 +149,7 @@
     get user() { return user; }
   };
 
-  /* ---------- sign-in screen + status pill ---------- */
+  /* MARK: Sign-in screen and status pill */
   /* Uses the site theme tokens from /assets/base.css when the page loads it; the fallbacks keep it usable without */
   const CSS = `
     html.sync-locked body > :not(#sync-gate) { visibility: hidden }
@@ -222,7 +222,7 @@
     gateErr.hidden = !t;
   }
 
-  /* ---------- auth ---------- */
+  /* MARK: Auth */
   async function signIn(e) {
     e.preventDefault();
     const f = e.target, btn = f.querySelector('button');

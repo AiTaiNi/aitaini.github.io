@@ -1,6 +1,6 @@
 /* Expenses only. Theme and shared layout come from /assets/base.css and /assets/app.css. */
 
-/* ---------- cycle ---------- */
+/* MARK: Cycle */
 #cycle {
     margin-bottom: 12px
 }
@@ -90,7 +90,7 @@
     font-size: .9rem
 }
 
-/* ---------- group tables ---------- */
+/* MARK: Group tables */
 .lines button.ren {
     margin-left: 6px;
     padding: 0 6px;
@@ -159,7 +159,7 @@ tr.sum td {
     margin-top: 6px
 }
 
-/* ---------- insights ---------- */
+/* MARK: Insights */
 .icols {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -213,7 +213,7 @@ tr.sum td {
     grid-column: 2 / 4
 }
 
-/* ---------- history ---------- */
+/* MARK: History */
 #hist tr.cur td {
     background: var(--tint)
 }

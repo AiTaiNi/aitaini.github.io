@@ -73,7 +73,7 @@
         render();
     }
 
-    /* ---------- the list, one block per store ---------- */
+    /* MARK: The list, one block per store */
     function render() {
         const box = $('lists');
 
@@ -93,7 +93,7 @@
 
                 amount.setAttribute('aria-label', 'Amount of ' + it.name);
 
-                /* saved when you leave the field, so typing isn't interrupted */
+                /* saved when field loses focus so typing isn't interrupted */
                 amount.onchange = () => {
                     it.amount = amount.value.trim();
                     saveList();
@@ -134,7 +134,7 @@
         });
     }
 
-    /* ---------- suggestions and remembered items ---------- */
+    /* MARK: Suggestions and remembered items */
     const sorted = () => Object.values(known).sort((a, b) => (b.n || 0) - (a.n || 0) || a.name.localeCompare(b.name));
 
     function renderKnown() {
@@ -181,14 +181,14 @@
         }));
     }
 
-    /* ---------- adding ---------- */
+    /* MARK: Adding */
     const addStore = storeSelect(STORES[0], () => {});
 
     addStore.id = 'store';
     addStore.setAttribute('aria-label', 'Store');
     $('store').replaceWith(addStore);
 
-    /* A remembered item picks its last store by itself (you can still change it before adding) */
+    /* A remembered item picks its last store by itself, can be edited */
     $('name').addEventListener('input', () => {
         const k = known[keyOf($('name').value)];
 
@@ -221,7 +221,7 @@
         saveList();
     };
 
-    /* ---------- settings: the store list ---------- */
+    /* MARK: Settings (store list) */
     function renderStores() {
         $('storeList').replaceChildren(...STORES.map((n, i) => {
             const btn = (text, label, disabled, fn) => {

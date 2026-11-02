@@ -74,7 +74,7 @@
         render();
     }
 
-    /* ---------- helpers ---------- */
+    /* MARK: Helpers */
     const cur = c => c === 'USD' ? 'US$' : 'S/';
 
     function money(cents, c) {
@@ -112,7 +112,7 @@
         $('msg').textContent = t;
     }
 
-    /* ---------- analysis ---------- */
+    /* MARK: Analysis */
     /* Card purchases are grouped by merchant, so "DLC*MICROSOFT LIMA" and "DLC*Microsoft 365 F" are one line:
        drop the payment processor (DLC*, PAYPAL *, Google …) and anything with digits, keep the first word
        (two if the first is short, so DIDI DRIVE and DIDI FOOD stay apart). */
@@ -334,7 +334,7 @@
         return { cats, cur, total, top: top.sort((a, b) => b.pen - a.pen) };
     }
 
-    /* ---------- exchange rate ---------- */
+    /* MARK: Exchange rate */
     /* The site-wide rate (/assets/fx.js): fetched at most every 12 hours, the same on every page and device */
     let fxInfo = { rate: 3.40, at: null }, fx = fxInfo.rate;
 
@@ -354,7 +354,7 @@
         return ['PEN', 'USD'].filter(c => s[c]).map(c => money(s[c], c)).join(' + ') || money(0, 'PEN');
     }
 
-    /* ---------- page ---------- */
+    /* MARK: Page */
     let A = null, M = null;
 
     function groupSelect(l, g) {
@@ -678,7 +678,7 @@
         });
     }
 
-    /* ---------- calendar ---------- */
+    /* MARK: Calendar */
     /* Yearly payments as yearly Calendar events on their last charge date, kept in step on every render. Waits for
        the first sync so an old copy of the calendar on this device can't replace newer events. */
     let calReady = false;
@@ -815,7 +815,7 @@
         if (A) renderOther();
     });
 
-    /* ---------- loading ---------- */
+    /* MARK: Loading */
     /* Money out only. Supabase returns at most 1000 rows per request: count first, then the rest in parallel. */
     async function fetchOut() {
         const cols = 'statement_id,account,posted_on,description,amount,currency,reference,category';

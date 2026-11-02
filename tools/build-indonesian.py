@@ -1,10 +1,9 @@
 """
-Build the data for the Indonesian learning pages (personal/learning/indonesian/), and turn your own Indonesian PDFs
-into private import candidates. Background: _docs/indonesian-data.md.
+Build the data for the Indonesian learning pages (personal/learning/indonesian/), and turn Indonesian PDFs into private import candidates. Background: _docs/indonesian-data.md.
 
 `python tools/build-indonesian.py`         public data -> personal/learning/indonesian/data/ (dictionary, deck, forms, sentences, slang, plan)
 `python tools/build-indonesian.py pdfs`    private: adds tools/indonesian/pdfs/ to tools/indonesian/out-private/library.json
-`python tools/build-indonesian.py sync`    private: uploads that library to your Supabase table idn_library (asks you to sign in)
+`python tools/build-indonesian.py sync`    private: uploads that library to Supabase table idn_library (asks you to sign in)
 `python tools/build-indonesian.py all`     all three
 `--prune`                            with pdfs/sync/all: drop library entries whose PDF is no longer in the folder
 
@@ -116,7 +115,7 @@ def norm_affix(a: str) -> str:
     return AFFIX_NAMES.get(a, a)
 
 
-# ---------- dictionary ----------
+# MARK: Dictionary
 def affix_info(templates: list[dict]) -> tuple[str, list[str]] | None:
     """Root and affixes from Wiktionary's etymology templates (af/pre/suf/con/reduplication)."""
     for t in templates:
@@ -324,7 +323,7 @@ def short_gloss(lex: dict[str, list[dict]], w: str, depth: int = 0) -> tuple[str
     return (text[:110].rsplit(" ", 1)[0] + "…" if len(text) > 110 else text), std
 
 
-# ---------- forms ----------
+# MARK: Forms
 class Analyser:
     """Maps any surface form to a dictionary word: itself, minus clitics (-nya, -ku…), casual affixes, or a stem."""
 
@@ -384,7 +383,7 @@ def load_freq() -> list[str]:
     return words
 
 
-# ---------- sentences ----------
+# MARK: Sentences
 def load_tatoeba() -> dict[int, tuple[str, str]]:
     say("Reading Tatoeba sentences…")
     ind: dict[int, str] = {}
@@ -450,7 +449,7 @@ def pick_examples(pairs: dict[int, tuple[str, str]], an: Analyser, rank: dict[st
     return {w: [sid for _, sid in sorted(v)[:EXAMPLES]] for w, v in found.items()}
 
 
-# ---------- slang ----------
+# MARK: Slang
 def load_slang() -> list[dict]:
     items = yaml.safe_load((CONTENT / "slang.yaml").read_text(encoding="utf-8")) or []
 
@@ -490,7 +489,7 @@ def slang_table(items: list[dict], lex: dict[str, list[dict]]) -> dict[str, dict
     return table
 
 
-# ---------- public build ----------
+# MARK: Public build
 def build() -> None:
     need(KAIKKI, FREQ, TATOEBA_IND, TATOEBA_ENG, TATOEBA_LINKS)
     lex, root_of, affixes_of = load_lexicon()
@@ -665,7 +664,7 @@ def build() -> None:
     say(f"✓ {OUT.relative_to(ROOT)}: {len(manifest['files'])} files, {total / 1e6:.1f} MB before compression (version {manifest['version']})")
 
 
-# ---------- PDFs (private) ----------
+# MARK: PDFs
 BOILERPLATE = re.compile(r"indonesianpod101|click|here|writing practice|^meaning$|^indonesian$|copy this line|write it here|copyright|free|lifetime|worksheet|workbook|^note:|^practice$|cakap\.com|^\d+$", re.I)
 
 
@@ -966,7 +965,7 @@ def build_pdfs(prune: bool) -> None:
     say(f"✓ {LIBRARY.relative_to(ROOT)}: {len(items)} entries from {len(files_meta)} PDFs ({', '.join(f'{v} {k}' for k, v in sorted(status.items()))}). Private: never commit it.")
 
 
-# ---------- library upload (private) ----------
+# MARK: Library upload
 LIBRARY_COLUMNS = ("id", "kind", "indonesian", "english", "lemma", "root", "also", "pos", "example", "example_en", "topic", "file", "page", "status", "deck_pos")
 
 
@@ -981,8 +980,8 @@ def supabase_request(url: str, key: str, token: str | None, method: str, path: s
 
 
 def sync_library(prune: bool) -> None:
-    """Upload the library to idn_library as you (so the database's rules apply), adding and updating rows; with prune,
-    rows that are no longer in the library are deleted too."""
+    """Upload the library to idn_library, adding and updating rows; with prune, rows that are no longer in the library are deleted too."""
+
     if not LIBRARY.exists():
         sys.exit("No library yet: run `python tools/build-indonesian.py pdfs` first.")
 

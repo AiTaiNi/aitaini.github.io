@@ -153,7 +153,7 @@
         return 'hsl(' + Math.round(frac * 120) + ',70%,' + (frac > 0.4 && frac < 0.75 ? '62%' : '60%') + ')';
     }
 
-    /* ---------- events ---------- */
+    /* MARK: Events */
     var REPS = { none: 'once', week: 'weekly', month: 'monthly', year: 'yearly' };
     var ICONS = [['star', '★'], ['heart', '♥'], ['flag', '⚑'], ['plane', '✈'], ['mail', '✉'], ['phone', '☎'], ['music', '♫'], ['alert', '⚠'], ['scissors', '✂'], ['pen', '✎'], ['home', '⌂'], ['gear', '⚙'], ['money', '$'], ['plus', '✚'], ['umbrella', '☂'], ['moon', '☾'], ['flower', '✿'], ['crown', '♛'], ['spark', '✦'], ['key', '⚿']];
 
@@ -362,7 +362,7 @@
         });
     }
 
-    /* ---------- event form ---------- */
+    /* MARK: Event form */
     var editing = null;
 
     function startEdit(e) {
@@ -449,7 +449,7 @@
         };
     }
 
-    /* ---------- calendar ---------- */
+    /* MARK: Calendar */
     function renderCal() {
         var y = view.getFullYear(), m = view.getMonth();
 
@@ -557,7 +557,7 @@
         }
     }
 
-    /* ---------- day checklist ---------- */
+    /* MARK: Day checklist */
     function renderDay() {
         if ($('dayTitle')) {
             var title = niceDate(sel, { weekday: 'long', month: 'short', day: 'numeric' });
@@ -636,7 +636,7 @@
         });
     }
 
-    /* ---------- managing daily tasks ---------- */
+    /* MARK: Managing daily tasks */
     function renderManage() {
         var box = $('manage');
         box.innerHTML = '';
@@ -889,7 +889,7 @@
         });
     }
 
-    /* ---------- import / export (dashboard settings) ---------- */
+    /* MARK: Import and export */
     if ($('expJson')) {
         var msg = $('dataMsg'), area = $('dataText'), actions = $('impActions'), pending = null;
 

@@ -28,7 +28,8 @@ window.SRS = (() => {
     const startOfDay = (d = new Date()) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
     const uuid = () => crypto.randomUUID();
 
-    /* ---------- FSRS (v5 formulas, default weights) with short learning steps ---------- */
+    /* MARK: FSRS scheduler */
+    /* v5 formulas, default weights, short steps */
     const W = [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621];
     const F = 19 / 81, C = -0.5;
     const R = (t, s) => Math.pow(1 + F * t / s, C);
@@ -111,7 +112,8 @@ window.SRS = (() => {
         }
     }
 
-    /* ---------- a deck: cards + schedule in Supabase, every write through an offline queue ---------- */
+    /* MARK: Deck */
+    /* Cards + schedule in Supabase, writes through an offline queue */
     function deck(o) {
         const db = Sync.db, cards = new Map(), sched = new Map();
         const retention = o.retention || (() => 0.9);

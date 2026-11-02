@@ -43,7 +43,7 @@ def norm(s: str) -> str:
     return "".join(c for c in unicodedata.normalize("NFD", s) if not unicodedata.combining(c)).upper()
 
 
-# ---------- PDF → rows of positioned words ----------
+# MARK: PDF to positioned words
 @dataclass
 class Word:
     x0: float
@@ -105,7 +105,7 @@ def read_rows(doc: pymupdf.Document) -> list[Row]:
     return rows
 
 
-# ---------- tokens ----------
+# MARK: Tokens
 def cents(s: str) -> tuple[int, bool] | None:
     """'1,234.56' → (123456, False); '45.00-' → (4500, True)."""
     m = AMOUNT.match(s)
@@ -162,7 +162,7 @@ def amounts_above(rows: list[Row], label: Row) -> list[Word]:
     return above[-1].words if above else []
 
 
-# ---------- statements ----------
+# MARK: Statements
 @dataclass
 class Tx:
     posted_on: date
@@ -368,7 +368,7 @@ def parse_credit(rows: list[Row], start: date, end: date) -> Statement:
     return st
 
 
-# ---------- checks + output ----------
+# MARK: Checks and output
 def checks(st: Statement) -> list[dict]:
     """Opening + movements = closing, per currency (card balances are debt, so spending raises them). Debit also checks the printed totals."""
     out = []

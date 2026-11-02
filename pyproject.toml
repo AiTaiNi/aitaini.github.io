@@ -29,6 +29,8 @@ select = ["ALL"]
 ignore = [
     "T201",
     "BLE001",
+    "PLR0913",
+    "INP001",
     
     "CPY",        # Useless
     "DTZ",        # Pointless, timezone isn't as important and should only run inside Peru anyway

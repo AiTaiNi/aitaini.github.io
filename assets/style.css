@@ -26,19 +26,25 @@
   box-shadow: var(--shadow-hi)
 }
 
-/* Home looks like the other header links (.btn); it just sits on the left */
+/* Home looks like the other header links (.btn); sits on the left */
 .logo {
   margin-right: auto
 }
 
-/* The current page: bold and in the link colour, no background */
+/* Header links: hover, tap and the current page only change the colour, never a background; the current page is bold */
+.nav .btn:hover,
+.nav .btn:active,
 .nav .btn.on {
-  background: transparent;
+  background: transparent
+}
+
+.nav .btn.on {
   font-weight: 700
 }
 
-.nav .btn.on:hover {
-  background: var(--tint)
+/* and no grey flash from the phone's own tap highlight */
+.nav .btn {
+  -webkit-tap-highlight-color: transparent
 }
 
 .search {
@@ -577,23 +583,35 @@ aside {
   display: none !important
 }
 
+/* Segmented toggle, like .seg on the personal pages (assets/app.css) */
 .mal-tabs {
   display: flex;
-  gap: .25rem;
-  margin: 0 0 .8rem
+  gap: 2px;
+  padding: 2px;
+  margin: 0 0 .8rem;
+  border-radius: var(--radius);
+  background: var(--tint)
 }
 
 .mal-tabs .btn {
   flex: 1;
-  padding: .3rem .5rem;
+  padding: .35rem .8rem;
   font-size: .9rem;
-  background: var(--tint);
+  background: transparent;
   color: var(--link)
 }
 
-.mal-tabs .btn.on {
+.mal-tabs .btn:hover {
+  background: var(--tint-hi)
+}
+
+.mal-tabs .btn[aria-pressed=true] {
   background: var(--primary);
   color: var(--card)
+}
+
+.mal-tabs .btn[aria-pressed=true]:hover {
+  background: var(--link)
 }
 
 .mal-user {
@@ -626,25 +644,9 @@ aside {
 }
 
 .mal-user span,
-.mal-stats span,
 .mal-note {
   font-size: .8rem;
   color: var(--sub)
-}
-
-.mal-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: .4rem;
-  margin-bottom: .8rem;
-  text-align: center
-}
-
-.mal-stats b {
-  display: block;
-  font-size: 1.05rem;
-  color: var(--title);
-  line-height: 1.25
 }
 
 .mal-bar {
