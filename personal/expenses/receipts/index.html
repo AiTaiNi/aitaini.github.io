@@ -36,6 +36,7 @@
     <section class="card" id="scanCard">
       <h2>Add a receipt</h2>
       <div class="btns">
+        <button class="pri touch-only" id="qrCamBtn">Photograph QR code…</button>
         <button class="pri" id="qrBtn">Scan QR code…</button>
         <button id="xmlBtn">Import XML…</button>
         <button id="scanBtn">Scan photo…</button>
@@ -46,6 +47,7 @@
         (exact lines, nothing to fix). Otherwise scan a photo: lay the receipt flat on something darker than the paper and
         photograph it straight from above in good light, the whole receipt filling the photo.</p>
       <input type="file" id="qrPhoto" accept="image/*" hidden>
+      <input type="file" id="qrCamera" accept="image/*" capture="environment" hidden>
       <input type="file" id="xmlFile" hidden>
       <input type="file" id="photo" accept="image/*" hidden>
       <div id="qrBox" hidden></div>

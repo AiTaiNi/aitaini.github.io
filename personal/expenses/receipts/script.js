@@ -752,11 +752,13 @@
     }
 
     $('qrBtn').onclick = () => $('qrPhoto').click();
+    $('qrCamBtn').onclick = () => $('qrCamera').click();
 
-    $('qrPhoto').onchange = async () => {
-        const file = $('qrPhoto').files[0], msg = $('scanMsg');
+    /* the same reader for a picked photo and one just taken with the camera */
+    $('qrPhoto').onchange = $('qrCamera').onchange = async e => {
+        const input = e.target, file = input.files[0], msg = $('scanMsg');
 
-        $('qrPhoto').value = '';
+        input.value = '';
 
         if (!file) return;
 

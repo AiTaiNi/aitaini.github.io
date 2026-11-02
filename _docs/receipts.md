@@ -65,8 +65,10 @@ Every Peruvian e-receipt (boleta or factura) has SUNAT's QR code:
   RUC        type series number IGV  total  date   buyer's ID type, ID
 ```
 
-**Scan QR code…** reads it from a photo (the browser's own QR reader on Chrome for Android, otherwise
-[jsQR](https://github.com/cozmo/jsQR) 1.4.0 from jsDelivr, loaded on first use). **Paste text** also takes the QR
+**Scan QR code…** reads it from a photo you pick, and on phones and tablets **Photograph QR code…** opens the
+back camera straight away (hidden on computers, where it would only open the same file picker). Both use the
+browser's own QR reader on Chrome for Android, otherwise
+[jsQR](https://github.com/cozmo/jsQR) 1.4.0 from jsDelivr, loaded on first use. **Paste text** also takes the QR
 code's text, from any QR scanner app. Only the RUC, type, series-number, total and date are used; the IGV and the
 buyer's ID are ignored.
 

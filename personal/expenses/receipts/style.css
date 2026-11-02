@@ -18,6 +18,13 @@ main > .card {
 }
 
 /* ---------- adding ---------- */
+/* the camera button only where there's a camera to open: phones and tablets (a computer would show the same file picker twice) */
+@media (hover: hover) and (pointer: fine) {
+    .touch-only {
+        display: none
+    }
+}
+
 #pasteBox textarea {
     width: 100%;
     min-height: 160px;
