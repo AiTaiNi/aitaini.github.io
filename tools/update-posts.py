@@ -4,8 +4,8 @@ Scans the posts/ folder (including sub-folders) for .md files and rebuilds posts
     python tools/update-posts.py        (or double-click tools/update-posts.bat on Windows)
 
 Post front matter (between --- lines at the top of each file):
-    title, date (YYYY-MM-DD), category, tags (comma separated),
-    description (optional), id (optional), draft: true (skips the post)
+    title, date (YYYY-MM-DD), category, description (optional), id (optional),
+    draft: true (skips the post). Anything else (e.g. an old tags: line) is ignored.
 """
 
 import json
@@ -67,7 +67,6 @@ def main():
             "title": meta.get("title") or f.stem.replace("-", " ").replace("_", " ").title(),
             "date": date,
             "category": meta.get("category", ""),
-            "tags": [t.strip() for t in meta.get("tags", "").split(",") if t.strip()],
             "description": meta.get("description") or (text[:160] + "…" if len(text) > 160 else text),
             "words": len(text.split()),
         })

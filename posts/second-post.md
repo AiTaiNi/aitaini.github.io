@@ -2,7 +2,6 @@
 title: Another post
 date: 2026-10-15
 category: Guides
-tags: blogging, customization
 draft: true
 ---
 

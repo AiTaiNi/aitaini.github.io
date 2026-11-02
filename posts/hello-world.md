@@ -2,7 +2,6 @@
 title: Hello, world
 date: 2026-10-20
 category: Notes
-tags: intro, blogging
 description: A first post to show how everything looks.
 draft: true
 ---

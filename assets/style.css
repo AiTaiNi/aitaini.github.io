@@ -221,15 +221,6 @@ aside {
   text-align: center
 }
 
-/* Tag cloud */
-.chip {
-  margin: 0 .25rem .35rem 0
-}
-
-.chip:hover {
-  background: var(--tint-hi)
-}
-
 /* Main + page transition */
 #main {
   transition: opacity .22s ease, transform .22s ease;
@@ -298,21 +289,6 @@ aside {
 
 .meta a:hover {
   color: var(--accent)
-}
-
-.meta a.tag {
-  display: inline-block;
-  background: var(--accent-tint);
-  color: var(--accent);
-  padding: 1px 10px;
-  border-radius: 99px;
-  margin-left: 6px;
-  font-weight: 600
-}
-
-.meta a.tag:hover {
-  background: var(--accent);
-  color: var(--card)
 }
 
 .backlink {
@@ -389,6 +365,22 @@ aside {
   top: 0;
   height: 100%;
   width: .6rem
+}
+
+/* Opening to the left instead, when there's no room on the right (set by app.js) */
+.dd.flip>.sub {
+  left: auto;
+  right: 0
+}
+
+.sub .dd.flip>.sub {
+  left: auto;
+  right: calc(100% + .4rem)
+}
+
+.sub .dd.flip::after {
+  left: auto;
+  right: 100%
 }
 
 .count {
@@ -570,11 +562,6 @@ aside {
 .arow .t {
   flex: 1;
   font-weight: 500
-}
-
-.arow .tg {
-  color: var(--sub);
-  font-size: .85rem
 }
 
 .empty {

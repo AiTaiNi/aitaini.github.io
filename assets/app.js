@@ -7,9 +7,9 @@ const enc = encodeURIComponent;
 const md = t => marked.parse(t);
 const SITE = document.title;
 /* Sidebar boxes that only appear on one page: { box id: page path }. Everything else is always visible. */
-const SIDEBAR_ON = { 'w-cats': 'archive', 'w-tags': 'archive', 'w-mal': 'about' };
+const SIDEBAR_ON = { 'w-cats': 'archive', 'w-mal': 'about' };
 const coverUrl = p => !p.image ? '' : /^(https?:)?\/\//.test(p.image) ? p.image : 'posts/' + encodeURI(p.image);
-const POSTS_PER_PAGE = 5;   /* posts shown per page on the front page, tags, categories and search */
+const POSTS_PER_PAGE = 5;   /* posts shown per page on the front page, categories and search */
 const yr = $('#yr'); if (yr) yr.textContent = new Date().getFullYear();
 
 /* ---------- File loading ---------- */
@@ -42,7 +42,7 @@ async function loadPosts() {
   const list = JSON.parse(await getText('posts/posts.json'));
   posts = list.map(e => ({
     id: e.id, file: e.file, title: e.title || e.id, date: e.date || '', cat: e.category || '',
-    tags: e.tags || [], desc: e.description || '', words: e.words || 0, image: e.image || '', md: null, plain: null
+    desc: e.description || '', words: e.words || 0, image: e.image || '', md: null, plain: null
   })).sort((a, b) => b.date.localeCompare(a.date));
 
   buildSidebar();
@@ -103,7 +103,45 @@ document.addEventListener('click', e => {
   const l = e.target.closest('.dd-label');
   document.querySelectorAll('.dd.open').forEach(d => { if (!l || !d.contains(l)) d.classList.remove('open'); });
   if (l) l.parentElement.classList.toggle('open');
+  if (l) placeSubs(l.parentElement);
 });
+
+/* A submenu opens to the right, or to the left when it would run off the right edge. If neither side fits (narrow
+   phones), it takes the side that sticks out less and is nudged back on screen, so the page never gets wider. */
+function placeSub(dd) {
+  const sub = dd.querySelector(':scope > .sub');
+  if (!sub || getComputedStyle(sub).display === 'none') return;
+
+  const pad = 8, vw = document.documentElement.clientWidth;
+  dd.classList.remove('flip');
+  sub.style.transform = '';
+
+  let r = sub.getBoundingClientRect();
+  const overRight = r.right - (vw - pad);
+
+  if (overRight > 0) {
+    dd.classList.add('flip');
+    r = sub.getBoundingClientRect();
+
+    if (pad - r.left > overRight) {
+      dd.classList.remove('flip');
+      r = sub.getBoundingClientRect();
+    }
+  }
+
+  const dx = r.right > vw - pad ? vw - pad - r.right : r.left < pad ? pad - r.left : 0;
+  if (dx) sub.style.transform = `translateX(${dx}px)`;
+}
+
+/* Places the submenus from the outermost open one in, since each one's room depends on its parent's spot */
+function placeSubs(el) {
+  const chain = [];
+  for (let dd = el && el.closest('.dd'); dd; dd = dd.parentElement.closest('.dd')) chain.unshift(dd);
+  chain.forEach(placeSub);
+}
+
+document.addEventListener('mouseover', e => placeSubs(e.target));
+document.addEventListener('focusin', e => placeSubs(e.target));
 
 addEventListener('hashchange', () => document.querySelectorAll('.dd.open').forEach(d => d.classList.remove('open')));
 
@@ -113,21 +151,16 @@ const init = Promise.all([loadPosts(), loadMenu()]).catch(e => { loadError = e; 
 function buildSidebar() {
   const count = arr => arr.reduce((m, k) => (m[k] = (m[k] || 0) + 1, m), {});
   const cats = count(posts.map(p => p.cat).filter(Boolean));
-  const tags = count(posts.flatMap(p => p.tags));
 
   $('#w-cats').innerHTML = '<h4>Categories</h4>' + Object.entries(cats).map(([k, n]) =>
     `<a class="row" href="#/category/${enc(k)}">${esc(k)}<span>${n}</span></a>`).join('');
-  $('#w-tags').innerHTML = '<h4>Tags</h4>' + Object.keys(tags).map(k =>
-    `<a class="chip" href="#/tag/${enc(k)}">${esc(k)}</a>`).join('');
 
   if (!Object.keys(cats).length) $('#w-cats').remove();
-  if (!Object.keys(tags).length) $('#w-tags').remove();
 }
 
 /* ---------- Views ---------- */
 const metaLine = p => `<div class="meta">${esc(p.date)}` +
-  (p.cat ? ` · <a href="#/category/${enc(p.cat)}">${esc(p.cat)}</a>` : '') +
-  p.tags.map(t => `<a class="tag" href="#/tag/${enc(t)}">${esc(t)}</a>`).join('') + '</div>';
+  (p.cat ? ` · <a href="#/category/${enc(p.cat)}">${esc(p.cat)}</a>` : '') + '</div>';
 
 function pager(pages, page, href) {
   if (pages < 2) return '';
@@ -168,7 +201,7 @@ function timeline() {
   return Object.keys(years).sort().reverse().map(y => `
     <section class="entry year"><h3>${esc(y)}<small>${years[y].length} post${years[y].length > 1 ? 's' : ''}</small></h3>
     ${years[y].map(p => `<a class="arow" href="#/post/${enc(p.id)}"><span class="d">${esc(p.date.slice(5))}</span>
-      <span class="dot"></span><span class="t">${esc(p.title)}</span><span class="tg">${p.tags.map(esc).join(' · ')}</span></a>`).join('')}
+      <span class="dot"></span><span class="t">${esc(p.title)}</span></a>`).join('')}
     </section>`).join('') || '<div class="card empty">No posts yet.</div>';
 }
 
@@ -220,12 +253,10 @@ async function view(hash) {
   }
 
   if (route === 'category') return { title: a, nav: 'archive', html: cards(posts.filter(p => p.cat === a), `Category: ${esc(a)}`, num(arg2), paged(`#/category/${enc(a)}`)) };
-  if (route === 'tag') return { title: '#' + a, nav: 'archive', html: cards(posts.filter(p => p.tags.includes(a)), `Tag: ${esc(a)}`, num(arg2), paged(`#/tag/${enc(a)}`)) };
-
   if (route === 'search') {
     const q = a.toLowerCase();
     await Promise.all(posts.map(p => body(p).catch(() => { })));
-    const r = posts.filter(p => (p.title + ' ' + p.cat + ' ' + p.tags.join(' ') + ' ' + (p.plain || '')).toLowerCase().includes(q));
+    const r = posts.filter(p => (p.title + ' ' + p.cat + ' ' + (p.plain || '')).toLowerCase().includes(q));
 
     return { title: 'Search', nav: 'none', html: cards(r, `${r.length} result${r.length === 1 ? '' : 's'} for “${esc(a)}”`, num(arg2), paged(`#/search/${enc(a)}`)) };
   }

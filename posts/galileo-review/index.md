@@ -3,7 +3,6 @@ title: Galileo (2007-2022) Review
 published: 2025-09-28
 description: 'A humble review about a JDrama I really enjoyed.'
 image: './cover.png'
-tags: ["Review", "Blogging", "JDrama"]
 category: Review
 draft: true 
 lang: 'en'
