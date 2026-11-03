@@ -73,10 +73,9 @@ Pages share the main site's look, so a change to the hue or colours in one place
 - **Give items stable ids** (`'i' + Date.now()`) so merge functions can combine copies from two devices.
 - **Re-render in `Sync.on`**: another device's change can arrive at any time.
 
-## For Claude
+## TLDR
 
-When asked to make a new private page: copy this folder to `personal/<name>/` as above, choose a new unique key
-(check that existing pages don't already use it with a search for `Sync.use`), keep the head scripts and the style
-tokens, and replace the example feature completely rather than leaving template text behind. Put only page-specific
-rules in the page's `style.css`. Anything two pages would share belongs in `/assets/app.css`, and colours or shapes
+Copy this folder to `personal/<name>/` as above, choose a new unique key (check that existing pages don't already use it with a search for `Sync.use`), keep the head scripts and the style tokens, and replace the example feature completely rather than leaving template text behind.
+
+Put only page-specific rules in the page's `style.css`. Anything two pages would share belongs in `/assets/app.css`, and colours or shapes
 belong in `/assets/base.css` as tokens.

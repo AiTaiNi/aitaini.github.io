@@ -24,17 +24,18 @@ yarn.lock
 .idea
 *.iml
 
-# bank statements (sensitive, never commit)
+# bank statements
 personal/statements/examples/
 personal/statements/**/*.pdf
 personal/statements/json/
 
-# Indonesian data sources (large downloads) and your own PDFs (may be copyrighted, never commit)
+# Indonesian data sources
 tools/indonesian/raw/
 tools/indonesian/pdfs/
 tools/indonesian/out-private/
 
-# receipt photos (card digits, IDs) and the downloaded OCR model for tools/purchase-receipts/read-receipt.py
+# receipt photos
+
 tools/purchase-receipts/*.jpg
 tools/purchase-receipts/*.jpeg
 tools/purchase-receipts/*.png

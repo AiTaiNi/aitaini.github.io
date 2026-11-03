@@ -9,7 +9,7 @@ Build the data for the Indonesian learning pages (personal/learning/indonesian/)
 
 The PDF library is cumulative: new PDFs are added, a changed PDF replaces its own entries, and entries from deleted PDFs stay unless --prune is passed.
 
-Sources go in tools/indonesian/raw/ (git-ignored): the kaikki.org Indonesian Wiktionary extract, Tatoeba's Indonesian and English sentences with their links, and the FrequencyWords Indonesian list. Hand-written content is in tools/indonesian/content/. Needs PySastrawi and PyYAML (`pip install PySastrawi pyyaml`); the PDF step also needs PyMuPDF (already used by tools/parse-statements.py).
+Sources go in tools/indonesian/raw/ (git-ignored): the kaikki.org Indonesian Wiktionary extract, Tatoeba's Indonesian and English sentences with their links, and the FrequencyWords Indonesian list. Hand-written content is in tools/indonesian/content/. Needs PySastrawi, PyYAML and Requests (`pip install PySastrawi pyyaml requests`); the PDF step also needs PyMuPDF (already used by tools/parse-statements.py).
 
 The public output contains only freely licensed material (see SOURCES); nothing from the PDFs ever goes there.
 """
@@ -22,13 +22,17 @@ import json
 import os
 import re
 import sys
-import urllib.error
-import urllib.request
 from collections import defaultdict
 from datetime import date
+from itertools import pairwise
 from pathlib import Path
+from typing import TYPE_CHECKING
 
+import requests
 import yaml
+
+if TYPE_CHECKING:
+    import pymupdf
 
 ROOT = Path(__file__).resolve().parent.parent   # this script is in tools/
 TOOLS = ROOT / "tools" / "indonesian"
@@ -85,11 +89,11 @@ AFFIX_NAMES = {
 CASUAL_PREFIXES = [("nge", ""), ("ng", "k"), ("ng", ""), ("ny", "s"), ("ny", "c"), ("m", "p"), ("m", "b"), ("n", "t"), ("n", "")]
 
 
-def say(*a: object) -> None:
-    print(*a, flush=True)
+def say(*a: object):
+    print(*a, flush = True)
 
 
-def need(*paths: Path) -> None:
+def need(*paths: Path):
     missing = [p.name for p in paths if not p.exists()]
 
     if missing:
@@ -98,8 +102,9 @@ def need(*paths: Path) -> None:
 
 def write_json(path: Path, data: object) -> dict:
     """Compact UTF-8 JSON; returns its manifest entry (short hash, size)."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    raw = json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode()
+
+    path.parent.mkdir(parents = True, exist_ok = True)
+    raw = json.dumps(data, ensure_ascii = False, separators = (",", ":")).encode()
     path.write_bytes(raw)
 
     return {"hash": hashlib.sha256(raw).hexdigest()[:12], "bytes": len(raw)}
@@ -114,18 +119,19 @@ def norm_affix(a: str) -> str:
 # MARK: Dictionary
 def affix_info(templates: list[dict]) -> tuple[str, list[str]] | None:
     """Root and affixes from Wiktionary's etymology templates (af/pre/suf/con/reduplication)."""
+
     for t in templates:
         name, args = t.get("name"), t.get("args") or {}
 
         if args.get("1") != "id":
             continue
 
-        parts = [args[k].strip() for k in sorted((k for k in args if k.isdigit() and k != "1"), key=int) if args[k].strip()]
+        parts = [args[k].strip() for k in sorted((k for k in args if k.isdigit() and k != "1"), key = int) if args[k].strip()]
 
         if name in ("af", "affix", "con", "confix", "circumfix"):
             is_affix = [any(x.startswith("-") or x.endswith("-") for x in p.split()) for p in parts]
-            roots = [p for p, a in zip(parts, is_affix, strict=True) if not a]
-            affixes = [norm_affix(x) for p, a in zip(parts, is_affix, strict=True) if a for x in p.split()]
+            roots = [p for p, a in zip(parts, is_affix, strict = True) if not a]
+            affixes = [norm_affix(x) for p, a in zip(parts, is_affix, strict = True) if a for x in p.split()]
         elif name in ("pre", "prefix") and len(parts) >= 2:
             roots, affixes = [parts[-1]], [norm_affix(p if p.endswith("-") else p + "-") for p in parts[:-1]]
         elif name in ("suf", "suffix") and len(parts) >= 2:
@@ -146,14 +152,15 @@ def clean_gloss(g: str) -> str:
 
 
 def load_lexicon() -> tuple[dict[str, list[dict]], dict[str, str], dict[str, list[str]]]:
-    """word -> entries (one per part of speech), word -> immediate root, word -> affixes."""
-    say("Reading the Wiktionary extract…")
+    """Parses word -> entries (one per part of speech), word -> immediate root, word -> affixes."""
+
+    say("Reading the Wiktionary extract...")
     lex: dict[str, list[dict]] = defaultdict(list)
     root_of: dict[str, str] = {}
     affixes_of: dict[str, list[str]] = {}
     derived_of: dict[str, str] = {}
 
-    with open(KAIKKI, encoding="utf-8") as f:
+    with KAIKKI.open(encoding = "utf-8") as f:
         for line in f:
             e = json.loads(line)
             w, pos = e.get("word", "").strip(), e.get("pos")
@@ -226,6 +233,7 @@ def load_lexicon() -> tuple[dict[str, list[dict]], dict[str, str], dict[str, lis
 
 def base_root(w: str, root_of: dict[str, str]) -> str:
     """Follow roots down to the base: pelajaran -> pelajar -> ajar."""
+
     seen = {w}
 
     while w in root_of and root_of[w] not in seen:
@@ -237,8 +245,11 @@ def base_root(w: str, root_of: dict[str, str]) -> str:
 
 def primary(entries: list[dict]) -> tuple[dict, dict] | None:
     """The entry and sense to show first. A word with several entries (bisa: "venom" and "can") shows the one with the most current senses, which is nearly always the everyday one; archaic senses only when there's nothing else."""
-    current = lambda e: [s for s in e["s"] if not OLD & set(s.get("t", []))]   # noqa: E731
-    ranked = sorted(entries, key=lambda e: -len(current(e)))
+
+    def current(e: dict) -> list[dict]:
+        return [s for s in e["s"] if not OLD & set(s.get("t", []))]
+
+    ranked = sorted(entries, key = lambda e: -len(current(e)))
 
     for e in ranked:
         if current(e):
@@ -249,6 +260,7 @@ def primary(entries: list[dict]) -> tuple[dict, dict] | None:
 
 def inflection_of(lex: dict[str, list[dict]], w: str) -> str | None:
     """The base word when w is only an inflected form (dilakukan -> lakukan, jadilah -> jadi), so the deck doesn't get a card for each. Casual and alternative spellings (tau -> tahu) aren't inflections: they keep their own card."""
+
     p = primary(lex.get(w, []))
 
     if not p:
@@ -274,6 +286,7 @@ def register(tags: set[str]) -> str:
 
 def short_gloss(lex: dict[str, list[dict]], w: str, depth: int = 0) -> tuple[str, str | None]:
     """A card-sized meaning (up to two senses), and the standard form when w is a casual/alternative spelling."""
+
     p = primary(lex.get(w, []))
 
     if not p:
@@ -321,7 +334,7 @@ def short_gloss(lex: dict[str, list[dict]], w: str, depth: int = 0) -> tuple[str
 class Analyser:
     """Maps any surface form to a dictionary word: itself, minus clitics (-nya, -ku, ...), casual affixes, or a stem."""
 
-    def __init__(self, lex: dict[str, list[dict]]) -> None:
+    def __init__(self, lex: dict[str, list[dict]]):
         from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 
         self.lex = lex
@@ -367,7 +380,7 @@ class Analyser:
 def load_freq() -> list[str]:
     words = []
 
-    with open(FREQ, encoding="utf-8") as f:
+    with FREQ.open(encoding = "utf-8") as f:
         for line in f:
             w = line.split(" ", 1)[0].strip()
 
@@ -379,10 +392,10 @@ def load_freq() -> list[str]:
 
 # MARK: Sentences
 def load_tatoeba() -> dict[int, tuple[str, str]]:
-    say("Reading Tatoeba sentences…")
+    say("Reading Tatoeba sentences...")
     ind: dict[int, str] = {}
 
-    with bz2.open(TATOEBA_IND, "rt", encoding="utf-8") as f:
+    with bz2.open(TATOEBA_IND, "rt", encoding = "utf-8") as f:
         for line in f:
             parts = line.rstrip("\n").split("\t")
 
@@ -391,7 +404,7 @@ def load_tatoeba() -> dict[int, tuple[str, str]]:
 
     links: dict[int, list[int]] = defaultdict(list)
 
-    with bz2.open(TATOEBA_LINKS, "rt", encoding="utf-8") as f:
+    with bz2.open(TATOEBA_LINKS, "rt", encoding = "utf-8") as f:
         for line in f:
             a, b = line.split("\t")[:2]
 
@@ -401,7 +414,7 @@ def load_tatoeba() -> dict[int, tuple[str, str]]:
     want = {b for v in links.values() for b in v}
     eng: dict[int, str] = {}
 
-    with bz2.open(TATOEBA_ENG, "rt", encoding="utf-8") as f:
+    with bz2.open(TATOEBA_ENG, "rt", encoding = "utf-8") as f:
         for line in f:
             i, _, rest = line.partition("\t")
 
@@ -423,6 +436,7 @@ def load_tatoeba() -> dict[int, tuple[str, str]]:
 
 def pick_examples(pairs: dict[int, tuple[str, str]], an: Analyser, rank: dict[str, int], wanted: set[str]) -> dict[str, list[int]]:
     """Up to EXAMPLES sentences per word: short, and with the easiest other words (lowest frequency rank)."""
+
     say("Choosing example sentences…")
     found: dict[str, list[tuple[tuple[int, int], int]]] = defaultdict(list)
 
@@ -437,7 +451,7 @@ def pick_examples(pairs: dict[int, tuple[str, str]], an: Analyser, rank: dict[st
 
         for i, lm in enumerate(lemmas):
             if lm in wanted:
-                hardest = max((r for j, r in enumerate(ranks) if j != i), default=0)
+                hardest = max((r for j, r in enumerate(ranks) if j != i), default = 0)
                 found[lm].append(((hardest // 500, abs(len(tokens) - 7)), sid))
 
     return {w: [sid for _, sid in sorted(v)[:EXAMPLES]] for w, v in found.items()}
@@ -445,7 +459,7 @@ def pick_examples(pairs: dict[int, tuple[str, str]], an: Analyser, rank: dict[st
 
 # MARK: Slang
 def load_slang() -> list[dict]:
-    items = yaml.safe_load((CONTENT / "slang.yaml").read_text(encoding="utf-8")) or []
+    items = yaml.safe_load((CONTENT / "slang.yaml").read_text(encoding = "utf-8")) or []
 
     for it in items:
         it["form"] = str(it["form"]).lower()
@@ -456,6 +470,7 @@ def load_slang() -> list[dict]:
 
 def slang_table(items: list[dict], lex: dict[str, list[dict]]) -> dict[str, dict]:
     """Every casual/chat spelling -> its meaning and standard form. Hand-written entries win over Wiktionary's."""
+
     table: dict[str, dict] = {}
 
     for w, entries in lex.items():
@@ -484,10 +499,10 @@ def slang_table(items: list[dict], lex: dict[str, list[dict]]) -> dict[str, dict
 
 
 # MARK: Public build
-def build() -> None:
+def build():
     need(KAIKKI, FREQ, TATOEBA_IND, TATOEBA_ENG, TATOEBA_LINKS)
     lex, root_of, affixes_of = load_lexicon()
-    overrides = yaml.safe_load((CONTENT / "overrides.yaml").read_text(encoding="utf-8")) or {}
+    overrides = yaml.safe_load((CONTENT / "overrides.yaml").read_text(encoding = "utf-8")) or {}
     gloss_fix = overrides.get("gloss") or {}
 
     for w, r in (overrides.get("roots") or {}).items():
@@ -507,7 +522,7 @@ def build() -> None:
         return base_root(w, root_of)
 
     # forms: the most frequent words (and every casual spelling) -> dictionary word and root
-    say("Analysing word forms…")
+    say("Analysing word forms")
     forms: dict[str, list[str]] = {}
 
     for w in freq[:FORMS_TOP] + [s["form"] for s in slang] + [a for s in slang for a in s["also"]]:
@@ -524,7 +539,7 @@ def build() -> None:
     say(f"  {len(forms):,} forms mapped")
 
     # deck: dictionary words in order of first appearance in the frequency list
-    say("Building the deck…")
+    say("Building the deck")
     # hand-written casual words get their own (early) place; their alternative spellings (nggak for gak) no card
     slang_forms = {s["form"] for s in slang if s.get("deck")} | {a for s in slang for a in s["also"]} | set(overrides.get("skip") or [])
     main, seen = [], set()
@@ -612,7 +627,7 @@ def build() -> None:
     say(f"  {len(deck):,} deck words ({sum(1 for d in deck if d.get('sl'))} hand-written casual), {with_ex:,} with an example")
 
     # dictionary shards by first letter; root families
-    say("Writing files…")
+    say("Writing files")
     shards: dict[str, dict] = defaultdict(dict)
     families: dict[str, list[str]] = defaultdict(list)
 
@@ -646,9 +661,9 @@ def build() -> None:
     manifest["files"]["families.json"] = write_json(OUT / "families.json", families)
     manifest["files"]["sentences.json"] = write_json(OUT / "sentences.json", used)
     manifest["files"]["slang.json"] = write_json(OUT / "slang.json", slang_table(slang, lex))
-    manifest["files"]["plan.json"] = write_json(OUT / "plan.json", yaml.safe_load((CONTENT / "plan.yaml").read_text(encoding="utf-8")))
+    manifest["files"]["plan.json"] = write_json(OUT / "plan.json", yaml.safe_load((CONTENT / "plan.yaml").read_text(encoding = "utf-8")))
 
-    manifest["version"] = hashlib.sha256(json.dumps(manifest["files"], sort_keys=True).encode()).hexdigest()[:12]
+    manifest["version"] = hashlib.sha256(json.dumps(manifest["files"], sort_keys = True).encode()).hexdigest()[:12]
     manifest["built"] = date.today().isoformat()
     manifest["counts"] = {"words": len(lex), "deck": len(deck), "forms": len(forms), "families": len(families), "sentences": len(used)}
     manifest["sources"] = SOURCES
@@ -670,7 +685,7 @@ def clean_text(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
-def spans_of(page) -> list[dict]:
+def spans_of(page: pymupdf.Page) -> list[dict]:
     out = []
 
     for b in page.get_text("dict")["blocks"]:
@@ -688,14 +703,14 @@ def spans_of(page) -> list[dict]:
 class PdfReader:
     """Recognises the layouts seen so far (_docs/indonesian-data.md) and turns them into candidates."""
 
-    def __init__(self) -> None:
+    def __init__(self):
         self.words: set[str] = set()
 
         for f in (OUT / "lexicon").glob("*.json"):
-            self.words.update(json.loads(f.read_text(encoding="utf-8")))
+            self.words.update(json.loads(f.read_text(encoding = "utf-8")))
 
-        self.forms: dict[str, list[str]] = json.loads((OUT / "forms.json").read_text(encoding="utf-8"))
-        self.deck = {d["id"]: i for i, d in enumerate(json.loads((OUT / "deck.json").read_text(encoding="utf-8")))}
+        self.forms: dict[str, list[str]] = json.loads((OUT / "forms.json").read_text(encoding = "utf-8"))
+        self.deck = {d["id"]: i for i, d in enumerate(json.loads((OUT / "deck.json").read_text(encoding = "utf-8")))}
 
     def lemma(self, w: str) -> str | None:
         w = w.lower()
@@ -718,6 +733,7 @@ class PdfReader:
 
     def refresh(self, c: dict) -> dict:
         """Match against the current dictionary and deck (re-run for old entries after every rebuild)."""
+
         head = c["indonesian"].split(",")[0].strip().lower()
         lm = self.lemma(head) if " " not in head else (head if head in self.words else None)
         c["lemma"] = lm
@@ -730,7 +746,7 @@ class PdfReader:
         return c
 
     # The 300-word card books: "CARD 001", "root, form ~ meaning", a bold example + translation, numbered derived forms
-    def cards(self, doc, name: str) -> list[dict]:
+    def cards(self, doc: pymupdf.Document, name: str) -> list[dict]:
         out, card = [], None
 
         for pno, page in enumerate(doc, 1):
@@ -748,7 +764,7 @@ class PdfReader:
                 elif card and card["head"] is None and "~" in text:
                     left, right = text.split("~", 1)
                     heads = [h.strip() for h in left.split(",") if h.strip()]   # "makan, memakan": root first, then the meN- form
-                    card["head"] = self.candidate("word", heads[0], right, src, topic="300 most common words", card=card["no"], also=heads[1:])
+                    card["head"] = self.candidate("word", heads[0], right, src, topic = "300 most common words", card = card["no"], also = heads[1:])
                     card["head"]["root"] = heads[0]
                     out.append(card["head"])
                 elif card and card["head"] and spans[0]["bold"] and not re.match(r"^\d+$", spans[0]["t"]) and any(not s["bold"] for s in spans):
@@ -757,12 +773,12 @@ class PdfReader:
                 elif card and card["head"] and re.match(r"^\d+$", spans[0]["t"]) and len(spans) >= 3:
                     ind = " ".join(s["t"] for s in spans[1:] if s["bold"])
                     en = " ".join(s["t"] for s in spans[1:] if not s["bold"])
-                    out.append(self.candidate("derived", ind, en, src, topic="300 most common words", card=card["no"], root=card["head"]["root"]))
+                    out.append(self.candidate("derived", ind, en, src, topic = "300 most common words", card = card["no"], root = card["head"]["root"]))
 
         return out
 
     # Word lists in three columns: word, part of speech, "=meaning"
-    def word_list(self, doc, name: str) -> list[dict]:
+    def word_list(self, doc: pymupdf.Document, name: str) -> list[dict]:
         out = []
         pos_names = {"v.": "verb", "n.": "noun", "adj.": "adj", "adv.": "adv", "p.": "particle", "pron.": "pron", "conj.": "conj", "prep.": "prep", "num.": "num"}
 
@@ -778,16 +794,16 @@ class PdfReader:
 
                 if gloss and pos:
                     word = re.sub(r"\(\d+\)", "", " ".join(s["t"] for s in spans if s["x"] < pos["x"])).strip()
-                    out.append(self.candidate("word", word, gloss["t"][1:], {"file": name, "page": pno}, pos=pos_names[pos["t"]], topic=Path(name).stem))
+                    out.append(self.candidate("word", word, gloss["t"][1:], {"file": name, "page": pno}, pos = pos_names[pos["t"]], topic = Path(name).stem))
 
         return out
 
     # Worksheets and similar. A table under an "Indonesian | Meaning" header pairs by column; otherwise a bold Indonesian line pairs with plain English on the same row (to the right) or just below it.
-    def pairs(self, doc, name: str) -> list[dict]:
+    def pairs(self, doc: pymupdf.Document, name: str) -> list[dict]:
         out, seen = [], set()
         topic = re.sub(r"^\d+\+?\s*", "", Path(name).stem).strip()
 
-        def add(ind: str, en: str, pno: int) -> None:
+        def add(ind: str, en: str, pno: int):
             key = (ind.lower(), en.lower())
 
             if key in seen or not ind or not en or re.search(r"@|https?:|www\.", en):
@@ -795,7 +811,7 @@ class PdfReader:
 
             seen.add(key)
             kind = "phrase" if len(TOKEN.findall(ind.lower())) > 1 or re.search(r"[.?!]$", ind) else "word"
-            out.append(self.candidate(kind, ind, en, {"file": name, "page": pno}, topic=topic))
+            out.append(self.candidate(kind, ind, en, {"file": name, "page": pno}, topic = topic))
 
         for pno, page in enumerate(doc, 1):
             every = spans_of(page)
@@ -808,7 +824,7 @@ class PdfReader:
                 right = [s for s in spans if abs(s["x"] - head_en["x"]) <= 12 and s["y"] > head_ind["y"]]
 
                 for s in left:
-                    r = min((r for r in right if abs(r["y"] - s["y"]) <= 5), key=lambda r: abs(r["y"] - s["y"]), default=None)
+                    r = min((r for r in right if abs(r["y"] - s["y"]) <= 5), key = lambda r: abs(r["y"] - s["y"]), default = None)
 
                     if r:
                         add(s["t"], r["t"], pno)
@@ -821,7 +837,7 @@ class PdfReader:
             for b in (s for s in spans if s["bold"]):
                 right = [r for r in plain if abs(r["y"] - b["y"]) <= 4 and r["x"] > b["x1"] and r["x"] - b["x1"] < 260]
                 below = [r for r in plain if abs(r["x"] - b["x"]) <= 8 and 0 < r["y"] - b["y"] <= 30]
-                r = min(right, key=lambda r: r["x"]) if right else min(below, key=lambda r: r["y"]) if below else None
+                r = min(right, key = lambda r: r["x"]) if right else min(below, key = lambda r: r["y"]) if below else None
 
                 if r and self.indonesian_share(b["t"]) >= 0.5 and self.indonesian_share(r["t"]) < 0.5:
                     add(b["t"], r["t"], pno)
@@ -830,7 +846,7 @@ class PdfReader:
                 continue
 
             # Numbered sentences: Indonesian in larger type (possibly wrapped over two lines), English smaller below
-            column = sorted((s for s in plain if not re.match(r"^\d+$", s["t"])), key=lambda s: (round(s["x"] / 8), s["y"]))
+            column = sorted((s for s in plain if not re.match(r"^\d+$", s["t"])), key = lambda s: (round(s["x"] / 8), s["y"]))
             merged: list[dict] = []
 
             for s in column:
@@ -841,7 +857,7 @@ class PdfReader:
                 else:
                     merged.append(dict(s))
 
-            for a, b in zip(merged, merged[1:], strict=False):
+            for a, b in pairwise(merged):
                 if abs(a["x"] - b["x"]) <= 6 and a["size"] - b["size"] >= 3 and 0 < b["y"] - a["y"] <= 60:
                     ind, en = a["t"].replace("\n", " "), b["t"].replace("\n", " ")
 
@@ -886,12 +902,13 @@ class PdfReader:
         return ("pairs", found, "") if found else ("none", [], "no word/translation pairs found (reading material? kept for later)")
 
 
-def build_pdfs(prune: bool) -> None:
+def build_pdfs(*, prune: bool):
     """Add the PDFs to the cumulative library. Unchanged PDFs aren't re-read; a changed one replaces its own entries; a renamed one keeps its entries (matched by content); a deleted one keeps them too unless prune is set."""
+
     if not (OUT / "forms.json").exists():
         sys.exit("Run `python tools/build-indonesian.py` first: the PDF step checks words against the built dictionary.")
 
-    lib = json.loads(LIBRARY.read_text(encoding="utf-8")) if LIBRARY.exists() else {"format": "idn-library", "version": 1, "files": {}, "items": {}}
+    lib = json.loads(LIBRARY.read_text(encoding = "utf-8")) if LIBRARY.exists() else {"format": "idn-library", "version": 1, "files": {}, "items": {}}
     files_meta, items = lib["files"], lib["items"]
     reader, today = PdfReader(), date.today().isoformat()
     present = sorted(PDFS.glob("*.pdf"))
@@ -909,12 +926,12 @@ def build_pdfs(prune: bool) -> None:
                 if it["file"] == moved:
                     it["file"] = f.name
 
-            files_meta[f.name] = dict(files_meta.pop(moved), present=True, last_seen=today)
+            files_meta[f.name] = dict(files_meta.pop(moved), present = True, last_seen = today)
             say(f"= {f.name}: renamed from {moved}, entries kept")
             continue
 
         if meta and meta.get("hash") == digest:
-            meta.update(present=True, last_seen=today)
+            meta.update(present = True, last_seen = today)
             say(f"= {f.name}: unchanged, {meta.get('count', 0)} entries")
             continue
 
@@ -963,34 +980,32 @@ LIBRARY_COLUMNS = ("id", "kind", "indonesian", "english", "lemma", "root", "also
 
 def supabase_request(url: str, key: str, token: str | None, method: str, path: str, body: object = None, headers: dict | None = None) -> object:
     h = {"apikey": key, "Content-Type": "application/json", "Authorization": "Bearer " + (token or key), **(headers or {})}
-    req = urllib.request.Request(url + path, method=method, headers=h, data=json.dumps(body).encode() if body is not None else None)
+    r = requests.request(method, url + path, headers = h, json = body, timeout = 60)
+    r.raise_for_status()
 
-    with urllib.request.urlopen(req, timeout=60) as r:
-        raw = r.read()
-
-    return json.loads(raw) if raw else None
+    return r.json() if r.content else None
 
 
-def sync_library(prune: bool) -> None:
+def sync_library(*, prune: bool):
     """Upload the library to idn_library, adding and updating rows; with prune, rows that are no longer in the library are deleted too."""
 
     if not LIBRARY.exists():
         sys.exit("No library yet: run `python tools/build-indonesian.py pdfs` first.")
 
-    js = SYNC_JS.read_text(encoding="utf-8")
+    js = SYNC_JS.read_text(encoding = "utf-8")
     url = re.search(r"SUPABASE_URL\s*=\s*'([^']+)'", js).group(1).rstrip("/")
     key = re.search(r"SUPABASE_KEY\s*=\s*'([^']+)'", js).group(1)
-    items = json.loads(LIBRARY.read_text(encoding="utf-8"))["items"]
+    items = json.loads(LIBRARY.read_text(encoding = "utf-8"))["items"]
 
     email = os.environ.get("IDN_EMAIL") or input("Supabase sign-in email: ").strip()
     password = os.environ.get("IDN_PASSWORD") or getpass.getpass("Password (not shown): ")
 
     try:
         token = supabase_request(url, key, None, "POST", "/auth/v1/token?grant_type=password", {"email": email, "password": password})["access_token"]
-    except urllib.error.HTTPError as e:
-        sys.exit(f"Sign-in failed ({e.code}): check the email and password.")
-    except urllib.error.URLError as e:
-        sys.exit(f"Couldn't reach Supabase ({e.reason}). The library is saved locally; run `sync` again later.")
+    except requests.HTTPError as e:
+        sys.exit(f"Sign-in failed ({e.response.status_code}): check the email and password.")
+    except requests.RequestException as e:
+        sys.exit(f"Couldn't reach Supabase ({e}). The library is saved locally; run `sync` again later.")
 
     rows = [{c: it.get(c) for c in LIBRARY_COLUMNS} | {"also": it.get("also") or []} for it in items.values()]
 
@@ -1018,32 +1033,32 @@ def sync_library(prune: bool) -> None:
                 supabase_request(url, key, token, "DELETE", "/rest/v1/idn_library?id=in.(" + ",".join(stale[i:i + 100]) + ")")
 
             removed = len(stale)
-    except urllib.error.HTTPError as e:
-        detail = e.read().decode(errors="replace")
+    except requests.HTTPError as e:
+        detail = e.response.text
 
-        if e.code == 404 or "idn_library" in detail and "does not exist" in detail:
+        if e.response.status_code == 404 or ("idn_library" in detail and "does not exist" in detail):
             sys.exit("The idn_library table doesn't exist yet: run its SQL from _docs/indonesian-database.md first.")
 
-        sys.exit(f"Upload failed ({e.code}): {detail[:300]}")
+        sys.exit(f"Upload failed ({e.response.status_code}): {detail[:300]}")
 
     say(f"✓ Uploaded {len(rows)} library entries to idn_library" + (f", removed {removed} stale ones" if prune else ""))
 
 
-def main() -> None:
-    sys.stdout.reconfigure(encoding="utf-8")
-    ap = argparse.ArgumentParser(description="Build the Indonesian learning data.")
-    ap.add_argument("what", nargs="?", default="data", choices=["data", "pdfs", "sync", "all"])
-    ap.add_argument("--prune", action="store_true", help="drop library entries whose PDF is gone")
+def main():
+    sys.stdout.reconfigure(encoding = "utf-8")
+    ap = argparse.ArgumentParser(description = "Build the Indonesian learning data.")
+    ap.add_argument("what", nargs = "?", default = "data", choices = ["data", "pdfs", "sync", "all"])
+    ap.add_argument("--prune", action = "store_true", help = "drop library entries whose PDF is gone")
     args = ap.parse_args()
 
     if args.what in ("data", "all"):
         build()
 
     if args.what in ("pdfs", "all"):
-        build_pdfs(args.prune)
+        build_pdfs(prune = args.prune)
 
     if args.what in ("sync", "all"):
-        sync_library(args.prune)
+        sync_library(prune = args.prune)
 
 
 if __name__ == "__main__":

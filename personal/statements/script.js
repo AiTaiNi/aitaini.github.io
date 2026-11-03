@@ -257,7 +257,7 @@
         });
     }
 
-    const STATUS = { reading: 'Reading…', parsed: 'Ready', saving: 'Saving…', saved: 'Saved', error: 'Error' };
+    const STATUS = { reading: 'Reading', parsed: 'Ready', saving: 'Saving', saved: 'Saved', error: 'Error' };
 
     function renderFiles() {
         const t = $('files');

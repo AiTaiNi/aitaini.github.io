@@ -8,11 +8,11 @@ import argparse
 import json
 import re
 import sys
-import urllib.request
 from datetime import UTC, datetime
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import Any
+
+import requests
 
 SPEC: dict[str, list[tuple[str, str, float | int]]] = {
     "anime": [
@@ -40,7 +40,7 @@ class Text(HTMLParser):
         self.parts = []
         self.skip = 0
 
-    def handle_starttag(self, tag: str, attrs: list):  # noqa: ARG002
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]):  # noqa: ARG002
         if tag in ("script", "style"):
             self.skip += 1
 
@@ -48,8 +48,7 @@ class Text(HTMLParser):
         if tag in ("script", "style") and self.skip:
             self.skip -= 1
 
-    def handle_data(self, data: Any):  # noqa: ANN401
-        if not self.skip:
+    def handle_data(self, data: str):
             self.parts.append(data)
 
 
@@ -99,9 +98,11 @@ def main():
     if a.file:
         html = Path(a.file).read_text(encoding = "utf-8", errors = "ignore")
     else:
-        req = urllib.request.Request(f"https://myanimelist.net/profile/{a.user}", headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36", "Accept-Language": "en-US,en;q=0.9"})
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36", "Accept-Language": "en-US,en;q=0.9"}
         try:
-            html = urllib.request.urlopen(req, timeout = 30).read().decode("utf-8", "ignore")  # noqa: S310
+            r = requests.get(f"https://myanimelist.net/profile/{a.user}", headers = headers, timeout = 30)
+            r.raise_for_status()
+            html = r.content.decode("utf-8", "ignore")
         except Exception as e:
             sys.exit(f"Could not fetch the profile ({e}). Save the page from your browser and use --file profile.html")
     text = page_text(html)
@@ -116,7 +117,7 @@ def main():
     img = avatar(html)
     if not img:
         print("Note: no profile picture found. The profile may have none set, or MAL changed its layout.")
-    data = {"updated": datetime.now(UTC).isoformat(timespec="seconds"), "profile": {"username": a.user, "url": f"https://myanimelist.net/profile/{a.user}", "images": {"jpg": {"image_url": img}}}, "stats": stats}
+    data = {"updated": datetime.now(UTC).isoformat(timespec = "seconds"), "profile": {"username": a.user, "url": f"https://myanimelist.net/profile/{a.user}", "images": {"jpg": {"image_url": img}}}, "stats": stats}
     out = Path(__file__).resolve().parent.parent / "data" / "mal-stats.json"   # this script is in tools/
     out.parent.mkdir(exist_ok = True)
     out.write_text(json.dumps(data, indent = 2), encoding = "utf-8")

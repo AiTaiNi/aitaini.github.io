@@ -71,7 +71,7 @@ Scheduling and saving are in ../idn.js.
         const tag = el('span', { className: 'sm', textContent: item.isNew ? 'New word' + (face.pos ? ' · #' + face.pos : '') : item.dir === 'recall' ? 'Type it in Indonesian' : '' });
 
         if (item.dir === 'recall') {
-            const inp = el('input', { id: 'typed', autocomplete: 'off', spellcheck: false, placeholder: 'in Indonesian…' });
+            const inp = el('input', { id: 'typed', autocomplete: 'off', spellcheck: false, placeholder: 'in Indonesian...' });
 
             inp.setAttribute('autocapitalize', 'off');
             inp.setAttribute('aria-label', 'The Indonesian word');

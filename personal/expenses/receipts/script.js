@@ -112,7 +112,7 @@
     }
 
     const loadStore = () => signedIn && !rows[store] && load(store);
-    const waiting = () => failed[store] || (db ? 'Loading…' : 'Supabase isn’t set up (see _docs/sync-setup.md), so there are no receipts to read.');
+    const waiting = () => failed[store] || (db ? 'Loading...' : 'Error loading receipts.');
 
     /* MARK: Store picker */
     function renderStores() {
@@ -582,9 +582,9 @@
         const msg = $('scanMsg'), btn = $('scanBtn');
 
         btn.disabled = true;
-        msg.textContent = 'Loading the text reader…';
+        msg.textContent = 'Loading the text reader...';
         onProgress = m => {
-            if (m.status === 'recognizing text') msg.textContent = 'Reading… ' + Math.round(m.progress * 100) + '%';
+            if (m.status === 'recognizing text') msg.textContent = 'Reading [' + Math.round(m.progress * 100) + ']%';
         };
 
         try {

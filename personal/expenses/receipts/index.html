@@ -29,23 +29,21 @@
       </nav>
     </header>
 
-    <!-- Everything below is for the chosen store: each store has its own codes, names and prices -->
+    <!-- Chosen store: each store has its own codes, names and prices -->
     <div class="seg stores" id="stores" role="group" aria-label="Store"></div>
     <p class="note">Stores come from the <a href="/personal/shopping/">Shopping</a> list's Settings.</p>
 
     <section class="card" id="scanCard">
       <h2>Add a receipt</h2>
       <div class="btns">
-        <button class="pri touch-only" id="qrCamBtn">Photograph QR code…</button>
-        <button class="pri" id="qrBtn">Scan QR code…</button>
-        <button id="xmlBtn">Import XML…</button>
-        <button id="scanBtn">Scan photo…</button>
+        <button class="pri touch-only" id="qrCamBtn">Photograph QR code</button>
+        <button class="pri" id="qrBtn">Scan QR code</button>
+        <button id="xmlBtn">Import XML</button>
+        <button id="scanBtn">Scan photo</button>
         <button id="pasteBtn">Paste text</button>
         <button id="handBtn">Enter by hand</button>
       </div>
-      <p class="note">Best: scan the QR code, download the receipt's XML from the store's lookup site, and import it
-        (exact lines, nothing to fix). Otherwise scan a photo: lay the receipt flat on something darker than the paper and
-        photograph it straight from above in good light, the whole receipt filling the photo.</p>
+      <p class="note">Best: scan the QR code, download the receipt's XML from the store's lookup site, and import it (exact lines, nothing to fix). Otherwise scan a photo: lay the receipt flat on something darker than the paper and photograph it straight from above in good light, the whole receipt filling the photo.</p>
       <input type="file" id="qrPhoto" accept="image/*" hidden>
       <input type="file" id="qrCamera" accept="image/*" capture="environment" hidden>
       <input type="file" id="xmlFile" hidden>
@@ -66,7 +64,14 @@
         <div class="scroll">
           <table class="lines" id="rLines">
             <thead>
-              <tr><th>Code</th><th>Name on receipt</th><th class="num">Qty</th><th class="num">Paid</th><th class="num">Each</th><th></th></tr>
+              <tr>
+                <th>Code</th>
+                <th>Name on receipt</th>
+                <th class="num">Qty</th>
+                <th class="num">Paid</th>
+                <th class="num">Each</th>
+                <th></th>
+              </tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -93,13 +98,17 @@
     <section class="card">
       <h2>Prices</h2>
       <input type="search" id="q" placeholder="Search names and codes…" aria-label="Search items">
-      <div class="scroll"><table class="lines" id="prices"></table></div>
+      <div class="scroll">
+        <table class="lines" id="prices"></table>
+      </div>
       <p class="note" id="pNote"></p>
     </section>
 
     <section class="card">
       <h2>Saved receipts</h2>
-      <div class="scroll"><table class="lines" id="receipts"></table></div>
+      <div class="scroll">
+        <table class="lines" id="receipts"></table>
+      </div>
       <p class="note" id="rNote"></p>
     </section>
   </main>

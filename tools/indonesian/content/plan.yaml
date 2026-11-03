@@ -1,5 +1,5 @@
 # The 1-year study plan as data (_docs/indonesian-study-plan.md), built into data/plan.json for the Today page.
-# Weekdays: 1 Monday … 7 Sunday. Words = deck total by the end of the month.
+# Weekdays: 1 Monday to 7 Sunday. Words = deck total by the end of the month.
 
 week:
   1: {focus: lesson, label: "This week's lesson", minutes: 60}

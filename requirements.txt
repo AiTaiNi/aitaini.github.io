@@ -1,0 +1,19 @@
+# Python packages for the scripts in tools/. Install with: pip install -r requirements.txt
+
+# All network calls (build-indonesian.py, scrape-mal.py, read-receipt.py)
+requests>=2.34
+
+# build-indonesian.py
+PySastrawi>=1.2
+PyYAML>=6.0
+
+# parse-statements.py, and the PDF step of build-indonesian.py
+PyMuPDF>=2.0
+
+# purchase-receipts/read-receipt.py, which also needs the Tesseract program itself (winget install UB-Mannheim.TesseractOCR)
+numpy>=2.5
+opencv-python>=5.0
+pytesseract>=0.3.13
+
+# Linting, rules in pyproject.toml. Only "ruff check": "ruff format" and "--fix" would undo the project's kwarg spacing
+ruff>=0.17

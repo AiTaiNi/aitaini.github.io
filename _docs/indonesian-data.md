@@ -16,7 +16,7 @@ The public build takes about 25 seconds; the PDF step a few more (unchanged PDFs
 
 ## Setup (once)
 
-1. `pip install PySastrawi pyyaml` (PyMuPDF is already installed for `tools/parse-statements.py`).
+1. `pip install PySastrawi pyyaml requests` (PyMuPDF is already installed for `tools/parse-statements.py`).
 2. Download into `tools/indonesian/raw/` (git-ignored, about 100 MB):
 
    | File | From |

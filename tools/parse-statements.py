@@ -63,6 +63,7 @@ class Row:
     @property
     def text(self) -> str:
         """The line as printed, with wide gaps kept as double spaces."""
+
         out = ""
 
         for i, w in enumerate(self.words):
@@ -78,6 +79,7 @@ class Row:
     @property
     def label(self) -> str:
         """The line's text without its amounts."""
+
         return norm(" ".join(w.s for w in self.words if not cents(w.s)))
 
     def find(self, s: str) -> Word | None:
@@ -90,14 +92,14 @@ def read_rows(doc: pymupdf.Document) -> list[Row]:
     for pi, page in enumerate(doc, 1):
         page_rows: list[Row] = []
 
-        for x0, _y0, x1, y1, s, *_ in sorted(page.get_text("words"), key=lambda w: (w[3], w[0])):
+        for x0, _y0, x1, y1, s, *_ in sorted(page.get_text("words"), key = lambda w: (w[3], w[0])):
             if page_rows and abs(page_rows[-1].y - y1) <= 2.5:
                 page_rows[-1].words.append(Word(x0, x1, s))
             else:
                 page_rows.append(Row(pi, y1, [Word(x0, x1, s)]))
 
         for r in page_rows:
-            r.words.sort(key=lambda w: w.x0)
+            r.words.sort(key = lambda w: w.x0)
 
         rows += page_rows
 
@@ -107,6 +109,7 @@ def read_rows(doc: pymupdf.Document) -> list[Row]:
 # MARK: Tokens
 def cents(s: str) -> tuple[int, bool] | None:
     """'1,234.56' -> (123456, False); '45.00-' -> (4500, True)."""
+
     m = AMOUNT.match(s)
 
     if not m: return None
@@ -129,6 +132,7 @@ def full_date(s: str) -> date | None:
 
 def short_date(s: str, end: date) -> date | None:
     """'05DIC' -> the latest such date on or shortly after the statement's end (so December rows in a January statement get last year)."""
+
     m = SHORT_DATE.match(s)
 
     if not m or norm(m[2]) not in MONTHS: return None
@@ -139,19 +143,20 @@ def short_date(s: str, end: date) -> date | None:
         except ValueError:
             continue
 
-        if d <= end + timedelta(days=7): return d
+        if d <= end + timedelta(days = 7): return d
 
     return None
 
 
 def nearest(cols: dict[str, float], w: Word) -> tuple[str, float]:
-    k = min(cols, key=lambda k: abs(cols[k] - w.c))
+    k = min(cols, key = lambda k: abs(cols[k] - w.c))
 
     return k, abs(cols[k] - w.c)
 
 
 def amounts_above(rows: list[Row], label: Row) -> list[Word]:
     """Totals are printed just above their label ("TOTAL MOVIMIENTO", "SALDO"); sometimes on the same line."""
+
     own = [w for w in label.words if cents(w.s)]
 
     if own: return own
@@ -171,7 +176,7 @@ class Tx:
     currency: str
     reference: str | None
     raw: str
-    flags: list[str] = field(default_factory=list)
+    flags: list[str] = field(default_factory = list)
 
 
 @dataclass
@@ -180,10 +185,10 @@ class Statement:
     parser: str
     start: date
     end: date
-    txs: list[Tx] = field(default_factory=list)
-    balances: dict[str, dict[str, int]] = field(default_factory=dict)   # {"PEN": {"opening": cents, "closing": cents}}; card balances are debt
-    totals: dict[str, int] = field(default_factory=dict)   # debit only: printed total charges/deposits, for checking
-    warnings: list[str] = field(default_factory=list)
+    txs: list[Tx] = field(default_factory = list)
+    balances: dict[str, dict[str, int]] = field(default_factory = dict)   # {"PEN": {"opening": cents, "closing": cents}}; card balances are debt
+    totals: dict[str, int] = field(default_factory = dict)   # debit only: printed total charges/deposits, for checking
+    warnings: list[str] = field(default_factory = list)
 
 
 def find_period(rows: list[Row]) -> tuple[date, date]:
@@ -201,6 +206,7 @@ def find_period(rows: list[Row]) -> tuple[date, date]:
 
 def parse_debit(rows: list[Row], start: date, end: date) -> Statement:
     """Savings account: FECHA PROC. | FECHA VALOR | DESCRIPCION | CARGOS / DEBE | ABONOS / HABER, one currency per account."""
+
     st = Statement("debit", "bcp-debit-v1", start, end)
     cols: dict[int, dict[str, float]] = {}
     first_header = None
@@ -281,8 +287,12 @@ def parse_debit(rows: list[Row], start: date, end: date) -> Statement:
 
 
 def parse_credit(rows: list[Row], start: date, end: date) -> Statement:
-    """Visa card: Fecha de proceso | Fecha de consumo | Descripción | Tipo de Operación | Soles | Dólares.
-    Movements run from SALDO ANTERIOR to MONTO TOTAL FACTURADO; the installment plan after that is not a movement."""
+    """
+    Visa card: Fecha de proceso | Fecha de consumo | Descripción | Tipo de Operación | Soles | Dólares.
+
+    Movements run from SALDO ANTERIOR to MONTO TOTAL FACTURADO; the installment plan after that is not a movement.
+    """
+    
     st = Statement("credit", "bcp-credit-v1", start, end)
     cols: dict[int, dict[str, float]] = {}
     tipo_x: dict[int, float] = {}
@@ -371,6 +381,7 @@ def parse_credit(rows: list[Row], start: date, end: date) -> Statement:
 # MARK: Checks and output
 def checks(st: Statement) -> list[dict]:
     """Opening + movements = closing, per currency (card balances are debt, so spending raises them). Debit also checks the printed totals."""
+
     out = []
 
     for cur, b in sorted(st.balances.items()):
@@ -385,15 +396,15 @@ def checks(st: Statement) -> list[dict]:
             got = sum(abs(t.cents) for t in st.txs if (t.cents < 0) == (side == "out") and t.cents)
             out.append({"check": f"total {label}", "ok": got == st.totals[side], "expected": got / 100, "printed": st.totals[side] / 100})
 
-    for cur in {t.currency for t in st.txs} - set(st.balances):
-        out.append({"check": f"{cur} balance", "ok": False, "expected": None, "printed": None})
+    
+    out.extend({"check": f"{cur} balance", "ok": False, "expected": None, "printed": None} for cur in {t.currency for t in st.txs} - set(st.balances))
 
     return out
 
 
 def parse_pdf(path: Path, password: str) -> tuple[Statement, dict]:
     data = path.read_bytes()
-    doc = pymupdf.open(stream=data, filetype="pdf")
+    doc = pymupdf.open(stream = data, filetype = "pdf")
 
     if doc.needs_pass and not doc.authenticate(password):
         raise ParseError("wrong PDF password")
@@ -449,9 +460,9 @@ def parse_pdf(path: Path, password: str) -> tuple[Statement, dict]:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Turn BCP statement PDFs into JSON for personal/statements/.")
-    ap.add_argument("paths", nargs="*", type=Path, default=[DEFAULT_IN], help="PDF files or folders (default: personal/statements/examples)")
-    ap.add_argument("--out", type=Path, default=DEFAULT_OUT, help="output folder (default: personal/statements/json)")
+    ap = argparse.ArgumentParser(description = "Turn BCP statement PDFs into JSON for personal/statements/.")
+    ap.add_argument("paths", nargs = "*", type = Path, default = [DEFAULT_IN], help = "PDF files or folders (default: personal/statements/examples)")
+    ap.add_argument("--out", type = Path, default = DEFAULT_OUT, help = "output folder (default: personal/statements/json)")
     args = ap.parse_args()
 
     pdfs = sorted({f for p in args.paths for f in ([p] if p.is_file() else p.glob("*")) if f.suffix.lower() == ".pdf"})
@@ -461,7 +472,7 @@ def main() -> int:
         return 1
 
     password = os.environ.get("BCP_PDF_PASSWORD") or getpass.getpass("PDF password (blank if none): ")
-    args.out.mkdir(parents=True, exist_ok=True)
+    args.out.mkdir(parents = True, exist_ok = True)
     written: dict[str, tuple[Path, list]] = {}
     failed = dupes = 0
 
@@ -486,7 +497,7 @@ def main() -> int:
             print(f"! {pdf.name}: {name} differs from {first.name}; keeping {pdf.name}, check which is right")
 
         written[name] = (pdf, out["transactions"])
-        (args.out / name).write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
+        (args.out / name).write_text(json.dumps(out, ensure_ascii = False, indent = 1), encoding = "utf-8")
 
         marks = "  ".join(f"{c['check']} {'✓' if c['ok'] else '✗'}" for c in out["checks"]) or "no balances to check"
         flagged = sum(1 for t in st.txs if t.flags)
@@ -504,8 +515,9 @@ def main() -> int:
     return 1 if failed else 0
 
 
-def coverage(written: dict[str, tuple[Path, list]]) -> None:
+def coverage(written: dict[str, tuple[Path, list]]):
     """Months covered per account, and any gaps between the first and last."""
+
     for account in ("debit", "credit"):
         months = sorted(n.split()[1][:7] for n in written if n.startswith(account))
 

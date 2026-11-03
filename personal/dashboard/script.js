@@ -95,7 +95,7 @@ async function loadMal() {
         if (d) {
             useMal(d, 'Stats loaded from file on');
         } else {
-            $('#mal').innerHTML = `<p class="note">No stats yet. Run python tools/scrape-mal.py ${esc(cfg.mal)}, then press “Load stats file…” and choose data/mal-stats.json.</p>`;
+            $('#mal').innerHTML = 'Missing file';
         }
     }
 }

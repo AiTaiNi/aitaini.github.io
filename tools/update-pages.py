@@ -52,7 +52,7 @@ def main():
     pages, folders, seen = [], {}, {}
     for f in sorted(PAGES.rglob("*.md")):
         rel = f.relative_to(PAGES).as_posix()
-        meta = parse(f.read_text(encoding="utf-8"))
+        meta = parse(f.read_text(encoding = "utf-8"))
         if meta.get("draft", "").lower() in ("true", "yes", "1"):
             print(f"  skipped draft: {rel}")
             continue
@@ -80,8 +80,8 @@ def main():
             "order": order,
             "menu": meta.get("menu", "").lower() not in ("false", "no", "0"),
         })
-    pages.sort(key=lambda p: (p["order"], p["title"].lower()))
-    OUT.write_text(json.dumps({"pages": pages, "folders": folders}, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    pages.sort(key = lambda p: (p["order"], p["title"].lower()))
+    OUT.write_text(json.dumps({"pages": pages, "folders": folders}, indent = 2, ensure_ascii = False) + "\n", encoding = "utf-8")
     print(f"Done: {len(pages)} page(s) written to {OUT.relative_to(ROOT)}")
 
 

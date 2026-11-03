@@ -825,7 +825,7 @@
     }
 
     async function load() {
-        say('Loading statements…');
+        say('Loading statements...');
 
         try {
             const s = await db.from('statements').select('id,account,period');

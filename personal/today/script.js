@@ -17,7 +17,7 @@
 
     /* Spaces out saves while typing; Sync uploads shortly after each save */
     box.addEventListener('input', () => {
-        state.textContent = 'Saving…';
+        state.textContent = 'Saving...';
         clearTimeout(timer);
         timer = setTimeout(flush, 400);
     });

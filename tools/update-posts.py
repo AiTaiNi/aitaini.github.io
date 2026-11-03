@@ -33,11 +33,11 @@ def parse(text: str) -> tuple[dict[str, str], str]:
 
 
 def plain(md: str) -> str:
-    s = re.sub(r"```.*?```", " ", md, flags=re.S)
+    s = re.sub(r"```.*?```", " ", md, flags = re.S)
     s = re.sub(r"!\[[^\]]*\]\([^)]*\)", " ", s)          # images
     s = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", s)       # links -> text
     s = re.sub(r"<[^>]+>", " ", s)                        # html tags
-    s = re.sub(r"^\s{0,3}(#{1,6}|>|[-*+]|\d+\.)\s+", "", s, flags=re.M)
+    s = re.sub(r"^\s{0,3}(#{1,6}|>|[-*+]|\d+\.)\s+", "", s, flags = re.M)
     s = re.sub(r"[*_`~]", "", s)
     return re.sub(r"\s+", " ", s).strip()
 
@@ -48,7 +48,7 @@ def main():
     entries, seen = [], {}
     for f in sorted(POSTS.rglob("*.md")):
         rel = f.relative_to(POSTS).as_posix()
-        meta, body = parse(f.read_text(encoding="utf-8"))
+        meta, body = parse(f.read_text(encoding = "utf-8"))
         if meta.get("draft", "").lower() in ("true", "yes", "1"):
             print(f"  skipped draft: {rel}")
             continue
@@ -70,8 +70,8 @@ def main():
             "description": meta.get("description") or (text[:160] + "…" if len(text) > 160 else text),
             "words": len(text.split()),
         })
-    entries.sort(key=lambda e: e["date"], reverse=True)
-    OUT.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    entries.sort(key = lambda e: e["date"], reverse = True)
+    OUT.write_text(json.dumps(entries, indent = 2, ensure_ascii = False) + "\n", encoding = "utf-8")
     print(f"Done: {len(entries)} post(s) written to {OUT.relative_to(ROOT)}")
 
 
