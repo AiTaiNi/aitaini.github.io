@@ -101,7 +101,7 @@ small pill in the corner says "Sync not set up".
 2. You should see **Private page** with an email and password form. Sign in with the user from step 4.
 3. The dashboard appears, and the pill at the bottom right goes **Syncing… → Synced** (green).
 4. Your existing tasks, history, events and settings from this browser are uploaded on this first sign-in.
-   Check **Table Editor → kv** in Supabase: you'll see rows for `daily-tasks-v1` and `dash-cfg`.
+   Check **Table Editor → kv** in Supabase: you'll see rows for `daily-tasks-v1` and `dash-todo` (once the to-do list has an item).
 
 Do this first sign-in on the device that has your real dashboard data.
 
@@ -151,9 +151,8 @@ All of this happens in the Supabase dashboard. The site itself can only sign in 
 - **Conflicts**: if the same thing was changed on two devices while one was offline, the most recent change wins
   for that whole key (e.g. the whole task list). Rare in practice, but worth knowing.
 - **Offline**: everything works offline; changes upload when you're back.
-- **What syncs on the dashboard**: tasks/history/events (`daily-tasks-v1`) and settings (`dash-cfg`: MAL
-  username). MAL stats are a cache and stay per device. The exchange rate is shared by every page and device
-  (`fx-rate`, from `/assets/fx.js`): fetched at most every 12 hours by whichever page needs it first.
+- **What syncs on the dashboard**: tasks/history/events (`daily-tasks-v1`) and the to-do list (`dash-todo`).
+  An old `dash-cfg` row (the former MAL username setting) is no longer used and can be deleted. The exchange rate is shared by every page and device (`fx-rate`, from `/assets/fx.js`): fetched at most every 12 hours by whichever page needs it first.
 - **Backups**: the Export JSON button still works and is still a good idea now and then.
 
 ## Things to know about the free tier

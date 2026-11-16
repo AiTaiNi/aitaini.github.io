@@ -51,60 +51,20 @@ input[type=range] {
     margin-top: 2px
 }
 
-/* MARK: MyAnimeList */
-.tabs {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 8px
+/* MARK: To do */
+/* Rows reuse label.t from /assets/tasks.css (checkbox, strikethrough when done) */
+#todoForm {
+    margin-bottom: 4px
 }
 
-.tabs .sp {
-    margin-left: auto
+#todos span {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere
 }
 
-.user {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    margin-bottom: 8px
-}
-
-.user img {
-    width: 38px;
-    height: 38px;
-    border-radius: var(--radius-chip);
-    object-fit: cover;
-    background: var(--line)
-}
-
-.user a {
-    color: var(--title);
-    font-weight: 700
-}
-
-.bar {
-    display: flex;
-    height: 12px;
-    border-radius: 6px;
-    overflow: hidden;
-    background: var(--line)
-}
-
-.legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 14px;
-    margin-top: 10px;
-    font-size: .85rem
-}
-
-.legend i {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-right: 5px
+#todos .del {
+    padding: 2px 8px
 }
 
 /* MARK: Settings dialog */

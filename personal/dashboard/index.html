@@ -23,14 +23,14 @@
         <h1 id="hello">Hello</h1>
         <p id="date"></p>
       </div>
-      <div class="tools">
+      <nav class="tools">
         <a href="/personal/">All pages</a>
         <a href="/personal/today/">Today</a>
         <a href="/personal/calendar/">Calendar</a>
         <a href="/personal/statements/">Statements</a>
         <button id="refresh">Refresh</button>
         <button id="open">Settings</button>
-      </div>
+      </nav>
     </header>
 
     <div class="grid">
@@ -60,28 +60,19 @@
         </div>
       </section>
 
-      <section class="card" aria-live="polite">
-        <h2>MyAnimeList</h2>
-        <div class="tabs">
-          <div class="seg" role="group" aria-label="List">
-            <button data-t="anime" aria-pressed="true">Anime</button>
-            <button data-t="manga" aria-pressed="false">Manga</button>
-          </div>
-          <button id="malLoad" class="sp">Load stats file…</button>
-          <input type="file" id="malFile" accept=".json,application/json" hidden>
-        </div>
-        <div id="mal">
-          <p class="note">Loading stats…</p>
-        </div>
+      <section class="card">
+        <h2>To do</h2>
+        <form class="add" id="todoForm">
+          <input id="todoText" maxlength="200" autocomplete="off" placeholder="New item" aria-label="New item">
+          <button type="submit">Add</button>
+        </form>
+        <div id="todos"></div>
       </section>
     </div>
   </main>
 
   <dialog id="dlg">
     <h3 style="margin:0">Settings</h3>
-    <label for="malUser">MyAnimeList username</label>
-    <input id="malUser" maxlength="40" autocomplete="off">
-    <p class="note">Stats come from data/mal-stats.json. After changing the name, run <code>python tools/scrape-mal.py name</code> to refresh that file.</p>
     <details class="bk">
       <summary>Backup: import and export</summary>
       <div class="btns" style="margin-top:10px">
@@ -103,7 +94,7 @@
       <p class="msg" id="dataMsg"></p>
       <p class="note">JSON holds your tasks, history and events, for backup or moving devices. The CSV files are for spreadsheets.</p>
     </details>
-    <div class="row"><button id="cancel">Cancel</button><button id="save" class="pri">Save</button></div>
+    <div class="row"><button id="close" class="pri">Close</button></div>
   </dialog>
 
   <script src="script.js"></script>

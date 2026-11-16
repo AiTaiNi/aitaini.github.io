@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-26T16:49:06+00:00",
+  "updated": "2026-11-16T16:19:09+00:00",
   "profile": {
     "username": "AisareTai",
     "url": "https://myanimelist.net/profile/AisareTai",
@@ -11,29 +11,20 @@
   },
   "stats": {
     "anime": {
-      "days_watched": 70.8,
-      "mean_score": 7.92,
+      "mean_score": 7.88,
       "watching": 20,
-      "completed": 324,
-      "on_hold": 2,
+      "completed": 332,
+      "on_hold": 3,
       "dropped": 5,
-      "plan_to_watch": 82,
-      "total_entries": 433,
-      "rewatched": 0,
-      "episodes_watched": 4266
+      "plan_to_watch": 81
     },
     "manga": {
-      "days_read": 111.1,
       "mean_score": 7.32,
       "reading": 113,
-      "completed": 199,
+      "completed": 203,
       "on_hold": 20,
       "dropped": 1,
-      "plan_to_read": 238,
-      "total_entries": 571,
-      "reread": 0,
-      "chapters_read": 19582,
-      "volumes_read": 319
+      "plan_to_read": 243
     }
   }
 }

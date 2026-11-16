@@ -1,36 +1,13 @@
 /* MARK: Helpers */
 const $ = s => document.querySelector(s);
-
-const store = {
-    get(k, d) {
-        try {
-            const v = localStorage.getItem(k);
-
-            return v ? JSON.parse(v) : d;
-        } catch {
-            return d;
-        }
-    },
-    set(k, v) {
-        try {
-            localStorage.setItem(k, JSON.stringify(v));
-        } catch {
-        }
-    }
-};
-
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const fmt = (n, d = 0) => Number(n).toLocaleString('en-US', { maximumFractionDigits: d });
-const DEFAULTS = { mal: 'AisareTai' };
-const cfg = Object.assign({}, DEFAULTS, Sync.get('dash-cfg', {}));
 
-/* dash-mal is a cache and stays local. The exchange rate is site-wide (/assets/fx.js). */
-Sync.use(['dash-cfg']);
-Sync.on('dash-cfg', v => {
-    Object.assign(cfg, DEFAULTS, v);
-    loadMal();
+/* The to-do list syncs as dash-todo: [{ id, text, done }]. The exchange rate is site-wide (/assets/fx.js). */
+/* On a device's first sync, items from both copies are kept (matched by id, server copy wins). */
+Sync.use(['dash-todo'], {
+    merge: { 'dash-todo': (local, remote) => remote.concat(local.filter(l => !remote.some(r => r.id === l.id))) }
 });
-let malTab = 'anime', malData = null, malNote = '';
+Sync.on('dash-todo', drawTodos);
 
 /* MARK: Header */
 function header() {
@@ -67,105 +44,63 @@ async function loadFx() {
     showFx(await FX.get());
 }
 
-/* MARK: MyAnimeList */
-const MAL = {
-    anime: { keys: [['watching', 'Watching', '#2db039'], ['completed', 'Completed', '#2e51a2'], ['on_hold', 'On hold', '#f9d457'], ['dropped', 'Dropped', '#a12f31'], ['plan_to_watch', 'Plan to watch', '#9aa0a6']] },
-    manga: { keys: [['reading', 'Reading', '#2db039'], ['completed', 'Completed', '#2e51a2'], ['on_hold', 'On hold', '#f9d457'], ['dropped', 'Dropped', '#a12f31'], ['plan_to_read', 'Plan to read', '#9aa0a6']] }
+/* MARK: To do */
+const todos = () => Sync.get('dash-todo', []);
+
+function saveTodos(list) {
+    Sync.set('dash-todo', list);
+    drawTodos();
+}
+
+function drawTodos() {
+    const list = todos();
+
+    $('#todos').innerHTML = list.length ? list.map(t => `
+    <label class="t${t.done ? ' done' : ''}" data-id="${esc(t.id)}">
+      <input type="checkbox"${t.done ? ' checked' : ''}>
+      <span>${esc(t.text)}</span>
+      <button type="button" class="del" aria-label="Delete ${esc(t.text)}">Delete</button>
+    </label>`).join('') : '<p class="note">Nothing to do.</p>';
+}
+
+$('#todoForm').onsubmit = e => {
+    e.preventDefault();
+
+    const text = $('#todoText').value.trim();
+
+    if (!text) return;
+
+    saveTodos(todos().concat({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), text, done: false }));
+    $('#todoText').value = '';
 };
 
-function useMal(d, note) {
-    malData = d;
-    malNote = d.updated ? note + ' ' + new Date(d.updated).toLocaleDateString() + '.' : '';
-    drawMal();
-}
+$('#todos').onchange = e => {
+    const id = e.target.closest('[data-id]').dataset.id;
 
-async function loadMal() {
-    try {
-        const r = await fetch('../../data/mal-stats.json', { cache: 'no-cache' });
-
-        if (!r.ok) throw 0;
-
-        const d = await r.json();
-
-        store.set('dash-mal', d);
-        useMal(d, 'Stats saved on');
-    } catch {
-        const d = store.get('dash-mal');
-
-        if (d) {
-            useMal(d, 'Stats loaded from file on');
-        } else {
-            $('#mal').innerHTML = 'Missing file';
-        }
-    }
-}
-
-$('#malLoad').onclick = () => $('#malFile').click();
-
-$('#malFile').onchange = e => {
-    const f = e.target.files && e.target.files[0];
-
-    if (!f) return;
-
-    f.text().then(t => {
-        const d = JSON.parse(t);
-
-        if (!d.profile || !d.stats) throw 0;
-
-        store.set('dash-mal', d);
-        useMal(d, 'Stats saved on');
-    }).catch(() => {
-        $('#mal').innerHTML = '<p class="err">That file doesn’t look like mal-stats.json.</p>';
-    });
-
-    e.target.value = '';
+    saveTodos(todos().map(t => t.id === id ? { ...t, done: e.target.checked } : t));
 };
 
-function drawMal() {
-    if (!malData) return;
+$('#todos').onclick = e => {
+    if (!e.target.classList.contains('del')) return;
 
-    const { profile, stats } = malData, d = stats[malTab], m = MAL[malTab];
-    const img = profile.images && profile.images.jpg ? profile.images.jpg.image_url : '';
-    const total = m.keys.reduce((a, [k]) => a + (d[k] || 0), 0) || 1;
-    const mismatch = profile.username && cfg.mal && profile.username.toLowerCase() !== cfg.mal.toLowerCase();
-    const hint = mismatch ? `<p class="note">These stats are for ${esc(profile.username)}. Run python tools/scrape-mal.py ${esc(cfg.mal)} to switch.</p>` : '';
-    const stamp = malNote ? `<p class="note">${esc(malNote)}</p>` : '';
+    /* Inside the label, so stop the click from also toggling the checkbox */
+    e.preventDefault();
 
-    $('#mal').innerHTML = `
-    <div class="user">${img ? `<img src="${esc(img)}" alt="">` : ''}
-      <div><a href="${esc(profile.url)}" target="_blank" rel="noopener">${esc(profile.username)}</a>
-      <div class="note" style="margin:0">Mean score ${fmt(d.mean_score, 2)}</div></div></div>    <div class="bar" role="img" aria-label="Status breakdown">${m.keys.map(([k, , c]) => `<div style="width:${(d[k] || 0) / total * 100}%;background:${c}"></div>`).join('')}</div>
-    <div class="legend">${m.keys.map(([k, l, c]) => `<span><i style="background:${c}"></i>${l} ${fmt(d[k] || 0)}</span>`).join('')}</div>` + hint + stamp;
-}
-/* Only the Anime/Manga toggle (not "Load stats file…" next to it) */
-document.querySelectorAll('.tabs [data-t]').forEach(b => b.onclick = () => {
-    malTab = b.dataset.t;
-    document.querySelectorAll('.tabs [data-t]').forEach(x => x.setAttribute('aria-pressed', x === b));
-    drawMal();
-});
+    const id = e.target.closest('[data-id]').dataset.id;
+
+    saveTodos(todos().filter(t => t.id !== id));
+};
 
 /* MARK: Settings */
 const dlg = $('#dlg');
 
-$('#open').onclick = () => {
-    $('#malUser').value = cfg.mal;
-    dlg.showModal();
-};
-
-$('#cancel').onclick = () => dlg.close();
-
-$('#save').onclick = () => {
-    cfg.mal = $('#malUser').value.trim() || DEFAULTS.mal;
-    Sync.set('dash-cfg', cfg);
-    dlg.close();
-    loadAll();
-};
-
+$('#open').onclick = () => dlg.showModal();
+$('#close').onclick = () => dlg.close();
 $('#refresh').onclick = () => loadAll();
 
 function loadAll() {
     header();
     loadFx();
-    loadMal();
+    drawTodos();
 }
 loadAll();
